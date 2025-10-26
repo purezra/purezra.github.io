@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>彩色ASCII艺术转换器</title>
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 统一的 Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1',
+            secondary: '#4f46e5',
+            dark: '#1e1b4b',
+            light: '#e0e7ff',
+            accent: '#c084fc',
+            'dark-bg': '#0f172a',
+            'dark-card': '#1e293b',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Fira Code', 'Monaco', 'Consolas', 'monospace'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      },
+      darkMode: 'class',
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .text-shadow-lg {
+        text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+      .bg-gradient-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      }
+      .bg-gradient-dark {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      }
+      .transition-all-300 {
+        transition: all 300ms ease-in-out;
+      }
+      .ascii-container {
+        font-family: 'Fira Code', monospace;
+        line-height: 0.7;
+        letter-spacing: -0.2em;
+        overflow: auto;
+        max-height: 50vh;
+      }
+      .ascii-container pre {
+        font-family: inherit;
+        line-height: inherit;
+        letter-spacing: inherit;
+      }
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .dark .glass-effect {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 min-h-screen transition-all-300">
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <!-- 头部 -->
+    <header class="text-center mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent text-shadow-lg">
+        彩色ASCII艺术转换器
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        将图片转换为精彩的ASCII艺术，自定义参数以获得最佳效果
+      </p>
+    </header>
+
+    <!-- 主要内容区 -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <!-- 左侧控制面板 -->
+      <div class="md:col-span-8 lg:col-span-4">
+        <div class="bg-white dark:bg-dark-card rounded-xl shadow-lg shadow-lg p-6 h-full">
+          <h2 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fa fa-sliders mr-2 text-primary"></i> 参数控制
+          </h2>
+          
+          <!-- 图片上传区域 -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              上传图片
+            </label>
+            <div id="drop-area" class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center cursor-pointer hover:border-primary dark:hover:border-primary transition-all-300">
+              <i class="fa fa-cloud-upload text-3xl text-gray-400 dark:text-gray-500 mb-2"></i>
+              <p class="text-sm text-gray-600 dark:text-gray-400">拖放图片到这里，或</p>
+              <label class="mt-2 inline-block px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-all-300 cursor-pointer">
+                选择文件
+                <input type="file" id="image-input" accept="image/*" class="hidden">
+              </label>
+              <p id="file-name" class="mt-2 text-xs text-gray-500 dark:text-gray-500"></p>
+            </div>
+          </div>
+          
+          <!-- 示例图片 -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              或选择示例图片
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-primary transition-all-300">
+                <img src="https://p26-doubao-search-sign.byteimg.com/labis/5680ccbdaff0ccfc759ade0c3490c9dd~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=cqOqPznnvHx7qar1Z%2FBWrTPnrWo%3D" alt="汉堡示例1" class="w-full h-16 object-cover">
+              </div>
+              <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-primary transition-all-300">
+                <img src="https://p26-doubao-search-sign.byteimg.com/labis/826307ac4872f4a9e3b176676b66bb4d~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=OaZ5lNCtmSIgGie4z8sdLAhuia0%3D" alt="汉堡示例2" class="w-full h-16 object-cover">
+              </div>
+              <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-primary transition-all-300">
+                <img src="https://p26-doubao-search-sign.byteimg.com/labis/e36d32ed9155614c3b42a79bd75d7f02~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=Y9u43oIBbu7R4vkrK61gz3lEtTI%3D" alt="汉堡示例3" class="w-full h-16 object-cover">
+              </div>
+            </div>
+          </div>
+          
+          <!-- 转换参数 -->
+          <div class="space-y-4">
+            <!-- 宽度 -->
+            <div>
+              <label for="width-slider" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                宽度: <span id="width-value">100</span> 字符
+              </label>
+              <input type="range" id="width-slider" min="20" max="300" value="100" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
+            </div>
+            
+            <!-- 对比度 -->
+            <div>
+              <label for="contrast-slider" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                对比度: <span id="contrast-value">1.2</span>
+              </label>
+              <input type="range" id="contrast-slider" min="0.5" max="2" step="0.1" value="1.2" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
+            </div>
+            
+            <!-- 亮度 -->
+            <div>
+              <label for="brightness-slider" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                亮度: <span id="brightness-value">1.0</span>
+              </label>
+              <input type="range" id="brightness-slider" min="0.5" max="2" step="0.1" value="1.0" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
+            </div>
+            
+            <!-- 字符集选择 -->
+            <div>
+              <label for="char-set" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                字符集
+              </label>
+              <select id="char-set" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:ring-primary focus:border-primary">
+                <option value="detailed">详细 (70+字符)</option>
+                <option value="simple">简单 (10字符)</option>
+                <option value="blocks">方块 (Unicode方块)</option>
+                <option value="custom" selected>自定义</option>
+              </select>
+            </div>
+            
+            <!-- 自定义字符集输入 -->
+            <div id="custom-chars-container" class="mt-4">
+              <label for="custom-chars" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                自定义字符集
+                <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">(从暗到亮排序，至少2个字符)</span>
+              </label>
+              <input type="text" id="custom-chars" placeholder="例如: .:-=+*ABCDEFGHIJKLMNOPQRSTUVWXYZ#%@" 
+                     class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:ring-primary focus:border-primary">
+              <div class="flex justify-between mt-1">
+                <button id="reset-chars-btn" class="text-xs text-primary hover:text-secondary transition-all-300">
+                  <i class="fa fa-refresh mr-1"></i> 恢复默认
+                </button>
+                <button id="preview-chars-btn" class="text-xs text-primary hover:text-secondary transition-all-300">
+                  <i class="fa fa-eye mr-1"></i> 预览效果
+                </button>
+              </div>
+            </div>
+            
+            <!-- 抖动选项 -->
+            <div class="flex items-center justify-between">
+              <label for="dithering-toggle" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                启用抖动
+              </label>
+              <div class="relative inline-block w-12 align-middle select-none">
+                <input type="checkbox" id="dithering-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                <label for="dithering-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+              </div>
+            </div>
+            
+            <!-- 转换按钮 -->
+            <button id="convert-btn" class="w-full mt-4 px-4 py-2 bg-gradient-primary text-white rounded-md hover:opacity-90 transition-all-300 flex items-center justify-center">
+              <i class="fa fa-magic mr-2"></i> 转换为ASCII艺术
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 右侧结果显示区 -->
+      <div class="md:col-span-12 lg:col-span-8">
+        <div class="bg-white dark:bg-dark-card rounded-xl shadow-lg p-6 h-full flex flex-col">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold flex items-center">
+              <i class="fa fa-code mr-2 text-primary"></i> ASCII艺术结果
+            </h2>
+            <div class="flex space-x-2">
+              <button id="copy-btn" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all-300 flex items-center text-sm">
+                <i class="fa fa-copy mr-1"></i> 复制
+              </button>
+              <button id="download-btn" class="px-3 py-1 bg-primary text-white rounded-md hover:bg-secondary transition-all-300 flex items-center text-sm">
+                <i class="fa fa-download mr-1"></i> 下载
+              </button>
+              <button id="theme-toggle" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all-300">
+                <i class="fa fa-moon-o dark:hidden"></i>
+                <i class="fa fa-sun-o hidden dark:block"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 结果显示区 -->
+          <div id="result-container" class="flex-grow flex flex-col items-center justify-center">
+            <!-- 初始状态 -->
+            <div id="initial-state" class="text-center py-12">
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+                <i class="fa fa-image text-2xl text-gray-400 dark:text-gray-500"></i>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">准备开始</h3>
+              <p class="text-gray-500 dark:text-gray-400">上传图片并点击转换按钮生成ASCII艺术</p>
+            </div>
+            
+            <!-- 加载状态 -->
+            <div id="loading-state" class="text-center py-12 hidden">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">正在转换</h3>
+              <p class="text-gray-500 dark:text-gray-400">正在将图片转换为ASCII艺术...</p>
+            </div>
+            
+            <!-- 错误状态 -->
+            <div id="error-state" class="text-center py-12 hidden">
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+                <i class="fa fa-exclamation-triangle text-2xl text-red-500 dark:text-red-400"></i>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">转换失败</h3>
+              <p id="error-message" class="text-gray-500 dark:text-gray-400">无法处理图片，请尝试使用其他图片</p>
+            </div>
+            
+            <!-- 结果状态 -->
+            <div id="ascii-result" class="w-full h-full hidden">
+              <div class="ascii-container w-full h-full bg-black text-white p-4 rounded-lg">
+                <pre id="ascii-art"></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 底部信息 -->
+    <footer class="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm">
+      <p>彩色ASCII艺术转换器 &copy; 2025 | 将图片转换为精美的ASCII艺术</p>
+    </footer>
+  </div>
+
+  <!-- 自定义样式 -->
+  <style>
+    /* 滑块样式 */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #6366f1;
+      cursor: pointer;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #6366f1;
+      cursor: pointer;
+      border: none;
+    }
+    
+    /* 切换开关样式 */
+    .toggle-checkbox:checked {
+      right: 0;
+      border-color: #6366f1;
+    }
+    
+    .toggle-checkbox:checked + .toggle-label {
+      background-color: #6366f1;
+    }
+    
+    .toggle-label {
+      transition: background-color 0.2s ease;
+    }
+    
+    /* ASCII容器样式 */
+    .ascii-container {
+      font-size: 8px;
+    }
+    
+    @media (min-width: 640px) {
+      .ascii-container {
+        font-size: 9px;
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .ascii-container {
+        font-size: 8px;
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .ascii-container {
+        font-size: 7px;
+      }
+    }
+    
+    /* 移动设备优化 */
+    @media (max-width: 640px) {
+      /* 增大滑块触控区域 */
+      input[type="range"] {
+        height: 24px;
+      }
+      
+      input[type="range"]::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+      }
+      
+      input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+      }
+      
+      /* 增大按钮触控区域 */
+      button {
+        min-height: 44px;
+      }
+      
+      /* 增大切换开关 */
+      .toggle-checkbox {
+        width: 24px;
+        height: 24px;
+      }
+      
+      .toggle-label {
+        height: 24px;
+      }
+      
+      /* 调整示例图片大小 */
+      .sample-image img {
+        height: 24px;
+      }
+    }
+    
+    /* 动画效果 */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .slide-up {
+      animation: slideUp 0.5s ease-in-out;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+
+  <script>
+    // ASCII字符映射(按视觉密度从暗到亮排序)
+    const ASCII_CHARS_DETAILED = " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+    const ASCII_CHARS_SIMPLE = " .:-=+*#%@";
+    const ASCII_CHARS_BLOCKS = " ░▒▓█";
+    const ASCII_CHARS_CUSTOM = " .:-=+*ABCDEFGHIJKLMNOPQRSTUVWXYZ#%@";
+    
+    // DOM元素
+    const dropArea = document.getElementById('drop-area');
+    const imageInput = document.getElementById('image-input');
+    const fileName = document.getElementById('file-name');
+    const widthSlider = document.getElementById('width-slider');
+    const widthValue = document.getElementById('width-value');
+    const contrastSlider = document.getElementById('contrast-slider');
+    const contrastValue = document.getElementById('contrast-value');
+    const brightnessSlider = document.getElementById('brightness-slider');
+    const brightnessValue = document.getElementById('brightness-value');
+    const charSetSelect = document.getElementById('char-set');
+    const ditheringToggle = document.getElementById('dithering-toggle');
+    const convertBtn = document.getElementById('convert-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const themeToggle = document.getElementById('theme-toggle');
+    const resultContainer = document.getElementById('result-container');
+    const initialState = document.getElementById('initial-state');
+    const loadingState = document.getElementById('loading-state');
+    const errorState = document.getElementById('error-state');
+    const errorMessage = document.getElementById('error-message');
+    const asciiResult = document.getElementById('ascii-result');
+    const asciiArt = document.getElementById('ascii-art');
+    const sampleImages = document.querySelectorAll('.sample-image');
+    const customCharsInput = document.getElementById('custom-chars');
+    const resetCharsBtn = document.getElementById('reset-chars-btn');
+    const previewCharsBtn = document.getElementById('preview-chars-btn');
+    
+    // 当前图片
+    let currentImage = null;
+    
+    // 初始化自定义字符集输入框
+    function initCustomCharsInput() {
+      // 设置默认自定义字符集
+      const defaultCustomChars = " .:-=+*ABCDEFGHIJKLMNOPQRSTUVWXYZ#%@";
+      customCharsInput.value = defaultCustomChars;
+      
+      // 重置按钮点击事件
+      resetCharsBtn.addEventListener('click', () => {
+        customCharsInput.value = defaultCustomChars;
+      });
+      
+      // 预览按钮点击事件
+      previewCharsBtn.addEventListener('click', previewCustomChars);
+    }
+    
+    // 处理字符集选择变化
+    function handleCharSetChange() {
+      const selectedValue = charSetSelect.value;
+      const customCharsContainer = document.getElementById('custom-chars-container');
+      
+      // 只有选择"自定义"时才显示自定义字符集输入框
+      if (selectedValue === 'custom') {
+        customCharsContainer.classList.remove('hidden');
+      } else {
+        customCharsContainer.classList.add('hidden');
+      }
+    }
+    
+    // 预览自定义字符集效果
+    function previewCustomChars() {
+      const customChars = getCustomChars();
+      
+      if (!customChars) {
+        showError('请输入至少2个字符作为自定义字符集');
+        return;
+      }
+      
+      // 创建一个简单的渐变条来预览字符集效果
+      let preview = '字符集预览 (从暗到亮):\n';
+      for (let i = 0; i < customChars.length; i++) {
+        // 每隔5个字符添加一个空格，使预览更清晰
+        preview += customChars[i] + (i > 0 && (i + 1) % 5 === 0 ? ' ' : '');
+      }
+      
+      // 显示预览
+      alert(preview);
+    }
+    
+    // 获取自定义字符集
+    function getCustomChars() {
+      let chars = customCharsInput.value.trim();
+      
+      // 移除重复字符
+      chars = [...new Set(chars)].join('');
+      
+      // 至少需要2个字符
+      if (chars.length < 2) {
+        return null;
+      }
+      
+      return chars;
+    }
+    
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      // 检查暗黑模式偏好
+      if (localStorage.getItem('darkMode') === 'true' || 
+          (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      
+      // 事件监听
+      setupEventListeners();
+    });
+    
+    // 设置事件监听
+    function setupEventListeners() {
+      // 初始化自定义字符集输入框
+      initCustomCharsInput();
+      
+      // 字符集选择变化事件
+      charSetSelect.addEventListener('change', handleCharSetChange);
+      // 拖放区域
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+      });
+      
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+      });
+      
+      dropArea.addEventListener('drop', handleDrop, false);
+      
+      // 图片输入
+      imageInput.addEventListener('change', handleFileSelect, false);
+      
+      // 参数滑块
+      widthSlider.addEventListener('input', () => {
+        widthValue.textContent = widthSlider.value;
+      });
+      
+      contrastSlider.addEventListener('input', () => {
+        contrastValue.textContent = contrastSlider.value;
+      });
+      
+      brightnessSlider.addEventListener('input', () => {
+        brightnessValue.textContent = brightnessSlider.value;
+      });
+      
+      // 转换按钮
+      convertBtn.addEventListener('click', convertImageToAscii);
+      
+      // 复制按钮
+      copyBtn.addEventListener('click', copyToClipboard);
+      
+      // 下载按钮
+      downloadBtn.addEventListener('click', downloadAsciiArt);
+      
+      // 主题切换
+      themeToggle.addEventListener('click', toggleTheme);
+      
+      // 示例图片
+      sampleImages.forEach(sample => {
+        sample.addEventListener('click', () => {
+          const imgSrc = sample.querySelector('img').src;
+          loadSampleImage(imgSrc);
+        });
+      });
+    }
+    
+    // 拖放辅助函数
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    function highlight() {
+      dropArea.classList.add('border-primary');
+      dropArea.classList.add('bg-primary/5');
+    }
+    
+    function unhighlight() {
+      dropArea.classList.remove('border-primary');
+      dropArea.classList.remove('bg-primary/5');
+    }
+    
+    // 处理拖放
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length) {
+        handleFiles(files);
+      }
+    }
+    
+    // 处理文件选择
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      
+      if (files.length) {
+        handleFiles(files);
+      }
+    }
+    
+    // 处理文件
+    function handleFiles(files) {
+      const file = files[0];
+      
+      if (!file.type.match('image.*')) {
+        showError('请上传图片文件');
+        return;
+      }
+      
+      fileName.textContent = file.name;
+      
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          currentImage = img;
+          initialState.classList.remove('hidden');
+          errorState.classList.add('hidden');
+          asciiResult.classList.add('hidden');
+        };
+        img.src = e.target.result;
+      };
+      
+      reader.readAsDataURL(file);
+    }
+    
+    // 加载示例图片
+    function loadSampleImage(src) {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = function() {
+        currentImage = img;
+        fileName.textContent = src.split('/').pop().split('?')[0] || '示例图片';
+        initialState.classList.remove('hidden');
+        errorState.classList.add('hidden');
+        asciiResult.classList.add('hidden');
+      };
+      img.onerror = function() {
+        showError('无法加载示例图片');
+      };
+      img.src = src;
+    }
+    
+    // 应用抖动算法
+    function applyDithering(imageData, width, height) {
+      const data = imageData.data;
+      const dithered = new Uint8ClampedArray(data);
+      
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const index = (y * width + x) * 4;
+          
+          // 获取原始颜色
+          const r = data[index];
+          const g = data[index + 1];
+          const b = data[index + 2];
+          
+          // 计算灰度
+          const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+          
+          // 量化
+          const newGray = Math.round(gray / 255) * 255;
+          
+          // 计算误差
+          const error = gray - newGray;
+          
+          // 分散误差到相邻像素 (Floyd-Steinberg矩阵)
+          // 右
+          if (x + 1 < width) {
+            const rightIndex = (y * width + (x + 1)) * 4;
+            dithered[rightIndex] = clamp(dithered[rightIndex] + error * 7 / 16);
+            dithered[rightIndex + 1] = clamp(dithered[rightIndex + 1] + error * 7 / 16);
+            dithered[rightIndex + 2] = clamp(dithered[rightIndex + 2] + error * 7 / 16);
+          }
+          
+          // 下一行
+          if (y + 1 < height) {
+            // 左下
+            if (x > 0) {
+              const leftDownIndex = ((y + 1) * width + (x - 1)) * 4;
+              dithered[leftDownIndex] = clamp(dithered[leftDownIndex] + error * 3 / 16);
+              dithered[leftDownIndex + 1] = clamp(dithered[leftDownIndex + 1] + error * 3 / 16);
+              dithered[leftDownIndex + 2] = clamp(dithered[leftDownIndex + 2] + error * 3 / 16);
+            }
+            
+            // 下
+            const downIndex = ((y + 1) * width + x) * 4;
+            dithered[downIndex] = clamp(dithered[downIndex] + error * 5 / 16);
+            dithered[downIndex + 1] = clamp(dithered[downIndex + 1] + error * 5 / 16);
+            dithered[downIndex + 2] = clamp(dithered[downIndex + 2] + error * 5 / 16);
+            
+            // 右下
+            if (x + 1 < width) {
+              const rightDownIndex = ((y + 1) * width + (x + 1)) * 4;
+              dithered[rightDownIndex] = clamp(dithered[rightDownIndex] + error * 1 / 16);
+              dithered[rightDownIndex + 1] = clamp(dithered[rightDownIndex + 1] + error * 1 / 16);
+              dithered[rightDownIndex + 2] = clamp(dithered[rightDownIndex + 2] + error * 1 / 16);
+            }
+          }
+        }
+      }
+      
+      return new ImageData(dithered, width, height);
+    }
+    
+    // 颜色值限制在0-255之间
+    function clamp(value) {
+      return Math.max(0, Math.min(255, value));
+    }
+    
+    // 调整图像对比度
+    function adjustContrast(imageData, contrast) {
+      const data = imageData.data;
+      const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+      
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = clamp(factor * (data[i] - 128) + 128);
+        data[i + 1] = clamp(factor * (data[i + 1] - 128) + 128);
+        data[i + 2] = clamp(factor * (data[i + 2] - 128) + 128);
+      }
+      
+      return imageData;
+    }
+    
+    // 调整图像亮度
+    function adjustBrightness(imageData, brightness) {
+      const data = imageData.data;
+      
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = clamp(data[i] * brightness);
+        data[i + 1] = clamp(data[i + 1] * brightness);
+        data[i + 2] = clamp(data[i + 2] * brightness);
+      }
+      
+      return imageData;
+    }
+    
+    // 将图片转换为ASCII艺术
+    function convertImageToAscii() {
+      if (!currentImage) {
+        showError('请先上传图片');
+        return;
+      }
+      
+      // 显示加载状态
+      showLoading();
+      
+      // 使用setTimeout让UI有时间更新
+      setTimeout(() => {
+        try {
+          // 获取参数
+          const width = parseInt(widthSlider.value);
+          const contrast = parseFloat(contrastSlider.value);
+          const brightness = parseFloat(brightnessSlider.value);
+          const charSet = charSetSelect.value;
+          const useDithering = ditheringToggle.checked;
+          
+          // 选择字符集
+          let asciiChars;
+          switch (charSet) {
+            case 'detailed':
+              asciiChars = ASCII_CHARS_DETAILED;
+              break;
+            case 'simple':
+              asciiChars = ASCII_CHARS_SIMPLE;
+              break;
+            case 'blocks':
+              asciiChars = ASCII_CHARS_BLOCKS;
+              break;
+            case 'custom':
+              // 获取自定义字符集
+              asciiChars = getCustomChars();
+              if (!asciiChars) {
+                showError('自定义字符集无效，请输入至少2个字符');
+                return;
+              }
+              break;
+            default:
+              asciiChars = ASCII_CHARS_CUSTOM;
+              break;
+          }
+          
+          // 创建画布
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // 计算新的高度以保持宽高比(字符高度约为宽度的2倍)
+          const aspectRatio = currentImage.height / currentImage.width;
+          const height = Math.round(width * aspectRatio * 0.55);
+          
+          // 设置画布大小
+          canvas.width = width;
+          canvas.height = height;
+          
+          // 绘制图像
+          ctx.drawImage(currentImage, 0, 0, width, height);
+          
+          // 获取图像数据
+          let imageData = ctx.getImageData(0, 0, width, height);
+          
+          // 调整对比度和亮度
+          imageData = adjustContrast(imageData, contrast);
+          imageData = adjustBrightness(imageData, brightness);
+          
+          // 应用抖动(如果启用)
+          if (useDithering) {
+            imageData = applyDithering(imageData, width, height);
+          }
+          
+          // 处理每个像素
+          let ascii = '';
+          const data = imageData.data;
+          
+          for (let y = 0; y < height; y++) {
+            let line = '';
+            
+            for (let x = 0; x < width; x++) {
+              const index = (y * width + x) * 4;
+              const r = data[index];
+              const g = data[index + 1];
+              const b = data[index + 2];
+              const a = data[index + 3];
+              
+              // 如果透明度小于128(接近透明),则输出空格
+              if (a < 128) {
+                line += ' ';
+              } else {
+                // 计算感知亮度
+                const brightness = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+                
+                // 根据亮度选择ASCII字符
+                const charIndex = Math.min(
+                  Math.floor((brightness / 255) * asciiChars.length),
+                  asciiChars.length - 1
+                );
+                const char = asciiChars[charIndex];
+                
+                // 添加颜色和字符
+                line += `<span style="color: rgb(${r}, ${g}, ${b})">${char}</span>`;
+              }
+            }
+            
+            ascii += line + '\n';
+          }
+          
+          // 显示结果
+          asciiArt.innerHTML = ascii;
+          showResult();
+          
+        } catch (error) {
+          console.error('转换失败:', error);
+          showError('转换失败: ' + error.message);
+        }
+      }, 100);
+    }
+    
+    // 显示加载状态
+    function showLoading() {
+      initialState.classList.add('hidden');
+      errorState.classList.add('hidden');
+      asciiResult.classList.add('hidden');
+      loadingState.classList.remove('hidden');
+    }
+    
+    // 显示结果
+    function showResult() {
+      initialState.classList.add('hidden');
+      loadingState.classList.add('hidden');
+      errorState.classList.add('hidden');
+      asciiResult.classList.remove('hidden');
+      
+      // 添加动画效果
+      asciiResult.classList.add('fade-in');
+    }
+    
+    // 显示错误
+    function showError(message) {
+      initialState.classList.add('hidden');
+      loadingState.classList.add('hidden');
+      asciiResult.classList.add('hidden');
+      errorState.classList.remove('hidden');
+      
+      errorMessage.textContent = message;
+    }
+    
+    // 复制到剪贴板
+    function copyToClipboard() {
+      // 获取纯文本ASCII
+      const textAscii = asciiArt.textContent;
+      
+      navigator.clipboard.writeText(textAscii)
+        .then(() => {
+          // 显示复制成功提示
+          const originalText = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<i class="fa fa-check mr-1"></i> 已复制';
+          copyBtn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+          copyBtn.classList.add('bg-green-500', 'text-white');
+          
+          setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+            copyBtn.classList.remove('bg-green-500', 'text-white');
+            copyBtn.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('无法复制: ', err);
+          showError('无法复制到剪贴板');
+        });
+    }
+    
+    // 下载ASCII艺术
+    function downloadAsciiArt() {
+      // 获取纯文本ASCII
+      const textAscii = asciiArt.textContent;
+      
+      // 创建Blob对象
+      const blob = new Blob([textAscii], { type: 'text/plain' });
+      
+      // 创建下载链接
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ascii-art.txt';
+      
+      // 触发下载
+      document.body.appendChild(a);
+      a.click();
+      
+      // 清理
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
+    }
+    
+    // 切换主题
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    }
+  </script>
+</body>
+</html>
