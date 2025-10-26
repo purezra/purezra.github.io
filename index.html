@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工具集合 - icepig.top</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置 Tailwind -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36CFC9',
+            dark: '#1D2129',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+      .bg-gradient {
+        @apply bg-gradient-to-br from-primary to-secondary;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans">
+  <!-- 顶部导航 -->
+  <header class="bg-white shadow-sm sticky top-0 z-10">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-primary">
+        <i class="fa fa-wrench mr-2"></i>工具集合
+      </h1>
+      <p class="text-gray-600">icepig.top</p>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-12">
+    <!-- 标题区域 -->
+    <div class="text-center mb-12">
+      <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold text-dark mb-4">
+        实用工具入口
+      </h2>
+      <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+        精选实用工具集合，点击下方卡片使用对应功能
+      </p>
+    </div>
+
+    <!-- 工具卡片区域（板块式设计） -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <!-- 工具1：ASCII工具 -->
+      <a href="/ascii" class="block">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+          <div class="h-48 bg-gradient flex items-center justify-center">
+            <i class="fa fa-code text-white text-6xl"></i>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-dark mb-2">ASCII 工具</h3>
+            <p class="text-gray-600 mb-4">
+              处理ASCII字符相关功能，支持字符转换、艺术生成等
+            </p>
+            <div class="flex items-center text-primary font-medium">
+              <span>点击使用</span>
+              <i class="fa fa-arrow-right ml-2"></i>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- 工具2：时间间隔计算器 -->
+      <a href="/time" class="block">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+          <div class="h-48 bg-gradient flex items-center justify-center">
+            <i class="fa fa-clock-o text-white text-6xl"></i>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-dark mb-2">时间间隔计算器</h3>
+            <p class="text-gray-600 mb-4">
+              精确计算时间间隔，支持自定义目标时间，显示农历日期
+            </p>
+            <div class="flex items-center text-primary font-medium">
+              <span>点击使用</span>
+              <i class="fa fa-arrow-right ml-2"></i>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-8 mt-16">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2025 icepig.top 工具集合</p>
+      <p class="text-gray-400 text-sm mt-2">
+        <a href="/ascii" class="hover:text-white transition-colors">ASCII工具</a> · 
+        <a href="/time" class="hover:text-white transition-colors">时间计算器</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
