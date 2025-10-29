@@ -3,34 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>时间间隔计算器 - 距离除夕倒计时</title>
-  <!-- Tailwind CSS v3 -->
+  <title>时间间隔计算器 - icepig.top</title>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome -->
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- Lunar.js 农历转换库 -->
   <script src="https://cdn.bootcdn.net/ajax/libs/lunar-javascript/1.6.13/lunar.js"></script>
-  <!-- 统一的 Tailwind 配置 -->
+  
+  <!-- Configure Tailwind with Silver-Gray Tech Theme -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            primary: '#1e3a8a',
-            secondary: '#3b82f6',
-            accent: '#f97316',
-            dark: '#0f172a',
-            light: '#f8fafc'
+            // Silver-Gray Tech Color Palette
+            'tech-silver': '#E5E7EB',
+            'tech-gray': '#9CA3AF',
+            'tech-dark': '#374151',
+            'tech-darker': '#1F2937',
+            'tech-blue': '#3B82F6',
+            'tech-cyan': '#06B6D4',
+            'tech-accent': '#8B5CF6',
+            'tech-success': '#10B981',
+            'tech-warning': '#F59E0B',
           },
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
+            'inter': ['Inter', 'system-ui', 'sans-serif'],
           },
           animation: {
+            'grain': 'grain 8s steps(10) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'countdown': 'countdown 1s ease-in-out infinite',
             'fade-in': 'fadeIn 0.5s ease-in-out',
             'slide-up': 'slideUp 0.5s ease-in-out',
           },
           keyframes: {
+            grain: {
+              '0%, 100%': { transform: 'translate(0, 0)' },
+              '10%': { transform: 'translate(-5%, -10%)' },
+              '20%': { transform: 'translate(-15%, 5%)' },
+              '30%': { transform: 'translate(7%, -25%)' },
+              '40%': { transform: 'translate(-5%, 25%)' },
+              '50%': { transform: 'translate(-15%, 10%)' },
+              '60%': { transform: 'translate(15%, 0%)' },
+              '70%': { transform: 'translate(0%, 15%)' },
+              '80%': { transform: 'translate(3%, 35%)' },
+              '90%': { transform: 'translate(-10%, 10%)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
             countdown: {
               '0%': { transform: 'scale(1)' },
               '50%': { transform: 'scale(1.05)' },
@@ -44,140 +75,412 @@
               '0%': { transform: 'translateY(20px)', opacity: '0' },
               '100%': { transform: 'translateY(0)', opacity: '1' },
             },
-          },
+          }
         }
       }
     }
   </script>
+  
   <style type="text/tailwindcss">
     @layer utilities {
-      .text-shadow {
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      /* Grain Gradient Background Effect */
+      .grain-gradient {
+        background: linear-gradient(135deg, 
+          rgba(229, 231, 235, 0.1) 0%, 
+          rgba(156, 163, 175, 0.1) 25%, 
+          rgba(55, 65, 81, 0.1) 50%, 
+          rgba(31, 41, 55, 0.1) 75%, 
+          rgba(17, 24, 39, 0.1) 100%);
+        position: relative;
+        overflow: hidden;
       }
-      .text-shadow-lg {
-        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      
+      .grain-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+        animation: grain 8s steps(10) infinite;
+        pointer-events: none;
       }
-      .bg-gradient-primary {
-        background: linear-gradient(135deg, theme('colors.primary'), theme('colors.secondary'));
+      
+      .grain-gradient::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 1px,
+          rgba(255, 255, 255, 0.03) 1px,
+          rgba(255, 255, 255, 0.03) 2px
+        );
+        animation: grain 8s steps(10) infinite;
+        pointer-events: none;
       }
-      .bg-glass {
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+      
+      /* Card hover effects */
+      .tech-card {
+        @apply bg-white/80 backdrop-blur-sm border border-tech-silver/30 rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.8));
       }
+      
+      .tech-card:hover {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(249, 250, 251, 0.9));
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+      
+      /* Navigation glass effect */
+      .glass-nav {
+        @apply bg-white/80 backdrop-blur-lg border-b border-tech-silver/20;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.7));
+      }
+      
+      /* Hero text effects */
+      .hero-text {
+        @apply bg-gradient-to-r from-tech-dark via-tech-blue to-tech-cyan bg-clip-text text-transparent;
+        background-size: 200% 200%;
+        animation: gradient-shift 3s ease infinite;
+      }
+      
+      @keyframes gradient-shift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      
+      /* Floating elements */
+      .float-element {
+        animation: float 6s ease-in-out infinite;
+      }
+      
+      .float-element:nth-child(2) {
+        animation-delay: -2s;
+      }
+      
+      .float-element:nth-child(3) {
+        animation-delay: -4s;
+      }
+      
+      /* Tech grid pattern */
+      .tech-grid {
+        background-image: 
+          linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+      }
+      
+      /* Countdown styles */
       .countdown-number {
-        @apply text-4xl md:text-6xl font-bold text-primary;
+        @apply text-4xl md:text-6xl font-bold text-tech-blue;
       }
+      
       .countdown-label {
-        @apply text-sm md:text-base text-gray-600 mt-1;
+        @apply text-sm md:text-base text-tech-gray mt-1;
       }
+      
       .countdown-item {
         @apply flex flex-col items-center justify-center p-4 rounded-lg bg-white shadow-lg transition-all duration-300 hover:shadow-xl;
       }
+      
       .btn-primary {
-        @apply bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50;
+        @apply bg-gradient-to-r from-tech-blue to-tech-cyan hover:from-tech-blue/90 hover:to-tech-cyan/90 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-tech-blue focus:ring-opacity-50;
       }
+      
       .btn-secondary {
-        @apply bg-white hover:bg-gray-100 text-primary font-medium py-2 px-4 rounded-lg border border-gray-200 transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50;
+        @apply bg-white hover:bg-gray-100 text-tech-dark font-medium py-3 px-6 rounded-lg border border-tech-silver transition-all duration-300 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-tech-blue focus:ring-opacity-50;
       }
+      
       .input-field {
-        @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-transparent;
+        @apply w-full px-4 py-3 border border-tech-silver rounded-lg focus:outline-none focus:ring-2 focus:ring-tech-blue focus:ring-opacity-50 focus:border-transparent;
+      }
+      
+      /* Mobile responsive adjustments */
+      @media (max-width: 768px) {
+        .hero-text {
+          font-size: clamp(2rem, 8vw, 3.5rem);
+        }
+        
+        .tech-card {
+          margin: 0 0.5rem;
+        }
       }
     }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-  <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <!-- 头部区域 -->
-    <header class="text-center mb-12 animate-fade-in">
-      <h1 class="text-4xl md:text-5xl font-bold text-primary mb-2 text-shadow">时间间隔计算器</h1>
-      <p class="text-xl text-gray-600">计算距离目标时间的精确间隔</p>
-    </header>
 
-    <!-- 当前时间和农历显示 -->
-    <div class="bg-gradient-primary text-white rounded-xl p-6 mb-8 shadow-lg animate-slide-up">
-      <div class="flex flex-col md:flex-row justify-between items-center">
-        <div class="mb-4 md:mb-0">
-          <p class="text-lg opacity-80">当前时间</p>
-          <p id="current-time" class="text-3xl font-bold">2025-10-26 12:34:56</p>
-        </div>
-        <div class="flex items-center space-x-2">
-          <i class="fa fa-calendar text-2xl"></i>
+<body class="font-inter bg-gray-50 min-h-screen">
+  <!-- Navigation -->
+  <nav class="glass-nav sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-xl flex items-center justify-center">
+            <i class="fa fa-clock-o text-white text-lg"></i>
+          </div>
           <div>
-            <p class="text-lg opacity-80">农历</p>
-            <p id="lunar-date" class="text-2xl font-semibold">乙巳年九月十四</p>
+            <h1 class="text-xl font-bold text-tech-darker">时间间隔计算器</h1>
+            <p class="text-sm text-tech-gray">icepig.top</p>
+          </div>
+        </div>
+        <div class="hidden md:flex items-center space-x-6">
+          <a href="/" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">首页</a>
+          <a href="/ascii" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">ASCII工具</a>
+          <a href="/bg/index.html" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">联系</a>
+        </div>
+        <button id="mobile-menu-btn" class="md:hidden text-tech-dark p-2 rounded-lg hover:bg-gray-100 transition-colors">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden bg-white border-t border-tech-silver/30 shadow-lg hidden">
+      <div class="px-6 py-4 space-y-4">
+        <a href="/" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">首页</a>
+        <a href="/ascii" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">ASCII工具</a>
+        <a href="/bg/index.html" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">联系</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-screen grain-gradient tech-grid flex items-center justify-center overflow-hidden">
+    <!-- Floating geometric elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="float-element absolute top-20 left-10 w-20 h-20 bg-tech-blue/20 rounded-full blur-xl"></div>
+      <div class="float-element absolute top-40 right-20 w-32 h-32 bg-tech-cyan/20 rounded-full blur-xl"></div>
+      <div class="float-element absolute bottom-20 left-1/4 w-24 h-24 bg-tech-accent/20 rounded-full blur-xl"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-tech-blue/10 to-tech-cyan/10 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="container mx-auto px-6 text-center relative z-10">
+      <div class="max-w-4xl mx-auto">
+        <!-- Hero Badge -->
+        <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-tech-silver/30 mb-8">
+          <i class="fa fa-calendar text-tech-blue mr-2"></i>
+          <span class="text-tech-dark font-medium">精确时间计算</span>
+        </div>
+        
+        <!-- Main Hero Text -->
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <span class="hero-text">时间间隔</span><br>
+          <span class="text-tech-darker">计算器</span>
+        </h1>
+        
+        <!-- Hero Subtitle -->
+        <p class="text-xl md:text-2xl text-tech-gray mb-8 max-w-3xl mx-auto leading-relaxed">
+          计算距离目标时间的精确间隔，支持农历显示和自定义目标时间设置。
+        </p>
+        
+        <!-- Hero CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+          <a href="#calculator" class="group px-8 py-4 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex items-center">
+            <span>开始计算</span>
+            <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+          </a>
+          <a href="#features" class="px-8 py-4 bg-white/80 backdrop-blur-sm text-tech-dark border border-tech-silver/30 rounded-xl font-semibold transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-1">
+            功能特色
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculator Section -->
+  <section id="calculator" class="py-20 bg-white relative">
+    <div class="container mx-auto px-6">
+      <!-- 当前时间和农历显示 -->
+      <div class="tech-card p-8 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="mb-4 md:mb-0">
+            <p class="text-lg text-tech-gray">当前时间</p>
+            <p id="current-time" class="text-3xl font-bold text-tech-dark">2025-10-29 21:13:32</p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-xl flex items-center justify-center">
+              <i class="fa fa-calendar text-white text-xl"></i>
+            </div>
+            <div>
+              <p class="text-lg text-tech-gray">农历</p>
+              <p id="lunar-date" class="text-2xl font-semibold text-tech-dark">乙巳年九月十四</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 倒计时显示区域 -->
+      <div class="tech-card p-8 mb-8">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold text-tech-darker mb-2">距离目标时间</h2>
+          <p id="target-time-display" class="text-lg text-tech-gray">2026年除夕 20:00:00</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+          <div class="countdown-item">
+            <span id="years" class="countdown-number">0</span>
+            <span class="countdown-label">年</span>
+          </div>
+          <div class="countdown-item">
+            <span id="months" class="countdown-number">0</span>
+            <span class="countdown-label">月</span>
+          </div>
+          <div class="countdown-item">
+            <span id="days" class="countdown-number">0</span>
+            <span class="countdown-label">日</span>
+          </div>
+          <div class="countdown-item">
+            <span id="hours" class="countdown-number">0</span>
+            <span class="countdown-label">时</span>
+          </div>
+          <div class="countdown-item">
+            <span id="minutes" class="countdown-number">0</span>
+            <span class="countdown-label">分</span>
+          </div>
+          <div class="countdown-item">
+            <span id="seconds" class="countdown-number">0</span>
+            <span class="countdown-label">秒</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 控制面板 -->
+      <div class="tech-card p-8">
+        <h2 class="text-2xl font-bold text-tech-darker mb-6 text-center">控制面板</h2>
+        
+        <div class="flex flex-col md:flex-row justify-center items-center gap-6">
+          <!-- 目标时间选择 -->
+          <div class="w-full md:w-auto">
+            <label for="target-date" class="block text-sm font-medium text-tech-dark mb-2">选择目标日期</label>
+            <input type="date" id="target-date" class="input-field">
+          </div>
+          
+          <div class="w-full md:w-auto">
+            <label for="target-time" class="block text-sm font-medium text-tech-dark mb-2">选择目标时间</label>
+            <input type="time" id="target-time" class="input-field">
+          </div>
+          
+          <div class="flex flex-col gap-3 w-full md:w-auto">
+            <button id="set-target-btn" class="btn-primary flex items-center justify-center">
+              <i class="fa fa-check mr-2"></i> 设置目标时间
+            </button>
+            <button id="reset-to-new-year-btn" class="btn-secondary flex items-center justify-center">
+              <i class="fa fa-refresh mr-2"></i> 重置为除夕
+            </button>
           </div>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- 倒计时显示区域 -->
-    <div class="bg-white rounded-xl p-8 mb-8 shadow-lg animate-slide-up" style="animation-delay: 0.1s;">
-      <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold text-primary mb-2">距离目标时间</h2>
-        <p id="target-time-display" class="text-lg text-gray-600">2026年除夕 20:00:00</p>
+  <!-- Features Section -->
+  <section id="features" class="py-20 grain-gradient">
+    <div class="container mx-auto px-6">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-tech-silver/30 mb-8">
+          <i class="fa fa-star text-tech-blue mr-2"></i>
+          <span class="text-tech-dark font-medium">功能特色</span>
+        </div>
+        
+        <h2 class="text-4xl md:text-5xl font-bold text-tech-darker mb-6">
+          强大的<span class="hero-text">计算能力</span>
+        </h2>
+        
+        <p class="text-xl text-tech-gray max-w-3xl mx-auto">
+          精确的时间间隔计算，支持农历显示和自定义目标时间设置
+        </p>
       </div>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
-        <div class="countdown-item">
-          <span id="years" class="countdown-number">0</span>
-          <span class="countdown-label">年</span>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <i class="fa fa-clock-o text-white text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-tech-darker mb-4">精确计算</h3>
+          <p class="text-tech-gray">精确到秒的时间间隔计算，实时更新</p>
         </div>
-        <div class="countdown-item">
-          <span id="months" class="countdown-number">0</span>
-          <span class="countdown-label">月</span>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-gradient-to-r from-tech-cyan to-tech-success rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <i class="fa fa-calendar text-white text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-tech-darker mb-4">农历支持</h3>
+          <p class="text-tech-gray">显示农历日期，支持传统节日计算</p>
         </div>
-        <div class="countdown-item">
-          <span id="days" class="countdown-number">0</span>
-          <span class="countdown-label">日</span>
-        </div>
-        <div class="countdown-item">
-          <span id="hours" class="countdown-number">0</span>
-          <span class="countdown-label">时</span>
-        </div>
-        <div class="countdown-item">
-          <span id="minutes" class="countdown-number">0</span>
-          <span class="countdown-label">分</span>
-        </div>
-        <div class="countdown-item">
-          <span id="seconds" class="countdown-number">0</span>
-          <span class="countdown-label">秒</span>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-gradient-to-r from-tech-accent to-tech-warning rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <i class="fa fa-cogs text-white text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-tech-darker mb-4">自定义设置</h3>
+          <p class="text-tech-gray">支持自定义目标时间和快速重置功能</p>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- 控制面板 -->
-    <div class="bg-white rounded-xl p-8 shadow-lg animate-slide-up" style="animation-delay: 0.2s;">
-      <h2 class="text-2xl font-bold text-primary mb-6 text-center">控制面板</h2>
-      
-      <div class="flex flex-col md:flex-row justify-center items-center gap-6">
-        <!-- 目标时间选择 -->
-        <div class="w-full md:w-auto">
-          <label for="target-date" class="block text-sm font-medium text-gray-700 mb-1">选择目标日期</label>
-          <input type="date" id="target-date" class="input-field">
+  <!-- Footer -->
+  <footer class="bg-tech-darker text-white py-16">
+    <div class="container mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Brand -->
+        <div class="md:col-span-2">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-xl flex items-center justify-center">
+              <i class="fa fa-clock-o text-white text-lg"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold">时间间隔计算器</h3>
+              <p class="text-tech-gray">icepig.top</p>
+            </div>
+          </div>
+          <p class="text-tech-gray mb-6 max-w-md">
+            精确的时间间隔计算工具，支持农历显示和自定义目标时间。
+          </p>
+          <div class="flex space-x-4">
+            <a href="https://github.com/purezra" class="w-10 h-10 bg-tech-dark rounded-lg flex items-center justify-center hover:bg-tech-blue transition-colors">
+              <i class="fa fa-github"></i>
+            </a>
+          </div>
         </div>
         
-        <div class="w-full md:w-auto">
-          <label for="target-time" class="block text-sm font-medium text-gray-700 mb-1">选择目标时间</label>
-          <input type="time" id="target-time" class="input-field">
+        <!-- Quick Links -->
+        <div>
+          <h4 class="text-lg font-semibold mb-4">快速链接</h4>
+          <ul class="space-y-2">
+            <li><a href="/" class="text-tech-gray hover:text-white transition-colors">首页</a></li>
+            <li><a href="/ascii" class="text-tech-gray hover:text-white transition-colors">ASCII工具</a></li>
+            <li><a href="/bg/index.html" class="text-tech-gray hover:text-white transition-colors">联系</a></li>
+          </ul>
         </div>
         
-        <div class="flex flex-col gap-3 w-full md:w-auto">
-          <button id="set-target-btn" class="btn-primary flex items-center justify-center">
-            <i class="fa fa-check mr-2"></i> 设置目标时间
-          </button>
-          <button id="reset-to-new-year-btn" class="btn-secondary flex items-center justify-center">
-            <i class="fa fa-refresh mr-2"></i> 重置为除夕
-          </button>
+        <!-- Features -->
+        <div>
+          <h4 class="text-lg font-semibold mb-4">功能</h4>
+          <ul class="space-y-2">
+            <li><span class="text-tech-gray">精确时间计算</span></li>
+            <li><span class="text-tech-gray">农历显示</span></li>
+            <li><span class="text-tech-gray">自定义目标时间</span></li>
+            <li><span class="text-tech-gray">实时更新</span></li>
+          </ul>
         </div>
       </div>
+      
+      <div class="border-t border-tech-dark mt-12 pt-8 text-center">
+        <p class="text-tech-gray">
+          © 2025 icepig.top 时间间隔计算器. 精确的时间计算工具。
+        </p>
+      </div>
     </div>
-
-    <!-- 页脚 -->
-    <footer class="mt-12 text-center text-gray-500 text-sm">
-      <p>© 2025 时间间隔计算器 | 托管于 <a href="https://icepig.top/time" target="_blank" class="text-primary hover:underline">icepig.top/time</a></p>
-    </footer>
-  </div>
+  </footer>
 
   <script>
     // 全局变量
@@ -201,24 +504,47 @@
 
     // 初始化函数
     function init() {
-      // 设置默认目标时间为下一个除夕
       setDefaultTargetDate();
-      
-      // 更新当前时间和农历
       updateCurrentTime();
-      
-      // 开始倒计时
       startCountdown();
-      
-      // 添加事件监听器
       setTargetBtn.addEventListener('click', handleSetTargetTime);
       resetToNewYearBtn.addEventListener('click', handleResetToNewYear);
+      setupMobileMenu();
       
-      // 每秒更新一次当前时间和倒计时
       setInterval(() => {
         updateCurrentTime();
         updateCountdown();
       }, 1000);
+    }
+
+    // 设置移动端菜单
+    function setupMobileMenu() {
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const menuIcon = mobileMenuBtn.querySelector('i');
+      
+      mobileMenuBtn.addEventListener('click', () => {
+        const isHidden = mobileMenu.classList.contains('hidden');
+        
+        if (isHidden) {
+          mobileMenu.classList.remove('hidden');
+          menuIcon.classList.remove('fa-bars');
+          menuIcon.classList.add('fa-times');
+        } else {
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('fa-times');
+          menuIcon.classList.add('fa-bars');
+        }
+      });
+      
+      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+      mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('fa-times');
+          menuIcon.classList.add('fa-bars');
+        });
+      });
     }
 
     // 设置默认目标时间为下一个除夕
@@ -226,44 +552,30 @@
       const now = new Date();
       let year = now.getFullYear();
       
-      // 获取今年的除夕
       let newYearEve = getNewYearEve(year);
       
-      // 如果今年的除夕已经过了，就取下一年的
       if (newYearEve < now) {
         newYearEve = getNewYearEve(year + 1);
       }
       
-      // 设置目标时间为除夕晚上8点
       newYearEve.setHours(20, 0, 0, 0);
       
       targetDate = newYearEve;
-      
-      // 更新目标时间显示
       updateTargetTimeDisplay();
-      
-      // 更新日期和时间输入框
       updateDateAndTimeInputs();
     }
 
     // 获取指定年份的除夕日期
     function getNewYearEve(year) {
-      // 使用lunar.js库获取农历信息
-      // 除夕是农历十二月的最后一天
-      // 我们可以通过获取农历正月初一（春节）的前一天来得到除夕
-      
       try {
-        // 获取农历正月初一（春节）
         const solar = Solar.fromYmd(year, 1, 1);
         const lunar = solar.getLunar();
         const nextLunarYear = lunar.getYear() + 1;
         
-        // 找到农历新年（正月初一）
         let lunarNewYear = null;
         let month = 1;
         let day = 1;
         
-        // 春节通常在公历1月下旬到2月中旬之间
         while (month <= 2) {
           const date = Solar.fromYmd(year, month, day);
           const lunarDate = date.getLunar();
@@ -274,13 +586,12 @@
           }
           
           day++;
-          if (day > 29) { // 1月最多31天，2月最多29天
+          if (day > 29) {
             day = 1;
             month++;
           }
         }
         
-        // 如果找到了春节，除夕就是春节的前一天
         if (lunarNewYear) {
           const newYearEve = new Date(lunarNewYear);
           newYearEve.setDate(newYearEve.getDate() - 1);
@@ -290,8 +601,6 @@
         console.error('计算除夕日期出错:', e);
       }
       
-      // 如果无法通过农历计算，使用默认日期（1月21日）
-      console.warn('无法计算除夕日期，使用默认日期');
       return new Date(year, 0, 21);
     }
 
@@ -299,15 +608,18 @@
     function updateCurrentTime() {
       const now = new Date();
       
-      // 更新当前时间
       currentTimeEl.textContent = formatDateTime(now);
       
-      // 更新农历日期 - 修复农历显示
-      const solar = Solar.fromDate(now);
-      const lunar = solar.getLunar();
-      const lunarMonth = lunar.getMonthInChinese().replace(/\s+/g, '');
-      const lunarDay = lunar.getDayInChinese().replace(/\s+/g, '');
-      lunarDateEl.textContent = `${lunar.getYearInGanZhi()}年${lunarMonth}月${lunarDay}`;
+      try {
+        const solar = Solar.fromDate(now);
+        const lunar = solar.getLunar();
+        const lunarMonth = lunar.getMonthInChinese().replace(/\s+/g, '');
+        const lunarDay = lunar.getDayInChinese().replace(/\s+/g, '');
+        lunarDateEl.textContent = `${lunar.getYearInGanZhi()}年${lunarMonth}月${lunarDay}`;
+      } catch (e) {
+        console.error('农历转换出错:', e);
+        lunarDateEl.textContent = '农历数据加载中...';
+      }
     }
 
     // 格式化日期时间
@@ -331,18 +643,21 @@
     function updateTargetTimeDisplay() {
       if (!targetDate) return;
       
-      // 检查是否是除夕
-      const solar = Solar.fromDate(targetDate);
-      const lunar = solar.getLunar();
-      let displayText = '';
-      
-      if (lunar.getMonth() === 12 && (lunar.getDay() === 29 || lunar.getDay() === 30)) {
-        displayText = `${targetDate.getFullYear()}年除夕 ${formatTime(targetDate)}`;
-      } else {
-        displayText = `${formatDate(targetDate)} ${formatTime(targetDate)}`;
+      try {
+        const solar = Solar.fromDate(targetDate);
+        const lunar = solar.getLunar();
+        let displayText = '';
+        
+        if (lunar.getMonth() === 12 && (lunar.getDay() === 29 || lunar.getDay() === 30)) {
+          displayText = `${targetDate.getFullYear()}年除夕 ${formatTime(targetDate)}`;
+        } else {
+          displayText = `${formatDate(targetDate)} ${formatTime(targetDate)}`;
+        }
+        
+        targetTimeDisplayEl.textContent = displayText;
+      } catch (e) {
+        targetTimeDisplayEl.textContent = `${formatDate(targetDate)} ${formatTime(targetDate)}`;
       }
-      
-      targetTimeDisplayEl.textContent = displayText;
     }
 
     // 格式化日期
@@ -368,20 +683,17 @@
       if (!targetDate) return;
       
       targetDateInput.value = formatDate(targetDate);
-      targetTimeInput.value = formatTime(targetDate).substring(0, 5); // 不包含秒
+      targetTimeInput.value = formatTime(targetDate).substring(0, 5);
     }
 
     // 开始倒计时
     function startCountdown() {
-      // 清除之前的倒计时
       if (countdownInterval) {
         clearInterval(countdownInterval);
       }
       
-      // 更新倒计时
       updateCountdown();
       
-      // 每秒更新一次倒计时
       countdownInterval = setInterval(() => {
         updateCountdown();
       }, 1000);
@@ -394,52 +706,31 @@
       const now = new Date();
       const diff = targetDate - now;
       
-      // 如果目标时间已过，显示0
       if (diff <= 0) {
         updateCountdownDisplay(0, 0, 0, 0, 0, 0);
         return;
       }
       
-      // 计算年、月、日、时、分、秒
       const { years, months, days, hours, minutes, seconds } = calculateTimeDifference(now, targetDate);
-      
-      // 更新显示
       updateCountdownDisplay(years, months, days, hours, minutes, seconds);
     }
 
     // 计算时间差
     function calculateTimeDifference(startDate, endDate) {
-      // 计算总毫秒数差
       const diffMs = endDate - startDate;
-      
-      // 计算总秒数
       const totalSeconds = Math.floor(diffMs / 1000);
       
-      // 计算秒
       const seconds = totalSeconds % 60;
-      
-      // 计算总分钟数
       const totalMinutes = Math.floor(totalSeconds / 60);
-      
-      // 计算分钟
       const minutes = totalMinutes % 60;
-      
-      // 计算总小时数
       const totalHours = Math.floor(totalMinutes / 60);
-      
-      // 计算小时
       const hours = totalHours % 24;
-      
-      // 计算总天数
       const totalDays = Math.floor(totalHours / 24);
       
-      // 计算年、月、日
       let years = 0;
       let months = 0;
       let days = totalDays;
       
-      // 简化计算，实际情况更复杂
-      // 这里我们使用近似值：1年=365天，1月=30天
       years = Math.floor(days / 365);
       days %= 365;
       
@@ -458,7 +749,6 @@
       minutesEl.textContent = minutes;
       secondsEl.textContent = seconds;
       
-      // 添加动画效果
       [yearsEl, monthsEl, daysEl, hoursEl, minutesEl, secondsEl].forEach(el => {
         el.classList.add('animate-countdown');
         setTimeout(() => {
@@ -477,34 +767,24 @@
         return;
       }
       
-      // 解析日期和时间
       const [year, month, day] = dateStr.split('-').map(Number);
       const [hours, minutes] = timeStr.split(':').map(Number);
       
       const newTargetDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
       
-      // 检查日期是否有效
       if (isNaN(newTargetDate.getTime())) {
         alert('无效的日期或时间');
         return;
       }
       
-      // 设置新的目标时间
       targetDate = newTargetDate;
-      
-      // 更新目标时间显示
       updateTargetTimeDisplay();
-      
-      // 重启倒计时
       startCountdown();
     }
 
     // 处理重置为除夕按钮点击
     function handleResetToNewYear() {
-      // 设置目标时间为下一个除夕
       setDefaultTargetDate();
-      
-      // 重启倒计时
       startCountdown();
     }
 
