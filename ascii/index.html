@@ -1,282 +1,554 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>彩色ASCII艺术转换器</title>
-  <!-- Tailwind CSS v3 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>彩色ASCII艺术转换器 - icepig.top</title>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome -->
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <!-- 统一的 Tailwind 配置 -->
+  
+  <!-- Configure Tailwind with Silver-Gray Tech Theme -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            primary: '#6366f1',
-            secondary: '#4f46e5',
-            dark: '#1e1b4b',
-            light: '#e0e7ff',
-            accent: '#c084fc',
-            'dark-bg': '#0f172a',
-            'dark-card': '#1e293b',
+            // Silver-Gray Tech Color Palette
+            'tech-silver': '#E5E7EB',
+            'tech-gray': '#9CA3AF',
+            'tech-dark': '#374151',
+            'tech-darker': '#1F2937',
+            'tech-blue': '#3B82F6',
+            'tech-cyan': '#06B6D4',
+            'tech-accent': '#8B5CF6',
+            'tech-success': '#10B981',
+            'tech-warning': '#F59E0B',
           },
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['Fira Code', 'Monaco', 'Consolas', 'monospace'],
+            'inter': ['Inter', 'system-ui', 'sans-serif'],
+            'mono': ['Fira Code', 'Monaco', 'Consolas', 'monospace'],
           },
           animation: {
-            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'grain': 'grain 8s steps(10) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            grain: {
+              '0%, 100%': { transform: 'translate(0, 0)' },
+              '10%': { transform: 'translate(-5%, -10%)' },
+              '20%': { transform: 'translate(-15%, 5%)' },
+              '30%': { transform: 'translate(7%, -25%)' },
+              '40%': { transform: 'translate(-5%, 25%)' },
+              '50%': { transform: 'translate(-15%, 10%)' },
+              '60%': { transform: 'translate(15%, 0%)' },
+              '70%': { transform: 'translate(0%, 15%)' },
+              '80%': { transform: 'translate(3%, 35%)' },
+              '90%': { transform: 'translate(-10%, 10%)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
           }
         }
-      },
-      darkMode: 'class',
+      }
     }
   </script>
+  
   <style type="text/tailwindcss">
     @layer utilities {
-      .content-auto {
-        content-visibility: auto;
+      /* Grain Gradient Background Effect */
+      .grain-gradient {
+        background: linear-gradient(135deg, 
+          rgba(229, 231, 235, 0.1) 0%, 
+          rgba(156, 163, 175, 0.1) 25%, 
+          rgba(55, 65, 81, 0.1) 50%, 
+          rgba(31, 41, 55, 0.1) 75%, 
+          rgba(17, 24, 39, 0.1) 100%);
+        position: relative;
+        overflow: hidden;
       }
-      .text-shadow {
-        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      
+      .grain-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+        animation: grain 8s steps(10) infinite;
+        pointer-events: none;
       }
-      .text-shadow-lg {
-        text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      
+      .grain-gradient::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 1px,
+          rgba(255, 255, 255, 0.03) 1px,
+          rgba(255, 255, 255, 0.03) 2px
+        );
+        animation: grain 8s steps(10) infinite;
+        pointer-events: none;
       }
-      .bg-gradient-primary {
-        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      
+      /* Card hover effects */
+      .tech-card {
+        @apply bg-white/80 backdrop-blur-sm border border-tech-silver/30 rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.8));
       }
-      .bg-gradient-dark {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      
+      .tech-card:hover {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(249, 250, 251, 0.9));
+        border-color: rgba(59, 130, 246, 0.3);
       }
-      .transition-all-300 {
-        transition: all 300ms ease-in-out;
+      
+      /* Navigation glass effect */
+      .glass-nav {
+        @apply bg-white/80 backdrop-blur-lg border-b border-tech-silver/20;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.7));
       }
+      
+      /* Hero text effects */
+      .hero-text {
+        @apply bg-gradient-to-r from-tech-dark via-tech-blue to-tech-cyan bg-clip-text text-transparent;
+        background-size: 200% 200%;
+        animation: gradient-shift 3s ease infinite;
+      }
+      
+      @keyframes gradient-shift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      
+      /* Floating elements */
+      .float-element {
+        animation: float 6s ease-in-out infinite;
+      }
+      
+      .float-element:nth-child(2) {
+        animation-delay: -2s;
+      }
+      
+      .float-element:nth-child(3) {
+        animation-delay: -4s;
+      }
+      
+      /* Tech grid pattern */
+      .tech-grid {
+        background-image: 
+          linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+      }
+      
+      /* ASCII container styles */
       .ascii-container {
         font-family: 'Fira Code', monospace;
         line-height: 0.7;
         letter-spacing: -0.2em;
         overflow: auto;
         max-height: 50vh;
+        @apply bg-black text-white p-4 rounded-lg;
       }
+      
       .ascii-container pre {
         font-family: inherit;
         line-height: inherit;
         letter-spacing: inherit;
       }
-      .glass-effect {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .dark .glass-effect {
-        background: rgba(15, 23, 42, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+      
+      /* Mobile responsive adjustments */
+      @media (max-width: 768px) {
+        .hero-text {
+          font-size: clamp(2rem, 8vw, 3.5rem);
+        }
+        
+        .tech-card {
+          margin: 0 0.5rem;
+        }
       }
     }
   </style>
 </head>
-<body class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 min-h-screen transition-all-300">
-  <div class="container mx-auto px-4 py-8 max-w-7xl">
-    <!-- 头部 -->
-    <header class="text-center mb-8">
-      <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent text-shadow-lg">
-        彩色ASCII艺术转换器
-      </h1>
-      <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-        将图片转换为精彩的ASCII艺术，自定义参数以获得最佳效果
-      </p>
-    </header>
 
-    <!-- 主要内容区 -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <!-- 左侧控制面板 -->
-      <div class="md:col-span-8 lg:col-span-4">
-        <div class="bg-white dark:bg-dark-card rounded-xl shadow-lg shadow-lg p-6 h-full">
-          <h2 class="text-xl font-semibold mb-4 flex items-center">
-            <i class="fa fa-sliders mr-2 text-primary"></i> 参数控制
-          </h2>
-          
-          <!-- 图片上传区域 -->
-          <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              上传图片
-            </label>
-            <div id="drop-area" class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center cursor-pointer hover:border-primary dark:hover:border-primary transition-all-300">
-              <i class="fa fa-cloud-upload text-3xl text-gray-400 dark:text-gray-500 mb-2"></i>
-              <p class="text-sm text-gray-600 dark:text-gray-400">拖放图片到这里，或</p>
-              <label class="mt-2 inline-block px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-all-300 cursor-pointer">
-                选择文件
-                <input type="file" id="image-input" accept="image/*" class="hidden">
-              </label>
-              <p id="file-name" class="mt-2 text-xs text-gray-500 dark:text-gray-500"></p>
-            </div>
+<body class="font-inter bg-gray-50 min-h-screen">
+  <!-- Navigation -->
+  <nav class="glass-nav sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-xl flex items-center justify-center">
+            <i class="fa fa-code text-white text-lg"></i>
           </div>
-          
-          <!-- 示例图片 -->
-          <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              或选择示例图片
-            </label>
-            <div class="grid grid-cols-3 gap-2">
-              <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-primary transition-all-300">
-                <img src="https://p26-doubao-search-sign.byteimg.com/labis/5680ccbdaff0ccfc759ade0c3490c9dd~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=cqOqPznnvHx7qar1Z%2FBWrTPnrWo%3D" alt="汉堡示例1" class="w-full h-16 object-cover">
-              </div>
-              <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-primary transition-all-300">
-                <img src="https://p26-doubao-search-sign.byteimg.com/labis/826307ac4872f4a9e3b176676b66bb4d~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=OaZ5lNCtmSIgGie4z8sdLAhuia0%3D" alt="汉堡示例2" class="w-full h-16 object-cover">
-              </div>
-              <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-primary transition-all-300">
-                <img src="https://p26-doubao-search-sign.byteimg.com/labis/e36d32ed9155614c3b42a79bd75d7f02~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=Y9u43oIBbu7R4vkrK61gz3lEtTI%3D" alt="汉堡示例3" class="w-full h-16 object-cover">
-              </div>
-            </div>
-          </div>
-          
-          <!-- 转换参数 -->
-          <div class="space-y-4">
-            <!-- 宽度 -->
-            <div>
-              <label for="width-slider" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                宽度: <span id="width-value">100</span> 字符
-              </label>
-              <input type="range" id="width-slider" min="20" max="300" value="100" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
-            </div>
-            
-            <!-- 对比度 -->
-            <div>
-              <label for="contrast-slider" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                对比度: <span id="contrast-value">1.2</span>
-              </label>
-              <input type="range" id="contrast-slider" min="0.5" max="2" step="0.1" value="1.2" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
-            </div>
-            
-            <!-- 亮度 -->
-            <div>
-              <label for="brightness-slider" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                亮度: <span id="brightness-value">1.0</span>
-              </label>
-              <input type="range" id="brightness-slider" min="0.5" max="2" step="0.1" value="1.0" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
-            </div>
-            
-            <!-- 字符集选择 -->
-            <div>
-              <label for="char-set" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                字符集
-              </label>
-              <select id="char-set" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:ring-primary focus:border-primary">
-                <option value="detailed">详细 (70+字符)</option>
-                <option value="simple">简单 (10字符)</option>
-                <option value="blocks">方块 (Unicode方块)</option>
-                <option value="custom" selected>自定义</option>
-              </select>
-            </div>
-            
-            <!-- 自定义字符集输入 -->
-            <div id="custom-chars-container" class="mt-4">
-              <label for="custom-chars" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                自定义字符集
-                <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">(从暗到亮排序，至少2个字符)</span>
-              </label>
-              <input type="text" id="custom-chars" placeholder="例如: .:-=+*ABCDEFGHIJKLMNOPQRSTUVWXYZ#%@" 
-                     class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:ring-primary focus:border-primary">
-              <div class="flex justify-between mt-1">
-                <button id="reset-chars-btn" class="text-xs text-primary hover:text-secondary transition-all-300">
-                  <i class="fa fa-refresh mr-1"></i> 恢复默认
-                </button>
-                <button id="preview-chars-btn" class="text-xs text-primary hover:text-secondary transition-all-300">
-                  <i class="fa fa-eye mr-1"></i> 预览效果
-                </button>
-              </div>
-            </div>
-            
-            <!-- 抖动选项 -->
-            <div class="flex items-center justify-between">
-              <label for="dithering-toggle" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                启用抖动
-              </label>
-              <div class="relative inline-block w-12 align-middle select-none">
-                <input type="checkbox" id="dithering-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                <label for="dithering-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
-              </div>
-            </div>
-            
-            <!-- 转换按钮 -->
-            <button id="convert-btn" class="w-full mt-4 px-4 py-2 bg-gradient-primary text-white rounded-md hover:opacity-90 transition-all-300 flex items-center justify-center">
-              <i class="fa fa-magic mr-2"></i> 转换为ASCII艺术
-            </button>
+          <div>
+            <h1 class="text-xl font-bold text-tech-darker">ASCII艺术转换器</h1>
+            <p class="text-sm text-tech-gray">icepig.top</p>
           </div>
         </div>
+        <div class="hidden md:flex items-center space-x-6">
+          <a href="/" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">首页</a>
+          <a href="/time" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">时间计算器</a>
+          <a href="/bg/index.html" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">联系</a>
+        </div>
+        <button id="mobile-menu-btn" class="md:hidden text-tech-dark p-2 rounded-lg hover:bg-gray-100 transition-colors">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
       </div>
-      
-      <!-- 右侧结果显示区 -->
-      <div class="md:col-span-12 lg:col-span-8">
-        <div class="bg-white dark:bg-dark-card rounded-xl shadow-lg p-6 h-full flex flex-col">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold flex items-center">
-              <i class="fa fa-code mr-2 text-primary"></i> ASCII艺术结果
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden bg-white border-t border-tech-silver/30 shadow-lg hidden">
+      <div class="px-6 py-4 space-y-4">
+        <a href="/" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">首页</a>
+        <a href="/time" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">时间计算器</a>
+        <a href="/bg/index.html" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">联系</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-screen grain-gradient tech-grid flex items-center justify-center overflow-hidden">
+    <!-- Floating geometric elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="float-element absolute top-20 left-10 w-20 h-20 bg-tech-blue/20 rounded-full blur-xl"></div>
+      <div class="float-element absolute top-40 right-20 w-32 h-32 bg-tech-cyan/20 rounded-full blur-xl"></div>
+      <div class="float-element absolute bottom-20 left-1/4 w-24 h-24 bg-tech-accent/20 rounded-full blur-xl"></div>
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-tech-blue/10 to-tech-cyan/10 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="container mx-auto px-6 text-center relative z-10">
+      <div class="max-w-4xl mx-auto">
+        <!-- Hero Badge -->
+        <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-tech-silver/30 mb-8">
+          <i class="fa fa-magic text-tech-blue mr-2"></i>
+          <span class="text-tech-dark font-medium">专业ASCII艺术工具</span>
+        </div>
+        
+        <!-- Main Hero Text -->
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <span class="hero-text">彩色ASCII</span><br>
+          <span class="text-tech-darker">艺术转换器</span>
+        </h1>
+        
+        <!-- Hero Subtitle -->
+        <p class="text-xl md:text-2xl text-tech-gray mb-8 max-w-3xl mx-auto leading-relaxed">
+          将图片转换为精彩的ASCII艺术，自定义参数以获得最佳效果。支持多种字符集和高级转换选项。
+        </p>
+        
+        <!-- Hero CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+          <a href="#converter" class="group px-8 py-4 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex items-center">
+            <span>开始转换</span>
+            <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+          </a>
+          <a href="#features" class="px-8 py-4 bg-white/80 backdrop-blur-sm text-tech-dark border border-tech-silver/30 rounded-xl font-semibold transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-1">
+            功能介绍
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Converter Section -->
+  <section id="converter" class="py-20 bg-white relative">
+    <div class="container mx-auto px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- 左侧控制面板 -->
+        <div class="lg:col-span-4">
+          <div class="tech-card p-8 h-full">
+            <h2 class="text-2xl font-bold text-tech-darker mb-6 flex items-center">
+              <i class="fa fa-sliders mr-3 text-tech-blue"></i> 参数控制
             </h2>
-            <div class="flex space-x-2">
-              <button id="copy-btn" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all-300 flex items-center text-sm">
-                <i class="fa fa-copy mr-1"></i> 复制
-              </button>
-              <button id="download-btn" class="px-3 py-1 bg-primary text-white rounded-md hover:bg-secondary transition-all-300 flex items-center text-sm">
-                <i class="fa fa-download mr-1"></i> 下载
-              </button>
-              <button id="theme-toggle" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all-300">
-                <i class="fa fa-moon-o dark:hidden"></i>
-                <i class="fa fa-sun-o hidden dark:block"></i>
+            
+            <!-- 图片上传区域 -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-tech-dark mb-2">
+                上传图片
+              </label>
+              <div id="drop-area" class="border-2 border-dashed border-tech-silver rounded-lg p-6 text-center cursor-pointer hover:border-tech-blue transition-all duration-300">
+                <i class="fa fa-cloud-upload text-3xl text-tech-gray mb-2"></i>
+                <p class="text-sm text-tech-gray">拖放图片到这里，或</p>
+                <label class="mt-2 inline-block px-4 py-2 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-md hover:shadow-lg transition-all duration-300 cursor-pointer">
+                  选择文件
+                  <input type="file" id="image-input" accept="image/*" class="hidden">
+                </label>
+                <p id="file-name" class="mt-2 text-xs text-tech-gray"></p>
+              </div>
+            </div>
+            
+            <!-- 示例图片 -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-tech-dark mb-2">
+                或选择示例图片
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-tech-blue transition-all duration-300">
+                  <img src="https://p26-doubao-search-sign.byteimg.com/labis/5680ccbdaff0ccfc759ade0c3490c9dd~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=cqOqPznnvHx7qar1Z%2FBWrTPnrWo%3D" alt="示例1" class="w-full h-16 object-cover">
+                </div>
+                <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-tech-blue transition-all duration-300">
+                  <img src="https://p26-doubao-search-sign.byteimg.com/labis/826307ac4872f4a9e3b176676b66bb4d~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=OaZ5lNCtmSIgGie4z8sdLAhuia0%3D" alt="示例2" class="w-full h-16 object-cover">
+                </div>
+                <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-tech-blue transition-all duration-300">
+                  <img src="https://p26-doubao-search-sign.byteimg.com/labis/e36d32ed9155614c3b42a79bd75d7f02~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=Y9u43oIBbu7R4vkrK61gz3lEtTI%3D" alt="示例3" class="w-full h-16 object-cover">
+                </div>
+              </div>
+            </div>
+            
+            <!-- 转换参数 -->
+            <div class="space-y-4">
+              <!-- 宽度 -->
+              <div>
+                <label for="width-slider" class="block text-sm font-medium text-tech-dark mb-1">
+                  宽度: <span id="width-value">100</span> 字符
+                </label>
+                <input type="range" id="width-slider" min="20" max="300" value="100" class="w-full h-2 bg-tech-silver rounded-lg appearance-none cursor-pointer">
+              </div>
+              
+              <!-- 对比度 -->
+              <div>
+                <label for="contrast-slider" class="block text-sm font-medium text-tech-dark mb-1">
+                  对比度: <span id="contrast-value">1.2</span>
+                </label>
+                <input type="range" id="contrast-slider" min="0.5" max="2" step="0.1" value="1.2" class="w-full h-2 bg-tech-silver rounded-lg appearance-none cursor-pointer">
+              </div>
+              
+              <!-- 亮度 -->
+              <div>
+                <label for="brightness-slider" class="block text-sm font-medium text-tech-dark mb-1">
+                  亮度: <span id="brightness-value">1.0</span>
+                </label>
+                <input type="range" id="brightness-slider" min="0.5" max="2" step="0.1" value="1.0" class="w-full h-2 bg-tech-silver rounded-lg appearance-none cursor-pointer">
+              </div>
+              
+              <!-- 字符集选择 -->
+              <div>
+                <label for="char-set" class="block text-sm font-medium text-tech-dark mb-1">
+                  字符集
+                </label>
+                <select id="char-set" class="w-full bg-white border border-tech-silver text-tech-dark rounded-md focus:ring-tech-blue focus:border-tech-blue">
+                  <option value="detailed">详细 (70+字符)</option>
+                  <option value="simple">简单 (10字符)</option>
+                  <option value="blocks">方块 (Unicode方块)</option>
+                  <option value="custom" selected>自定义</option>
+                </select>
+              </div>
+              
+              <!-- 自定义字符集输入 -->
+              <div id="custom-chars-container" class="mt-4">
+                <label for="custom-chars" class="block text-sm font-medium text-tech-dark mb-1">
+                  自定义字符集
+                  <span class="text-xs text-tech-gray ml-2">(从暗到亮排序，至少2个字符)</span>
+                </label>
+                <input type="text" id="custom-chars" placeholder="例如: .:-=+*ABCDEFGHIJKLMNOPQRSTUVWXYZ#%@" 
+                       class="w-full bg-white border border-tech-silver text-tech-dark rounded-md focus:ring-tech-blue focus:border-tech-blue">
+                <div class="flex justify-between mt-1">
+                  <button id="reset-chars-btn" class="text-xs text-tech-blue hover:text-tech-cyan transition-colors">
+                    <i class="fa fa-refresh mr-1"></i> 恢复默认
+                  </button>
+                  <button id="preview-chars-btn" class="text-xs text-tech-blue hover:text-tech-cyan transition-colors">
+                    <i class="fa fa-eye mr-1"></i> 预览效果
+                  </button>
+                </div>
+              </div>
+              
+              <!-- 抖动选项 -->
+              <div class="flex items-center justify-between">
+                <label for="dithering-toggle" class="text-sm font-medium text-tech-dark">
+                  启用抖动
+                </label>
+                <div class="relative inline-block w-12 align-middle select-none">
+                  <input type="checkbox" id="dithering-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                  <label for="dithering-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-tech-silver cursor-pointer"></label>
+                </div>
+              </div>
+              
+              <!-- 转换按钮 -->
+              <button id="convert-btn" class="w-full mt-4 px-4 py-3 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center font-semibold">
+                <i class="fa fa-magic mr-2"></i> 转换为ASCII艺术
               </button>
             </div>
           </div>
-          
-          <!-- 结果显示区 -->
-          <div id="result-container" class="flex-grow flex flex-col items-center justify-center">
-            <!-- 初始状态 -->
-            <div id="initial-state" class="text-center py-12">
-              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
-                <i class="fa fa-image text-2xl text-gray-400 dark:text-gray-500"></i>
+        </div>
+        
+        <!-- 右侧结果显示区 -->
+        <div class="lg:col-span-8">
+          <div class="tech-card p-8 h-full flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-tech-darker flex items-center">
+                <i class="fa fa-code mr-3 text-tech-blue"></i> ASCII艺术结果
+              </h2>
+              <div class="flex space-x-2">
+                <button id="copy-btn" class="px-4 py-2 bg-tech-silver text-tech-dark rounded-lg hover:bg-tech-gray transition-all duration-300 flex items-center text-sm font-medium">
+                  <i class="fa fa-copy mr-1"></i> 复制
+                </button>
+                <button id="download-btn" class="px-4 py-2 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center text-sm font-medium">
+                  <i class="fa fa-download mr-1"></i> 下载
+                </button>
               </div>
-              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">准备开始</h3>
-              <p class="text-gray-500 dark:text-gray-400">上传图片并点击转换按钮生成ASCII艺术</p>
             </div>
             
-            <!-- 加载状态 -->
-            <div id="loading-state" class="text-center py-12 hidden">
-              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">正在转换</h3>
-              <p class="text-gray-500 dark:text-gray-400">正在将图片转换为ASCII艺术...</p>
-            </div>
-            
-            <!-- 错误状态 -->
-            <div id="error-state" class="text-center py-12 hidden">
-              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
-                <i class="fa fa-exclamation-triangle text-2xl text-red-500 dark:text-red-400"></i>
+            <!-- 结果显示区 -->
+            <div id="result-container" class="flex-grow flex flex-col items-center justify-center">
+              <!-- 初始状态 -->
+              <div id="initial-state" class="text-center py-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-tech-silver/50 mb-4">
+                  <i class="fa fa-image text-2xl text-tech-gray"></i>
+                </div>
+                <h3 class="text-lg font-medium text-tech-dark mb-1">准备开始</h3>
+                <p class="text-tech-gray">上传图片并点击转换按钮生成ASCII艺术</p>
               </div>
-              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">转换失败</h3>
-              <p id="error-message" class="text-gray-500 dark:text-gray-400">无法处理图片，请尝试使用其他图片</p>
-            </div>
-            
-            <!-- 结果状态 -->
-            <div id="ascii-result" class="w-full h-full hidden">
-              <div class="ascii-container w-full h-full bg-black text-white p-4 rounded-lg">
-                <pre id="ascii-art"></pre>
+              
+              <!-- 加载状态 -->
+              <div id="loading-state" class="text-center py-12 hidden">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-tech-blue mb-4"></div>
+                <h3 class="text-lg font-medium text-tech-dark mb-1">正在转换</h3>
+                <p class="text-tech-gray">正在将图片转换为ASCII艺术...</p>
+              </div>
+              
+              <!-- 错误状态 -->
+              <div id="error-state" class="text-center py-12 hidden">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                  <i class="fa fa-exclamation-triangle text-2xl text-red-500"></i>
+                </div>
+                <h3 class="text-lg font-medium text-tech-dark mb-1">转换失败</h3>
+                <p id="error-message" class="text-tech-gray">无法处理图片，请尝试使用其他图片</p>
+              </div>
+              
+              <!-- 结果状态 -->
+              <div id="ascii-result" class="w-full h-full hidden">
+                <div class="ascii-container w-full h-full">
+                  <pre id="ascii-art"></pre>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    
-    <!-- 底部信息 -->
-    <footer class="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm">
-      <p>彩色ASCII艺术转换器 &copy; 2025 | 将图片转换为精美的ASCII艺术</p>
-    </footer>
-  </div>
+  </section>
 
-  <!-- 自定义样式 -->
+  <!-- Features Section -->
+  <section id="features" class="py-20 grain-gradient">
+    <div class="container mx-auto px-6">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-tech-silver/30 mb-8">
+          <i class="fa fa-star text-tech-blue mr-2"></i>
+          <span class="text-tech-dark font-medium">功能特色</span>
+        </div>
+        
+        <h2 class="text-4xl md:text-5xl font-bold text-tech-darker mb-6">
+          强大的<span class="hero-text">转换能力</span>
+        </h2>
+        
+        <p class="text-xl text-tech-gray max-w-3xl mx-auto">
+          专业的ASCII艺术转换工具，支持多种参数调节和字符集选择
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <i class="fa fa-palette text-white text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-tech-darker mb-4">彩色输出</h3>
+          <p class="text-tech-gray">保持原始图片的颜色信息，生成彩色ASCII艺术</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-gradient-to-r from-tech-cyan to-tech-success rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <i class="fa fa-sliders text-white text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-tech-darker mb-4">参数调节</h3>
+          <p class="text-tech-gray">精确控制宽度、对比度、亮度等参数</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-gradient-to-r from-tech-accent to-tech-warning rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <i class="fa fa-magic text-white text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-tech-darker mb-4">高级算法</h3>
+          <p class="text-tech-gray">支持抖动算法和多种字符集选择</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-tech-darker text-white py-16">
+    <div class="container mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Brand -->
+        <div class="md:col-span-2">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-xl flex items-center justify-center">
+              <i class="fa fa-code text-white text-lg"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold">ASCII艺术转换器</h3>
+              <p class="text-tech-gray">icepig.top</p>
+            </div>
+          </div>
+          <p class="text-tech-gray mb-6 max-w-md">
+            专业的图片转ASCII艺术工具，支持彩色输出和多种参数调节。
+          </p>
+          <div class="flex space-x-4">
+            <a href="https://github.com/purezra" class="w-10 h-10 bg-tech-dark rounded-lg flex items-center justify-center hover:bg-tech-blue transition-colors">
+              <i class="fa fa-github"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div>
+          <h4 class="text-lg font-semibold mb-4">快速链接</h4>
+          <ul class="space-y-2">
+            <li><a href="/" class="text-tech-gray hover:text-white transition-colors">首页</a></li>
+            <li><a href="/time" class="text-tech-gray hover:text-white transition-colors">时间计算器</a></li>
+            <li><a href="/bg/index.html" class="text-tech-gray hover:text-white transition-colors">联系</a></li>
+          </ul>
+        </div>
+        
+        <!-- Features -->
+        <div>
+          <h4 class="text-lg font-semibold mb-4">功能</h4>
+          <ul class="space-y-2">
+            <li><span class="text-tech-gray">彩色ASCII艺术</span></li>
+            <li><span class="text-tech-gray">参数调节</span></li>
+            <li><span class="text-tech-gray">多种字符集</span></li>
+            <li><span class="text-tech-gray">抖动算法</span></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-tech-dark mt-12 pt-8 text-center">
+        <p class="text-tech-gray">
+          © 2025 icepig.top ASCII艺术转换器. 专业的图片转换工具。
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Custom Styles -->
   <style>
     /* 滑块样式 */
     input[type="range"]::-webkit-slider-thumb {
@@ -285,7 +557,7 @@
       width: 18px;
       height: 18px;
       border-radius: 50%;
-      background: #6366f1;
+      background: #3B82F6;
       cursor: pointer;
     }
     
@@ -293,7 +565,7 @@
       width: 18px;
       height: 18px;
       border-radius: 50%;
-      background: #6366f1;
+      background: #3B82F6;
       cursor: pointer;
       border: none;
     }
@@ -301,11 +573,11 @@
     /* 切换开关样式 */
     .toggle-checkbox:checked {
       right: 0;
-      border-color: #6366f1;
+      border-color: #3B82F6;
     }
     
     .toggle-checkbox:checked + .toggle-label {
-      background-color: #6366f1;
+      background-color: #3B82F6;
     }
     
     .toggle-label {
@@ -334,63 +606,6 @@
         font-size: 7px;
       }
     }
-    
-    /* 移动设备优化 */
-    @media (max-width: 640px) {
-      /* 增大滑块触控区域 */
-      input[type="range"] {
-        height: 24px;
-      }
-      
-      input[type="range"]::-webkit-slider-thumb {
-        width: 24px;
-        height: 24px;
-      }
-      
-      input[type="range"]::-moz-range-thumb {
-        width: 24px;
-        height: 24px;
-      }
-      
-      /* 增大按钮触控区域 */
-      button {
-        min-height: 44px;
-      }
-      
-      /* 增大切换开关 */
-      .toggle-checkbox {
-        width: 24px;
-        height: 24px;
-      }
-      
-      .toggle-label {
-        height: 24px;
-      }
-      
-      /* 调整示例图片大小 */
-      .sample-image img {
-        height: 24px;
-      }
-    }
-    
-    /* 动画效果 */
-    .fade-in {
-      animation: fadeIn 0.5s ease-in-out;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    .slide-up {
-      animation: slideUp 0.5s ease-in-out;
-    }
-    
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
   </style>
 
   <script>
@@ -415,7 +630,6 @@
     const convertBtn = document.getElementById('convert-btn');
     const copyBtn = document.getElementById('copy-btn');
     const downloadBtn = document.getElementById('download-btn');
-    const themeToggle = document.getElementById('theme-toggle');
     const resultContainer = document.getElementById('result-container');
     const initialState = document.getElementById('initial-state');
     const loadingState = document.getElementById('loading-state');
@@ -433,16 +647,13 @@
     
     // 初始化自定义字符集输入框
     function initCustomCharsInput() {
-      // 设置默认自定义字符集
       const defaultCustomChars = " .:-=+*ABCDEFGHIJKLMNOPQRSTUVWXYZ#%@";
       customCharsInput.value = defaultCustomChars;
       
-      // 重置按钮点击事件
       resetCharsBtn.addEventListener('click', () => {
         customCharsInput.value = defaultCustomChars;
       });
       
-      // 预览按钮点击事件
       previewCharsBtn.addEventListener('click', previewCustomChars);
     }
     
@@ -451,7 +662,6 @@
       const selectedValue = charSetSelect.value;
       const customCharsContainer = document.getElementById('custom-chars-container');
       
-      // 只有选择"自定义"时才显示自定义字符集输入框
       if (selectedValue === 'custom') {
         customCharsContainer.classList.remove('hidden');
       } else {
@@ -468,25 +678,19 @@
         return;
       }
       
-      // 创建一个简单的渐变条来预览字符集效果
       let preview = '字符集预览 (从暗到亮):\n';
       for (let i = 0; i < customChars.length; i++) {
-        // 每隔5个字符添加一个空格，使预览更清晰
         preview += customChars[i] + (i > 0 && (i + 1) % 5 === 0 ? ' ' : '');
       }
       
-      // 显示预览
       alert(preview);
     }
     
     // 获取自定义字符集
     function getCustomChars() {
       let chars = customCharsInput.value.trim();
-      
-      // 移除重复字符
       chars = [...new Set(chars)].join('');
       
-      // 至少需要2个字符
       if (chars.length < 2) {
         return null;
       }
@@ -496,24 +700,15 @@
     
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
-      // 检查暗黑模式偏好
-      if (localStorage.getItem('darkMode') === 'true' || 
-          (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      }
-      
-      // 事件监听
+      initCustomCharsInput();
       setupEventListeners();
+      setupMobileMenu();
     });
     
     // 设置事件监听
     function setupEventListeners() {
-      // 初始化自定义字符集输入框
-      initCustomCharsInput();
-      
-      // 字符集选择变化事件
       charSetSelect.addEventListener('change', handleCharSetChange);
-      // 拖放区域
+      
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, preventDefaults, false);
       });
@@ -527,11 +722,8 @@
       });
       
       dropArea.addEventListener('drop', handleDrop, false);
-      
-      // 图片输入
       imageInput.addEventListener('change', handleFileSelect, false);
       
-      // 参数滑块
       widthSlider.addEventListener('input', () => {
         widthValue.textContent = widthSlider.value;
       });
@@ -544,23 +736,44 @@
         brightnessValue.textContent = brightnessSlider.value;
       });
       
-      // 转换按钮
       convertBtn.addEventListener('click', convertImageToAscii);
-      
-      // 复制按钮
       copyBtn.addEventListener('click', copyToClipboard);
-      
-      // 下载按钮
       downloadBtn.addEventListener('click', downloadAsciiArt);
       
-      // 主题切换
-      themeToggle.addEventListener('click', toggleTheme);
-      
-      // 示例图片
       sampleImages.forEach(sample => {
         sample.addEventListener('click', () => {
           const imgSrc = sample.querySelector('img').src;
           loadSampleImage(imgSrc);
+        });
+      });
+    }
+    
+    // 设置移动端菜单
+    function setupMobileMenu() {
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const menuIcon = mobileMenuBtn.querySelector('i');
+      
+      mobileMenuBtn.addEventListener('click', () => {
+        const isHidden = mobileMenu.classList.contains('hidden');
+        
+        if (isHidden) {
+          mobileMenu.classList.remove('hidden');
+          menuIcon.classList.remove('fa-bars');
+          menuIcon.classList.add('fa-times');
+        } else {
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('fa-times');
+          menuIcon.classList.add('fa-bars');
+        }
+      });
+      
+      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+      mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('fa-times');
+          menuIcon.classList.add('fa-bars');
         });
       });
     }
@@ -572,13 +785,13 @@
     }
     
     function highlight() {
-      dropArea.classList.add('border-primary');
-      dropArea.classList.add('bg-primary/5');
+      dropArea.classList.add('border-tech-blue');
+      dropArea.classList.add('bg-tech-blue/5');
     }
     
     function unhighlight() {
-      dropArea.classList.remove('border-primary');
-      dropArea.classList.remove('bg-primary/5');
+      dropArea.classList.remove('border-tech-blue');
+      dropArea.classList.remove('bg-tech-blue/5');
     }
     
     // 处理拖放
@@ -653,22 +866,14 @@
         for (let x = 0; x < width; x++) {
           const index = (y * width + x) * 4;
           
-          // 获取原始颜色
           const r = data[index];
           const g = data[index + 1];
           const b = data[index + 2];
           
-          // 计算灰度
           const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-          
-          // 量化
           const newGray = Math.round(gray / 255) * 255;
-          
-          // 计算误差
           const error = gray - newGray;
           
-          // 分散误差到相邻像素 (Floyd-Steinberg矩阵)
-          // 右
           if (x + 1 < width) {
             const rightIndex = (y * width + (x + 1)) * 4;
             dithered[rightIndex] = clamp(dithered[rightIndex] + error * 7 / 16);
@@ -676,9 +881,7 @@
             dithered[rightIndex + 2] = clamp(dithered[rightIndex + 2] + error * 7 / 16);
           }
           
-          // 下一行
           if (y + 1 < height) {
-            // 左下
             if (x > 0) {
               const leftDownIndex = ((y + 1) * width + (x - 1)) * 4;
               dithered[leftDownIndex] = clamp(dithered[leftDownIndex] + error * 3 / 16);
@@ -686,13 +889,11 @@
               dithered[leftDownIndex + 2] = clamp(dithered[leftDownIndex + 2] + error * 3 / 16);
             }
             
-            // 下
             const downIndex = ((y + 1) * width + x) * 4;
             dithered[downIndex] = clamp(dithered[downIndex] + error * 5 / 16);
             dithered[downIndex + 1] = clamp(dithered[downIndex + 1] + error * 5 / 16);
             dithered[downIndex + 2] = clamp(dithered[downIndex + 2] + error * 5 / 16);
             
-            // 右下
             if (x + 1 < width) {
               const rightDownIndex = ((y + 1) * width + (x + 1)) * 4;
               dithered[rightDownIndex] = clamp(dithered[rightDownIndex] + error * 1 / 16);
@@ -745,20 +946,16 @@
         return;
       }
       
-      // 显示加载状态
       showLoading();
       
-      // 使用setTimeout让UI有时间更新
       setTimeout(() => {
         try {
-          // 获取参数
           const width = parseInt(widthSlider.value);
           const contrast = parseFloat(contrastSlider.value);
           const brightness = parseFloat(brightnessSlider.value);
           const charSet = charSetSelect.value;
           const useDithering = ditheringToggle.checked;
           
-          // 选择字符集
           let asciiChars;
           switch (charSet) {
             case 'detailed':
@@ -771,7 +968,6 @@
               asciiChars = ASCII_CHARS_BLOCKS;
               break;
             case 'custom':
-              // 获取自定义字符集
               asciiChars = getCustomChars();
               if (!asciiChars) {
                 showError('自定义字符集无效，请输入至少2个字符');
@@ -783,34 +979,26 @@
               break;
           }
           
-          // 创建画布
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
           
-          // 计算新的高度以保持宽高比(字符高度约为宽度的2倍)
           const aspectRatio = currentImage.height / currentImage.width;
           const height = Math.round(width * aspectRatio * 0.55);
           
-          // 设置画布大小
           canvas.width = width;
           canvas.height = height;
           
-          // 绘制图像
           ctx.drawImage(currentImage, 0, 0, width, height);
           
-          // 获取图像数据
           let imageData = ctx.getImageData(0, 0, width, height);
           
-          // 调整对比度和亮度
           imageData = adjustContrast(imageData, contrast);
           imageData = adjustBrightness(imageData, brightness);
           
-          // 应用抖动(如果启用)
           if (useDithering) {
             imageData = applyDithering(imageData, width, height);
           }
           
-          // 处理每个像素
           let ascii = '';
           const data = imageData.data;
           
@@ -824,21 +1012,17 @@
               const b = data[index + 2];
               const a = data[index + 3];
               
-              // 如果透明度小于128(接近透明),则输出空格
               if (a < 128) {
                 line += ' ';
               } else {
-                // 计算感知亮度
                 const brightness = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
                 
-                // 根据亮度选择ASCII字符
                 const charIndex = Math.min(
                   Math.floor((brightness / 255) * asciiChars.length),
                   asciiChars.length - 1
                 );
                 const char = asciiChars[charIndex];
                 
-                // 添加颜色和字符
                 line += `<span style="color: rgb(${r}, ${g}, ${b})">${char}</span>`;
               }
             }
@@ -846,7 +1030,6 @@
             ascii += line + '\n';
           }
           
-          // 显示结果
           asciiArt.innerHTML = ascii;
           showResult();
           
@@ -871,9 +1054,6 @@
       loadingState.classList.add('hidden');
       errorState.classList.add('hidden');
       asciiResult.classList.remove('hidden');
-      
-      // 添加动画效果
-      asciiResult.classList.add('fade-in');
     }
     
     // 显示错误
@@ -888,21 +1068,19 @@
     
     // 复制到剪贴板
     function copyToClipboard() {
-      // 获取纯文本ASCII
       const textAscii = asciiArt.textContent;
       
       navigator.clipboard.writeText(textAscii)
         .then(() => {
-          // 显示复制成功提示
           const originalText = copyBtn.innerHTML;
           copyBtn.innerHTML = '<i class="fa fa-check mr-1"></i> 已复制';
-          copyBtn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-          copyBtn.classList.add('bg-green-500', 'text-white');
+          copyBtn.classList.remove('bg-tech-silver', 'text-tech-dark');
+          copyBtn.classList.add('bg-tech-success', 'text-white');
           
           setTimeout(() => {
             copyBtn.innerHTML = originalText;
-            copyBtn.classList.remove('bg-green-500', 'text-white');
-            copyBtn.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+            copyBtn.classList.remove('bg-tech-success', 'text-white');
+            copyBtn.classList.add('bg-tech-silver', 'text-tech-dark');
           }, 2000);
         })
         .catch(err => {
@@ -913,33 +1091,21 @@
     
     // 下载ASCII艺术
     function downloadAsciiArt() {
-      // 获取纯文本ASCII
       const textAscii = asciiArt.textContent;
       
-      // 创建Blob对象
       const blob = new Blob([textAscii], { type: 'text/plain' });
-      
-      // 创建下载链接
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'ascii-art.txt';
       
-      // 触发下载
       document.body.appendChild(a);
       a.click();
       
-      // 清理
       setTimeout(() => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, 0);
-    }
-    
-    // 切换主题
-    function toggleTheme() {
-      document.documentElement.classList.toggle('dark');
-      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
     }
   </script>
 </body>
