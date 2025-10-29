@@ -65,6 +65,47 @@
   
   <style type="text/tailwindcss">
     @layer utilities {
+      /* Mobile menu animation */
+      .mobile-menu-enter {
+        animation: slideDown 0.3s ease-out;
+      }
+      
+      .mobile-menu-exit {
+        animation: slideUp 0.3s ease-in;
+      }
+      
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes slideUp {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+      }
+      
+      /* Mobile responsive adjustments */
+      @media (max-width: 768px) {
+        .hero-text {
+          font-size: clamp(2rem, 8vw, 3.5rem);
+        }
+        
+        .tech-card {
+          margin: 0 0.5rem;
+        }
+      }
       /* Grain Gradient Background Effect */
       .grain-gradient {
         background: linear-gradient(135deg, 
@@ -177,14 +218,26 @@
             <p class="text-sm text-tech-gray">icepig.top</p>
           </div>
         </div>
+        <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-6">
           <a href="#tools" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">Tools</a>
           <a href="#about" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">About</a>
           <a href="/bg/index.html" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">Contact</a>
         </div>
-        <button class="md:hidden text-tech-dark">
+        
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden text-tech-dark p-2 rounded-lg hover:bg-gray-100 transition-colors">
           <i class="fa fa-bars text-xl"></i>
         </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden bg-white border-t border-tech-silver/30 shadow-lg hidden">
+      <div class="px-6 py-4 space-y-4">
+        <a href="#tools" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">Tools</a>
+        <a href="#about" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">About</a>
+        <a href="/bg/index.html" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">Contact</a>
       </div>
     </div>
   </nav>
@@ -523,6 +576,53 @@
         nav.classList.add('shadow-lg');
       } else {
         nav.classList.remove('shadow-lg');
+      }
+    });
+    
+    // Mobile menu functionality
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = mobileMenuBtn.querySelector('i');
+    
+    mobileMenuBtn.addEventListener('click', () => {
+      const isHidden = mobileMenu.classList.contains('hidden');
+      
+      if (isHidden) {
+        mobileMenu.classList.remove('hidden');
+        mobileMenu.classList.add('mobile-menu-enter');
+        menuIcon.classList.remove('fa-bars');
+        menuIcon.classList.add('fa-times');
+      } else {
+        mobileMenu.classList.add('mobile-menu-exit');
+        setTimeout(() => {
+          mobileMenu.classList.add('hidden');
+          mobileMenu.classList.remove('mobile-menu-enter', 'mobile-menu-exit');
+        }, 300);
+        menuIcon.classList.remove('fa-times');
+        menuIcon.classList.add('fa-bars');
+      }
+    });
+    
+    // Close mobile menu when clicking on a link
+    const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+    mobileMenuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('mobile-menu-enter', 'mobile-menu-exit');
+        menuIcon.classList.remove('fa-times');
+        menuIcon.classList.add('fa-bars');
+      });
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+        if (!mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          mobileMenu.classList.remove('mobile-menu-enter', 'mobile-menu-exit');
+          menuIcon.classList.remove('fa-times');
+          menuIcon.classList.add('fa-bars');
+        }
       }
     });
   </script>
