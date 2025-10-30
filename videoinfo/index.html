@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>像素视频重命名工具</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  
+  <!-- 配置Tailwind自定义主题 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              bg: '#0f172a',
+              panel: '#1e293b',
+              accent: '#3b82f6',
+              text: '#e2e8f0',
+              highlight: '#facc15',
+              success: '#10b981',
+              danger: '#ef4444'
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'monospace', 'system-ui']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .pixel-border {
+        box-shadow: 4px 4px 0 #000;
+        border: 2px solid #fff;
+      }
+      .pixel-button {
+        @apply bg-retro-accent hover:bg-blue-600 text-white font-pixel text-sm py-2 px-4 
+               transition-all duration-150 active:translate-x-1 active:translate-y-1 
+               active:shadow-none pixel-border;
+      }
+      .retro-input {
+        @apply bg-retro-panel border-2 border-white px-2 py-1 font-pixel text-sm 
+               text-retro-text focus:outline-none focus:border-retro-highlight;
+      }
+      .rule-item {
+        @apply bg-retro-panel border-2 border-white px-3 py-2 mb-2 flex items-center gap-2
+               cursor-move font-pixel text-sm;
+      }
+      .retro-checkbox {
+        @apply w-4 h-4 bg-retro-panel border-2 border-white text-retro-highlight 
+               focus:ring-0 accent-retro-highlight;
+      }
+    }
+  </style>
+  
+  <!-- 引入像素字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body class="bg-retro-bg text-retro-text min-h-screen p-4 md:p-8">
+  <!-- 导航栏 -->
+  <nav class="bg-retro-panel pixel-border p-4 mb-6">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <a href="../index.html" class="text-retro-text hover:text-retro-highlight transition-colors duration-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+        </a>
+        <h1 class="font-pixel text-retro-highlight text-sm">视频重命名工具</h1>
+      </div>
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="../index.html" class="font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200">工具</a>
+        <a href="../ascii/" class="font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200">ASCII转换</a>
+        <a href="../time/" class="font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200">时间计算</a>
+        <a href="../connectivity/" class="font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200">连通性测试</a>
+        <a href="../bg/" class="font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200">联系</a>
+      </div>
+      <div class="md:hidden">
+        <button id="mobile-menu-btn" class="text-retro-text hover:text-retro-highlight focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="md:hidden hidden mt-4 pt-4 border-t border-white/20">
+      <div class="space-y-2">
+        <a href="../index.html" class="block font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200 py-2">工具</a>
+        <a href="../ascii/" class="block font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200 py-2">ASCII转换</a>
+        <a href="../time/" class="block font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200 py-2">时间计算</a>
+        <a href="../connectivity/" class="block font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200 py-2">连通性测试</a>
+        <a href="../bg/" class="block font-pixel text-xs text-retro-text hover:text-retro-highlight transition-colors duration-200 py-2">联系</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 标题区域 -->
+  <header class="mb-6 text-center">
+    <h1 class="font-pixel text-retro-highlight text-xl md:text-2xl mb-2 tracking-tight">视频批量重命名工具</h1>
+    <p class="font-pixel text-xs text-retro-text/70">复古风格 · 简单高效</p>
+  </header>
+
+  <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- 左侧：文件选择区 -->
+    <section class="md:col-span-1">
+      <div class="bg-retro-panel pixel-border p-4 h-full">
+        <h2 class="font-pixel text-retro-highlight text-sm mb-4">选择视频文件</h2>
+        
+        <div class="mb-4">
+          <label for="fileInput" class="pixel-button w-full block text-center mb-3">
+            选择文件
+          </label>
+          <input type="file" id="fileInput" accept="video/*" multiple class="hidden" />
+          
+          <div id="fileList" class="max-h-60 overflow-y-auto text-xs font-pixel space-y-1">
+            <p class="text-retro-text/60">未选择任何文件</p>
+          </div>
+        </div>
+        
+        <div class="text-xs font-pixel text-retro-text/70">
+          <p>支持格式：MP4、WebM、MOV等</p>
+          <p class="mt-1">提示：按住Ctrl键可多选文件</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 中间：命名规则配置 -->
+    <section class="md:col-span-1">
+      <div class="bg-retro-panel pixel-border p-4 h-full">
+        <h2 class="font-pixel text-retro-highlight text-sm mb-4">命名规则设置</h2>
+        
+        <div class="mb-4">
+          <p class="font-pixel text-xs mb-2">可用元素：</p>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2 text-xs font-pixel">
+              <input type="checkbox" class="retro-checkbox" data-type="duration1" checked>
+              <span>时长 (2h30m1s格式)</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs font-pixel">
+              <input type="checkbox" class="retro-checkbox" data-type="duration2">
+              <span>时长 (2_30_1格式)</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs font-pixel">
+              <input type="checkbox" class="retro-checkbox" data-type="timestamp" checked>
+              <span>当前时间戳</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs font-pixel">
+              <input type="checkbox" class="retro-checkbox" data-type="custom">
+              <span>自定义文本：</span>
+              <input type="text" class="retro-input text-xs w-24" id="customText" placeholder="输入文字">
+            </label>
+          </div>
+        </div>
+        
+        <div>
+          <p class="font-pixel text-xs mb-2">命名顺序（拖拽调整）：</p>
+          <div id="ruleOrder" class="space-y-1 min-h-[120px]">
+            <div class="rule-item" data-type="duration1">
+              <span>⏱️ 时长(2h30m1s)</span>
+            </div>
+            <div class="rule-item" data-type="timestamp">
+              <span>📅 当前时间戳</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 右侧：预览和操作 -->
+    <section class="md:col-span-1">
+      <div class="bg-retro-panel pixel-border p-4 h-full">
+        <h2 class="font-pixel text-retro-highlight text-sm mb-4">预览与操作</h2>
+        
+        <div class="mb-4">
+          <p class="font-pixel text-xs mb-2">分隔符：</p>
+          <select id="separator" class="retro-input text-xs">
+            <option value="-">- 横线</option>
+            <option value="_" selected>_ 下划线</option>
+            <option value=" "> 空格</option>
+            <option value=".">. 点</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <p class="font-pixel text-xs mb-2">预览：</p>
+          <div id="previewArea" class="max-h-40 overflow-y-auto text-xs font-pixel space-y-1 p-2 bg-retro-bg border border-white">
+            <p class="text-retro-text/60">选择文件后显示预览</p>
+          </div>
+        </div>
+        
+        <div class="space-y-3">
+          <button id="generateBtn" class="pixel-button w-full bg-retro-success hover:bg-green-700" disabled>
+            生成并下载
+          </button>
+          <button id="clearBtn" class="pixel-button w-full bg-retro-danger hover:bg-red-700">
+            清除所有
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部状态栏 -->
+  <footer class="mt-8 text-center">
+    <div class="bg-retro-panel pixel-border p-2 inline-block">
+      <p class="font-pixel text-xs text-retro-text/70">状态: 就绪 | 像素工具 v1.0</p>
+    </div>
+  </footer>
+
+  <script>
+    // 移动端菜单功能
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', () => {
+        const isHidden = mobileMenu.classList.contains('hidden');
+        
+        if (isHidden) {
+          mobileMenu.classList.remove('hidden');
+        } else {
+          mobileMenu.classList.add('hidden');
+        }
+      });
+      
+      // 点击菜单项后关闭菜单
+      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+      mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+        });
+      });
+    }
+
+    // 全局变量
+    let selectedFiles = [];
+    let fileDurations = new Map(); // 存储文件时长信息
+    
+    // DOM元素
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    const ruleCheckboxes = document.querySelectorAll('.retro-checkbox[data-type]');
+    const customTextInput = document.getElementById('customText');
+    const ruleOrder = document.getElementById('ruleOrder');
+    const separatorSelect = document.getElementById('separator');
+    const previewArea = document.getElementById('previewArea');
+    const generateBtn = document.getElementById('generateBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    
+    // 初始化拖拽功能
+    function initDragAndDrop() {
+      const ruleItems = document.querySelectorAll('.rule-item');
+      
+      ruleItems.forEach(item => {
+        item.setAttribute('draggable', true);
+        
+        item.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', item.dataset.type);
+          setTimeout(() => item.classList.add('opacity-50'), 0);
+        });
+        
+        item.addEventListener('dragend', () => {
+          item.classList.remove('opacity-50');
+          updatePreview();
+        });
+        
+        item.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          const draggable = document.querySelector('.opacity-50');
+          const afterElement = getDragAfterElement(ruleOrder, e.clientY);
+          
+          if (afterElement == null) {
+            ruleOrder.appendChild(draggable);
+          } else {
+            ruleOrder.insertBefore(draggable, afterElement);
+          }
+        });
+      });
+    }
+    
+    // 辅助函数：确定拖拽元素的放置位置
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.rule-item:not(.opacity-50)')];
+      
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+    
+    // 解析视频时长
+    function getVideoDuration(file) {
+      return new Promise((resolve) => {
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.src = URL.createObjectURL(file);
+        
+        video.onloadedmetadata = () => {
+          URL.revokeObjectURL(video.src);
+          resolve(video.duration);
+        };
+        
+        video.onerror = () => {
+          resolve(null); // 无法解析时长
+        };
+      });
+    }
+    
+    // 格式化时长 - 2h30m1s格式
+    function formatDuration1(seconds) {
+      if (!seconds) return '未知时长';
+      
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      
+      let result = '';
+      if (h > 0) result += `${h}h`;
+      if (m > 0) result += `${m}m`;
+      result += `${s}s`;
+      
+      return result;
+    }
+    
+    // 格式化时长 - 2_30_1格式
+    function formatDuration2(seconds) {
+      if (!seconds) return '未知时长';
+      
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      
+      return `${h}_${m}_${s}`;
+    }
+    
+    // 获取当前时间戳字符串
+    function getCurrentTimestamp() {
+      const date = new Date();
+      return `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_${date.getHours().toString().padStart(2,'0')}${date.getMinutes().toString().padStart(2,'0')}`;
+    }
+    
+    // 更新文件列表显示
+    function updateFileList() {
+      if (selectedFiles.length === 0) {
+        fileList.innerHTML = '<p class="text-retro-text/60">未选择任何文件</p>';
+        generateBtn.disabled = true;
+        return;
+      }
+      
+      fileList.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'flex justify-between items-center p-1 hover:bg-retro-bg';
+        fileItem.innerHTML = `
+          <span class="truncate max-w-[180px]">${index + 1}. ${file.name}</span>
+          <span class="text-retro-text/60 text-[10px]">${(file.size / 1024 / 1024).toFixed(1)}MB</span>
+        `;
+        fileList.appendChild(fileItem);
+      });
+      
+      generateBtn.disabled = false;
+      updatePreview();
+    }
+    
+    // 更新命名规则顺序
+    function updateRuleOrder() {
+      // 清空现有规则
+      ruleOrder.innerHTML = '';
+      
+      // 添加选中的规则
+      ruleCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+          const ruleItem = document.createElement('div');
+          ruleItem.className = 'rule-item';
+          ruleItem.dataset.type = checkbox.dataset.type;
+          
+          let label = '';
+          switch(checkbox.dataset.type) {
+            case 'duration1': label = '⏱️ 时长(2h30m1s)'; break;
+            case 'duration2': label = '⏱️ 时长(2_30_1)'; break;
+            case 'timestamp': label = '📅 当前时间戳'; break;
+            case 'custom': label = '📝 自定义文本'; break;
+          }
+          
+          ruleItem.innerHTML = `<span>${label}</span>`;
+          ruleOrder.appendChild(ruleItem);
+        }
+      });
+      
+      // 重新初始化拖拽
+      initDragAndDrop();
+      updatePreview();
+    }
+    
+    // 更新预览
+    async function updatePreview() {
+      if (selectedFiles.length === 0) {
+        previewArea.innerHTML = '<p class="text-retro-text/60">选择文件后显示预览</p>';
+        return;
+      }
+      
+      previewArea.innerHTML = '';
+      const separator = separatorSelect.value;
+      const ruleItems = ruleOrder.querySelectorAll('.rule-item');
+      const customText = customTextInput.value || '自定义';
+      const timestamp = getCurrentTimestamp();
+      
+      // 确保所有文件时长都已加载
+      for (const file of selectedFiles) {
+        if (!fileDurations.has(file.name)) {
+          const duration = await getVideoDuration(file);
+          fileDurations.set(file.name, duration);
+        }
+      }
+      
+      // 生成预览
+      selectedFiles.forEach((file, index) => {
+        const nameParts = [];
+        const duration = fileDurations.get(file.name);
+        
+        ruleItems.forEach(item => {
+          switch(item.dataset.type) {
+            case 'duration1': 
+              nameParts.push(formatDuration1(duration));
+              break;
+            case 'duration2': 
+              nameParts.push(formatDuration2(duration));
+              break;
+            case 'timestamp': 
+              nameParts.push(timestamp);
+              break;
+            case 'custom': 
+              nameParts.push(customText);
+              break;
+          }
+        });
+        
+        // 获取文件扩展名
+        const ext = file.name.split('.').pop();
+        const newName = `${nameParts.join(separator)}.${ext}`;
+        
+        const previewItem = document.createElement('div');
+        previewItem.className = 'flex flex-col';
+        previewItem.innerHTML = `
+          <span class="text-retro-text/60">原: ${file.name.substring(0, 20)}${file.name.length > 20 ? '...' : ''}</span>
+          <span class="text-retro-highlight">新: ${newName.substring(0, 25)}${newName.length > 25 ? '...' : ''}</span>
+        `;
+        previewArea.appendChild(previewItem);
+      });
+    }
+    
+    // 生成并下载重命名后的文件
+    async function generateAndDownload() {
+      const zip = new JSZip();
+      const separator = separatorSelect.value;
+      const ruleItems = ruleOrder.querySelectorAll('.rule-item');
+      const customText = customTextInput.value || '自定义';
+      const timestamp = getCurrentTimestamp();
+      
+      // 为每个文件生成新名称并添加到ZIP
+      for (const file of selectedFiles) {
+        const nameParts = [];
+        const duration = fileDurations.get(file.name);
+        const ext = file.name.split('.').pop();
+        
+        ruleItems.forEach(item => {
+          switch(item.dataset.type) {
+            case 'duration1': 
+              nameParts.push(formatDuration1(duration));
+              break;
+            case 'duration2': 
+              nameParts.push(formatDuration2(duration));
+              break;
+            case 'timestamp': 
+              nameParts.push(timestamp);
+              break;
+            case 'custom': 
+              nameParts.push(customText);
+              break;
+          }
+        });
+        
+        const newName = `${nameParts.join(separator)}.${ext}`;
+        zip.file(newName, file);
+      }
+      
+      // 生成ZIP文件并下载
+      zip.generateAsync({ type: "blob" })
+        .then(content => {
+          saveAs(content, `重命名文件_${timestamp}.zip`);
+        });
+    }
+    
+    // 清除所有选择
+    function clearAll() {
+      selectedFiles = [];
+      fileDurations.clear();
+      fileInput.value = '';
+      updateFileList();
+      previewArea.innerHTML = '<p class="text-retro-text/60">选择文件后显示预览</p>';
+    }
+    
+    // 事件监听
+    fileInput.addEventListener('change', async (e) => {
+      selectedFiles = Array.from(e.target.files);
+      updateFileList();
+    });
+    
+    ruleCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', updateRuleOrder);
+    });
+    
+    customTextInput.addEventListener('input', updatePreview);
+    separatorSelect.addEventListener('change', updatePreview);
+    generateBtn.addEventListener('click', generateAndDownload);
+    clearBtn.addEventListener('click', clearAll);
+    
+    // 初始化
+    initDragAndDrop();
+  </script>
+</body>
+</html>
