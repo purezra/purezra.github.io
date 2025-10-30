@@ -18,12 +18,13 @@
   <!-- Configure Tailwind with Silver-Gray Tech Theme -->
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            // Silver-Gray Tech Color Palette
-            'tech-silver': '#E5E7EB',
-            'tech-gray': '#9CA3AF',
+            // Silver-Gray Tech Color Palette - Light Theme
+            'tech-silver': '#F9FAFB',
+            'tech-gray': '#6B7280',
             'tech-dark': '#374151',
             'tech-darker': '#1F2937',
             'tech-blue': '#3B82F6',
@@ -31,6 +32,10 @@
             'tech-accent': '#8B5CF6',
             'tech-success': '#10B981',
             'tech-warning': '#F59E0B',
+            // Dark theme colors
+            'dark-bg': '#111827',
+            'dark-card': '#1F2937',
+            'dark-text': '#F9FAFB',
           },
           fontFamily: {
             'inter': ['Inter', 'system-ui', 'sans-serif'],
@@ -113,7 +118,7 @@
       
       /* Card hover effects */
       .tech-card {
-        @apply bg-white/80 backdrop-blur-sm border border-tech-silver/30 rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2;
+        @apply bg-white/80 dark:bg-dark-card backdrop-blur-sm border border-tech-silver/30 dark:border-gray-700/50 rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2;
         background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.8));
       }
       
@@ -124,7 +129,7 @@
       
       /* Navigation glass effect */
       .glass-nav {
-        @apply bg-white/80 backdrop-blur-lg border-b border-tech-silver/20;
+        @apply bg-white/80 dark:bg-dark-card backdrop-blur-lg border-b border-tech-silver/20 dark:border-gray-700/20;
         background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.7));
       }
       
@@ -191,7 +196,7 @@
   </style>
 </head>
 
-<body class="font-inter bg-gray-50 min-h-screen">
+<body class="font-inter bg-gray-50 dark:bg-dark-bg min-h-screen">
   <!-- Navigation -->
   <nav class="glass-nav sticky top-0 z-50">
     <div class="container mx-auto px-6 py-4">
@@ -201,27 +206,47 @@
             <i class="fa fa-code text-white text-lg"></i>
           </div>
           <div>
-            <h1 class="text-xl font-bold text-tech-darker">ASCII艺术转换器</h1>
-            <p class="text-sm text-tech-gray">icepig.top</p>
+            <h1 class="text-xl font-bold text-tech-darker dark:text-dark-text">ASCII艺术转换器</h1>
+            <p class="text-sm text-tech-gray dark:text-gray-400">icepig.top</p>
           </div>
         </div>
         <div class="hidden md:flex items-center space-x-6">
-          <a href="/" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">首页</a>
-          <a href="/time" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">时间计算器</a>
-          <a href="/bg/index.html" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">联系</a>
+          <a href="/" class="text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium">首页</a>
+          <a href="/time" class="text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium">时间计算器</a>
+          <a href="/bg/index.html" class="text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium">联系</a>
+          <!-- Theme Toggle -->
+          <button id="theme-toggle" class="p-2 rounded-lg bg-tech-silver hover:bg-tech-gray transition-colors duration-200">
+            <svg id="theme-icon" class="w-5 h-5 text-tech-dark dark:text-dark-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </button>
         </div>
-        <button id="mobile-menu-btn" class="md:hidden text-tech-dark p-2 rounded-lg hover:bg-gray-100 transition-colors">
-          <i class="fa fa-bars text-xl"></i>
-        </button>
+        <div class="md:hidden flex items-center space-x-2">
+          <!-- Mobile Theme Toggle -->
+          <button id="mobile-theme-toggle" class="p-2 rounded-lg bg-tech-silver hover:bg-tech-gray transition-colors duration-200">
+            <svg id="mobile-theme-icon" class="w-5 h-5 text-tech-dark dark:text-dark-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </button>
+          <button id="mobile-menu-btn" class="text-tech-dark dark:text-dark-text p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+            <i class="fa fa-bars text-xl"></i>
+          </button>
+        </div>
       </div>
     </div>
     
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="md:hidden bg-white border-t border-tech-silver/30 shadow-lg hidden">
       <div class="px-6 py-4 space-y-4">
-        <a href="/" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">首页</a>
-        <a href="/time" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">时间计算器</a>
-        <a href="/bg/index.html" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">联系</a>
+        <a href="/" class="block text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium py-2">首页</a>
+        <a href="/time" class="block text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium py-2">时间计算器</a>
+        <a href="/bg/index.html" class="block text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium py-2">联系</a>
+        <div class="flex items-center space-x-2 py-2">
+          <span class="text-tech-gray dark:text-gray-400">主题:</span>
+          <button id="mobile-theme-toggle-menu" class="px-3 py-1 bg-tech-silver hover:bg-tech-gray rounded text-sm transition-colors duration-200">
+            切换主题
+          </button>
+        </div>
       </div>
     </div>
   </nav>
@@ -241,13 +266,13 @@
         <!-- Hero Badge -->
         <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-tech-silver/30 mb-8">
           <i class="fa fa-magic text-tech-blue mr-2"></i>
-          <span class="text-tech-dark font-medium">专业ASCII艺术工具</span>
+          <span class="text-tech-dark dark:text-dark-text font-medium">专业ASCII艺术工具</span>
         </div>
         
         <!-- Main Hero Text -->
         <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
           <span class="hero-text">彩色ASCII</span><br>
-          <span class="text-tech-darker">艺术转换器</span>
+          <span class="text-tech-darker dark:text-dark-text">艺术转换器</span>
         </h1>
         
         <!-- Hero Subtitle -->
@@ -276,13 +301,13 @@
         <!-- 左侧控制面板 -->
         <div class="lg:col-span-4">
           <div class="tech-card p-8 h-full">
-            <h2 class="text-2xl font-bold text-tech-darker mb-6 flex items-center">
+            <h2 class="text-2xl font-bold text-tech-darker dark:text-dark-text mb-6 flex items-center">
               <i class="fa fa-sliders mr-3 text-tech-blue"></i> 参数控制
             </h2>
             
             <!-- 图片上传区域 -->
             <div class="mb-6">
-              <label class="block text-sm font-medium text-tech-dark mb-2">
+              <label class="block text-sm font-medium text-tech-dark dark:text-dark-text mb-2">
                 上传图片
               </label>
               <div id="drop-area" class="border-2 border-dashed border-tech-silver rounded-lg p-6 text-center cursor-pointer hover:border-tech-blue transition-all duration-300">
@@ -298,7 +323,7 @@
             
             <!-- 示例图片 -->
             <div class="mb-6">
-              <label class="block text-sm font-medium text-tech-dark mb-2">
+              <label class="block text-sm font-medium text-tech-dark dark:text-dark-text mb-2">
                 或选择示例图片
               </label>
               <div class="grid grid-cols-3 gap-2">
@@ -318,7 +343,7 @@
             <div class="space-y-4">
               <!-- 宽度 -->
               <div>
-                <label for="width-slider" class="block text-sm font-medium text-tech-dark mb-1">
+                <label for="width-slider" class="block text-sm font-medium text-tech-dark dark:text-dark-text mb-1">
                   宽度: <span id="width-value">100</span> 字符
                 </label>
                 <input type="range" id="width-slider" min="20" max="300" value="100" class="w-full h-2 bg-tech-silver rounded-lg appearance-none cursor-pointer">
@@ -326,7 +351,7 @@
               
               <!-- 对比度 -->
               <div>
-                <label for="contrast-slider" class="block text-sm font-medium text-tech-dark mb-1">
+                <label for="contrast-slider" class="block text-sm font-medium text-tech-dark dark:text-dark-text mb-1">
                   对比度: <span id="contrast-value">1.2</span>
                 </label>
                 <input type="range" id="contrast-slider" min="0.5" max="2" step="0.1" value="1.2" class="w-full h-2 bg-tech-silver rounded-lg appearance-none cursor-pointer">
@@ -698,11 +723,70 @@
       return chars;
     }
     
+    // Theme Management
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      const theme = savedTheme;
+      
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        updateThemeIcons('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        updateThemeIcons('light');
+      }
+    }
+
+    function updateThemeIcons(theme) {
+      const icons = ['theme-icon', 'mobile-theme-icon'];
+      icons.forEach(iconId => {
+        const icon = document.getElementById(iconId);
+        if (icon) {
+          if (theme === 'dark') {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
+          } else {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+          }
+        }
+      });
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const newTheme = isDark ? 'light' : 'dark';
+      
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        updateThemeIcons('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        updateThemeIcons('light');
+      }
+      
+      localStorage.setItem('theme', newTheme);
+    }
+
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
       initCustomCharsInput();
       setupEventListeners();
       setupMobileMenu();
+      
+      // Theme toggle buttons
+      const themeToggle = document.getElementById('theme-toggle');
+      const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+      const mobileThemeToggleMenu = document.getElementById('mobile-theme-toggle-menu');
+
+      if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+      }
+      if (mobileThemeToggle) {
+        mobileThemeToggle.addEventListener('click', toggleTheme);
+      }
+      if (mobileThemeToggleMenu) {
+        mobileThemeToggleMenu.addEventListener('click', toggleTheme);
+      }
     });
     
     // 设置事件监听
