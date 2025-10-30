@@ -605,67 +605,67 @@
 
         // Theme Management
         function initTheme() {
-            const savedTheme =  =  =  = localStorage....getItem('theme') ||  ||  ||  || 'light';;;;
-            const theme =  =  =  =  =  =  =  = savedTheme;;;;;;;;
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const theme = savedTheme;
             
-            if (theme ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  === 'dark') {
-                document....documentElement....classList....add('dark');;;;
-                updateThemeIcons('dark');;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                updateThemeIcons('dark');
             } else {
-                document....documentElement....classList....remove('dark');;;;
-                updateThemeIcons('light');;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                document.documentElement.classList.remove('dark');
+                updateThemeIcons('light');
             }
         }
 
         function updateThemeIcons(theme) {
-            const icons =  =  =  =  =  =  =  = ['theme-icon', , , , , , , , 'mobile-theme-icon'];;;;;;;;
-            icons........forEach(iconId =>  =>  =>  =>  =>  =>  =>  => {
-                const icon =  =  =  =  =  =  =  = document........getElementById(iconId);;;;;;;;
+            const icons = ['theme-icon', 'mobile-theme-icon'];
+            icons.forEach(iconId => {
+                const icon = document.getElementById(iconId);
                 if (icon) {
-                    if (theme ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  === 'dark') {
-                        icon....innerHTML =  =  =  = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';;;;
+                    if (theme === 'dark') {
+                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
                     } else {
-                        icon....innerHTML =  =  =  = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';;;;
+                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
                     }
                 }
-            });;;;;;;;
+            });
         }
 
         function toggleTheme() {
-            const isDark =  =  =  =  =  =  =  = document........documentElement........classList........contains('dark');;;;;;;;
-            const newTheme =  =  =  = isDark ?  ?  ?  ? 'light' :  :  :  : 'dark';;;;
+            const isDark = document.documentElement.classList.contains('dark');
+            const newTheme = isDark ? 'light' : 'dark';
             
-            if (newTheme ===  === 'dark') {
-                document..documentElement..classList..add('dark');;
-                updateThemeIcons('dark');;
+            if (newTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                updateThemeIcons('dark');
             } else {
-                document..documentElement..classList..remove('dark');;
-                updateThemeIcons('light');;
+                document.documentElement.classList.remove('dark');
+                updateThemeIcons('light');
             }
             
-            localStorage..setItem('theme', , newTheme);;
+            localStorage.setItem('theme', newTheme);
         }
 
         // 页面加载完成后的初始化
-        document..addEventListener('DOMContentLoaded', , () =>  => {
-            initTheme();;
-            console..log('网络连通性测试工具已加载');;
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            console.log('网络连通性测试工具已加载');
             
             // Theme toggle buttons
-            const themeToggle =  = document..getElementById('theme-toggle');;
-            const mobileThemeToggle =  = document..getElementById('mobile-theme-toggle');;
-            const mobileThemeToggleMenu =  = document..getElementById('mobile-theme-toggle-menu');;
+            const themeToggle = document.getElementById('theme-toggle');
+            const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+            const mobileThemeToggleMenu = document.getElementById('mobile-theme-toggle-menu');
 
             if (themeToggle) {
-                themeToggle..addEventListener('click', , toggleTheme);;
+                themeToggle.addEventListener('click', toggleTheme);
             }
             if (mobileThemeToggle) {
-                mobileThemeToggle..addEventListener('click', , toggleTheme);;
+                mobileThemeToggle.addEventListener('click', toggleTheme);
             }
             if (mobileThemeToggleMenu) {
-                mobileThemeToggleMenu..addEventListener('click', , toggleTheme);;
+                mobileThemeToggleMenu.addEventListener('click', toggleTheme);
             }
-        });;
+        });
     </script>
 </body>
 </html>
