@@ -220,8 +220,8 @@
                             <span class="text-tech-gray dark:text-gray-400">GitHub</span>
                         </label>
                         <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" class="website-checkbox" value="https://ai.google.dev" checked>
-                            <span class="text-tech-gray dark:text-gray-400">Google AI</span>
+                            <input type="checkbox" class="website-checkbox" value="https://www.google.com.hk/" checked>
+                            <span class="text-tech-gray dark:text-gray-400">Google HK</span>
                         </label>
                     </div>
                     <div class="flex flex-wrap gap-2 mb-4">
@@ -242,7 +242,7 @@
                     <h3 class="text-lg font-semibold text-tech-dark mb-4">添加自定义网站</h3>
                     <div class="flex gap-2 mb-3">
                         <input type="url" id="custom-url" placeholder="输入网站URL (如: https://example.com)" 
-                               class="flex-1 px-3 py-2 bg-tech-dark dark:bg-gray-700 border border-tech-gray dark:border-gray-600 rounded-lg text-tech-dark dark:text-dark-text placeholder-tech-gray dark:placeholder-gray-400 focus:outline-none focus:border-tech-cyan">
+                               class="flex-1 px-3 py-2 bg-tech-dark dark:bg-gray-700 border border-tech-gray dark:border-gray-600 rounded-lg text-white dark:text-white placeholder-tech-gray dark:placeholder-gray-400 focus:outline-none focus:border-tech-cyan">
                         <button id="add-website" class="px-4 py-2 bg-tech-cyan hover:bg-tech-cyan/80 text-white rounded-lg transition-colors duration-200">
                             添加
                         </button>
@@ -259,11 +259,8 @@
                     <div class="flex items-center space-x-4">
                         <label class="flex items-center space-x-2">
                             <span class="text-tech-gray dark:text-white">测试次数:</span>
-                            <select id="test-count" class="px-3 py-1 bg-tech-dark border border-tech-gray rounded text-white dark:text-white">
-                                <option value="1">1次</option>
-                                <option value="3" selected>3次</option>
-                                <option value="5">5次</option>
-                            </select>
+                            <input type="number" id="test-count" min="1" max="10" value="3" class="px-3 py-1 bg-tech-dark border border-tech-gray rounded text-white dark:text-white w-16 text-center">
+                            <span class="text-tech-gray dark:text-white text-sm">(1-10次)</span>
                         </label>
                         <label class="flex items-center space-x-2">
                             <span class="text-tech-gray dark:text-white">超时设置:</span>
@@ -564,7 +561,12 @@
                 return;
             }
 
-            const testCount = parseInt(document.getElementById('test-count').value);
+            let testCount = parseInt(document.getElementById('test-count').value);
+            // 验证测试次数范围
+            if (testCount < 1 || testCount > 10) {
+                alert('测试次数必须在1-10次之间');
+                return;
+            }
             const timeout = parseInt(document.getElementById('timeout').value);
             
             // 清空之前的结果
@@ -603,7 +605,50 @@
                 // 更新最终结果
                 updateTestResult(i, { success: successCount > 0 }, avgTime);
             }
+            
+            // 测试完成后按延迟从小到大排序显示
+            setTimeout(() => {
+                sortTestResults();
+            }, 500);
         });
+
+        // 按延迟排序测试结果
+        function sortTestResults() {
+            const resultsContainer = document.getElementById('test-results');
+            const testItems = Array.from(resultsContainer.children);
+            
+            // 提取每个测试项的响应时间
+            const itemsWithTime = testItems.map((item, index) => {
+                const timeElement = item.querySelector(`#time-${index}`);
+                const timeText = timeElement ? timeElement.textContent : '';
+                const timeValue = timeText.includes('ms') ? parseFloat(timeText) : Infinity;
+                return { element: item, time: timeValue, index: index };
+            });
+            
+            // 按时间排序（从小到大）
+            itemsWithTime.sort((a, b) => a.time - b.time);
+            
+            // 重新排列DOM元素
+            itemsWithTime.forEach((item, newIndex) => {
+                item.element.style.order = newIndex;
+                // 更新元素内的序号
+                const numberElement = item.element.querySelector('.w-8.h-8.bg-tech-blue.rounded-lg.flex.items-center.justify-center span');
+                if (numberElement) {
+                    numberElement.textContent = newIndex + 1;
+                }
+                
+                // 更新ID以保持一致性
+                const statusEl = item.element.querySelector(`[id^="status-"]`);
+                const timeEl = item.element.querySelector(`[id^="time-"]`);
+                const spinnerEl = item.element.querySelector(`[id^="spinner-"]`);
+                const speedBarEl = item.element.querySelector(`[id^="speed-bar-"]`);
+                
+                if (statusEl) statusEl.id = `status-${newIndex}`;
+                if (timeEl) timeEl.id = `time-${newIndex}`;
+                if (spinnerEl) spinnerEl.id = `spinner-${newIndex}`;
+                if (speedBarEl) speedBarEl.id = `speed-bar-${newIndex}`;
+            });
+        }
 
         // Theme Management
         function initTheme() {
