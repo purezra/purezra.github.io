@@ -1,1 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试连通性 - 科技感工具集合</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Silver-Gray Tech Color Palette - Light Theme
+                        'tech-silver': '#F9FAFB',
+                        'tech-gray': '#6B7280',
+                        'tech-dark': '#374151',
+                        'tech-darker': '#1F2937',
+                        'tech-blue': '#3B82F6',
+                        'tech-cyan': '#06B6D4',
+                        'tech-accent': '#8B5CF6',
+                        'tech-success': '#10B981',
+                        'tech-warning': '#F59E0B',
+                        // Dark theme colors
+                        'dark-bg': '#111827',
+                        'dark-card': '#1F2937',
+                        'dark-text': '#F9FAFB',
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out infinite 2s',
+                        'float-slow': 'float 8s ease-in-out infinite 4s',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .grain-gradient {
+            background: linear-gradient(135deg, 
+                rgba(76, 90, 126, 0.1) 0%, 
+                rgba(192, 197, 206, 0.05) 50%, 
+                rgba(139, 146, 166, 0.08) 100%);
+        }
+        .floating-element {
+            position: absolute;
+            background: linear-gradient(45deg, rgba(74, 144, 226, 0.1), rgba(80, 201, 206, 0.1));
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        .floating-element:nth-child(2) { animation-delay: 2s; }
+        .floating-element:nth-child(3) { animation-delay: 4s; }
+        .floating-element:nth-child(4) { animation-delay: 1s; }
+        .floating-element:nth-child(5) { animation-delay: 3s; }
+        .floating-element:nth-child(6) { animation-delay: 5s; }
+        .glass-effect {
+            @apply bg-white/80 dark:bg-dark-card backdrop-blur-lg border-b border-tech-silver/20 dark:border-gray-700/20;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.7));
+        }
+        .test-item {
+            transition: all 0.3s ease;
+        }
+        .test-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .speed-indicator {
+            position: relative;
+            overflow: hidden;
+        }
+        .speed-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #50C9CE, #4A90E2);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        .loading-spinner {
+            border: 2px solid rgba(6, 182, 212, 0.3);
+            border-top: 2px solid #06B6D4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 dark:bg-dark-bg min-h-screen relative overflow-x-hidden">
+    <!-- 浮动装饰元素 -->
+    <div class="floating-element w-32 h-32 top-20 left-10 opacity-20"></div>
+    <div class="floating-element w-24 h-24 top-40 right-20 opacity-15"></div>
+    <div class="floating-element w-20 h-20 bottom-40 left-20 opacity-25"></div>
+    <div class="floating-element w-28 h-28 bottom-20 right-10 opacity-10"></div>
+    <div class="floating-element w-16 h-16 top-60 left-1/2 opacity-20"></div>
+    <div class="floating-element w-36 h-36 bottom-60 right-1/3 opacity-15"></div>
 
+    <!-- 导航栏 -->
+    <nav class="glass-effect sticky top-0 z-50 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="enhanced_index.html" class="text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors duration-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <h1 class="text-xl font-semibold text-tech-dark dark:text-dark-text">测试连通性</h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="enhanced_index.html" class="text-tech-gray dark:text-gray-400 hover:text-tech-cyan transition-colors duration-200">工具</a>
+                    <a href="enhanced_ascii.html" class="text-tech-gray dark:text-gray-400 hover:text-tech-cyan transition-colors duration-200">ASCII转换</a>
+                    <a href="enhanced_time.html" class="text-tech-gray dark:text-gray-400 hover:text-tech-cyan transition-colors duration-200">时间计算</a>
+                    <a href="/bg/index.html" class="text-tech-gray dark:text-gray-400 hover:text-tech-blue dark:hover:text-tech-cyan transition-colors duration-200">联系</a>
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-tech-silver dark:bg-gray-600 hover:bg-tech-gray dark:hover:bg-gray-500 transition-colors duration-200">
+                        <svg id="theme-icon" class="w-5 h-5 text-tech-dark dark:text-dark-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="md:hidden flex items-center space-x-2">
+                    <!-- Mobile Theme Toggle -->
+                    <button id="mobile-theme-toggle" class="p-2 rounded-lg bg-tech-silver dark:bg-gray-600 hover:bg-tech-gray dark:hover:bg-gray-500 transition-colors duration-200">
+                        <svg id="mobile-theme-icon" class="w-5 h-5 text-tech-dark dark:text-dark-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </button>
+                    <button id="mobile-menu-btn" class="text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden glass-effect border-t border-white/10">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="enhanced_index.html" class="block px-3 py-2 text-tech-gray dark:text-gray-400 hover:text-tech-blue dark:hover:text-tech-cyan transition-colors duration-200">工具</a>
+                <a href="enhanced_ascii.html" class="block px-3 py-2 text-tech-gray dark:text-gray-400 hover:text-tech-blue dark:hover:text-tech-cyan transition-colors duration-200">ASCII转换</a>
+                <a href="enhanced_time.html" class="block px-3 py-2 text-tech-gray dark:text-gray-400 hover:text-tech-blue dark:hover:text-tech-cyan transition-colors duration-200">时间计算</a>
+                <a href="/bg/index.html" class="block px-3 py-2 text-tech-gray dark:text-gray-400 hover:text-tech-blue dark:hover:text-tech-cyan transition-colors duration-200">联系</a>
+                <div class="flex items-center space-x-2 px-3 py-2">
+                    <span class="text-tech-gray dark:text-gray-400">主题:</span>
+                    <button id="mobile-theme-toggle-menu" class="px-3 py-1 bg-tech-silver dark:bg-gray-600 hover:bg-tech-gray dark:hover:bg-gray-500 rounded text-sm transition-colors duration-200">
+                        切换主题
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-tech-dark mb-6 leading-tight">
+                网络连通性
+                <span class="block text-tech-cyan dark:text-tech-cyan mt-2">测试工具</span>
+            </h1>
+            <p class="text-xl text-tech-gray mb-8 max-w-2xl mx-auto leading-relaxed">
+                快速检测您对主流AI服务和大模型平台的访问速度，确保最佳的使用体验
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <div class="glass-effect rounded-lg px-6 py-3 flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-tech-cyan rounded-full animate-pulse"></div>
+                    <span class="text-tech-dark dark:text-dark-text">实时网络检测</span>
+                </div>
+                <div class="glass-effect rounded-lg px-6 py-3 flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-tech-blue rounded-full animate-pulse"></div>
+                    <span class="text-tech-dark dark:text-dark-text">多平台支持</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 主要内容区域 -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <!-- 控制面板 -->
+        <div class="glass-effect rounded-xl p-6 mb-8">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- 预设网站选择 -->
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-tech-dark dark:text-dark-text mb-4">选择要测试的网站</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="website-checkbox" value="https://chat.openai.com" checked>
+                            <span class="text-tech-gray dark:text-gray-400">ChatGPT</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="website-checkbox" value="https://gemini.google.com" checked>
+                            <span class="text-tech-gray dark:text-gray-400">Google Gemini</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="website-checkbox" value="https://claude.ai" checked>
+                            <span class="text-tech-gray dark:text-gray-400">Claude</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="website-checkbox" value="https://huggingface.co" checked>
+                            <span class="text-tech-gray dark:text-gray-400">Hugging Face</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="website-checkbox" value="https://github.com" checked>
+                            <span class="text-tech-gray dark:text-gray-400">GitHub</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" class="website-checkbox" value="https://ai.google.dev" checked>
+                            <span class="text-tech-gray dark:text-gray-400">Google AI</span>
+                        </label>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button id="select-all" class="px-4 py-2 bg-tech-blue hover:bg-tech-blue/80 text-white rounded-lg transition-colors duration-200 text-sm">
+                            全选
+                        </button>
+                        <button id="select-none" class="px-4 py-2 bg-tech-gray hover:bg-tech-gray/80 text-white rounded-lg transition-colors duration-200 text-sm">
+                            全不选
+                        </button>
+                        <button id="clear-results" class="px-4 py-2 bg-tech-cyan hover:bg-tech-cyan/80 text-white rounded-lg transition-colors duration-200 text-sm">
+                            清除结果
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 自定义网站添加 -->
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-tech-dark mb-4">添加自定义网站</h3>
+                    <div class="flex gap-2 mb-3">
+                        <input type="url" id="custom-url" placeholder="输入网站URL (如: https://example.com)" 
+                               class="flex-1 px-3 py-2 bg-tech-dark dark:bg-gray-700 border border-tech-gray dark:border-gray-600 rounded-lg text-tech-dark dark:text-dark-text placeholder-tech-gray dark:placeholder-gray-400 focus:outline-none focus:border-tech-cyan">
+                        <button id="add-website" class="px-4 py-2 bg-tech-cyan hover:bg-tech-cyan/80 text-white rounded-lg transition-colors duration-200">
+                            添加
+                        </button>
+                    </div>
+                    <div id="custom-websites" class="space-y-2 max-h-32 overflow-y-auto">
+                        <!-- 自定义网站列表将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 测试控制 -->
+            <div class="mt-6 pt-6 border-t border-white/10">
+                <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-2">
+                            <span class="text-tech-gray dark:text-gray-400">测试次数:</span>
+                            <select id="test-count" class="px-3 py-1 bg-tech-dark border border-tech-gray rounded text-tech-dark">
+                                <option value="1">1次</option>
+                                <option value="3" selected>3次</option>
+                                <option value="5">5次</option>
+                            </select>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <span class="text-tech-gray dark:text-gray-400">超时设置:</span>
+                            <select id="timeout" class="px-3 py-1 bg-tech-dark border border-tech-gray rounded text-tech-dark">
+                                <option value="5000">5秒</option>
+                                <option value="10000" selected>10秒</option>
+                                <option value="15000">15秒</option>
+                                <option value="30000">30秒</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button id="start-test" class="px-8 py-3 bg-gradient-to-r from-tech-cyan to-tech-blue hover:from-tech-cyan/80 hover:to-tech-blue/80 text-white rounded-lg font-semibold transition-all duration-200 transform hover:scale-105">
+                        开始测试
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 测试结果 -->
+        <div id="test-results" class="space-y-4">
+            <!-- 测试结果将在这里显示 -->
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="glass-effect border-t border-white/10 py-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                    <span class="text-tech-gray dark:text-gray-400">© 2025 科技感工具集合</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="https://github.com/purezra" target="_blank" class="text-tech-gray dark:text-gray-400 hover:text-tech-blue dark:hover:text-tech-cyan transition-colors duration-200">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="/bg/index.html" class="text-tech-gray dark:text-gray-400 hover:text-tech-blue dark:hover:text-tech-cyan transition-colors duration-200">联系</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单控制
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = mobileMenuBtn.querySelector('svg path');
+            if (mobileMenu.classList.contains('hidden')) {
+                icon.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+            } else {
+                icon.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+            }
+        });
+
+        // 点击外部关闭移动菜单
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+                const icon = mobileMenuBtn.querySelector('svg path');
+                icon.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+            }
+        });
+
+        // 网站管理
+        const customWebsites = new Map();
+        const customWebsitesContainer = document.getElementById('custom-websites');
+
+        // 添加自定义网站
+        document.getElementById('add-website').addEventListener('click', () => {
+            const urlInput = document.getElementById('custom-url');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('请输入有效的URL');
+                return;
+            }
+
+            // 验证URL格式
+            try {
+                new URL(url);
+            } catch {
+                alert('请输入有效的URL格式');
+                return;
+            }
+
+            // 检查是否已存在
+            if (customWebsites.has(url)) {
+                alert('该网站已经添加过了');
+                return;
+            }
+
+            // 添加到自定义列表
+            customWebsites.set(url, { name: url.replace(/^https?:\/\//, '').replace(/\/$/, ''), checked: false });
+            updateCustomWebsitesDisplay();
+            urlInput.value = '';
+        });
+
+        // 更新自定义网站显示
+        function updateCustomWebsitesDisplay() {
+            customWebsitesContainer.innerHTML = '';
+            
+            customWebsites.forEach((data, url) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between p-2 bg-tech-dark dark:bg-gray-700 rounded border border-tech-gray dark:border-gray-600';
+                div.innerHTML = `
+                    <label class="flex items-center space-x-2 cursor-pointer flex-1">
+                        <input type="checkbox" class="custom-website-checkbox" value="${url}" ${data.checked ? 'checked' : ''}>
+                        <span class="text-tech-gray dark:text-gray-400 text-sm">${data.name}</span>
+                    </label>
+                    <button class="remove-custom-website text-tech-gray hover:text-red-400 ml-2" data-url="${url}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                `;
+                customWebsitesContainer.appendChild(div);
+            });
+
+            // 绑定复选框事件
+            document.querySelectorAll('.custom-website-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const url = e.target.value;
+                    customWebsites.get(url).checked = e.target.checked;
+                });
+            });
+
+            // 绑定删除事件
+            document.querySelectorAll('.remove-custom-website').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const url = e.currentTarget.dataset.url;
+                    customWebsites.delete(url);
+                    updateCustomWebsitesDisplay();
+                });
+            });
+        }
+
+        // 全选/全不选
+        document.getElementById('select-all').addEventListener('click', () => {
+            document.querySelectorAll('.website-checkbox').forEach(cb => cb.checked = true);
+            customWebsites.forEach(data => data.checked = true);
+            updateCustomWebsitesDisplay();
+        });
+
+        document.getElementById('select-none').addEventListener('click', () => {
+            document.querySelectorAll('.website-checkbox').forEach(cb => cb.checked = false);
+            customWebsites.forEach(data => data.checked = false);
+            updateCustomWebsitesDisplay();
+        });
+
+        // 清除结果
+        document.getElementById('clear-results').addEventListener('click', () => {
+            document.getElementById('test-results').innerHTML = '';
+        });
+
+        // 网络连通性测试
+        async function testConnectivity(url, timeout) {
+            const startTime = performance.now();
+            
+            try {
+                // 使用fetch测试连通性
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                
+                const response = await fetch(url, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+                
+                return {
+                    success: true,
+                    time: duration,
+                    status: '可达'
+                };
+            } catch (error) {
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+                
+                return {
+                    success: false,
+                    time: duration,
+                    status: error.name === 'AbortError' ? '超时' : '不可达'
+                };
+            }
+        }
+
+        // 获取选中的网站列表
+        function getSelectedWebsites() {
+            const websites = [];
+            
+            // 预设网站
+            document.querySelectorAll('.website-checkbox:checked').forEach(cb => {
+                websites.push({
+                    url: cb.value,
+                    name: cb.nextElementSibling.textContent
+                });
+            });
+            
+            // 自定义网站
+            customWebsites.forEach((data, url) => {
+                if (data.checked) {
+                    websites.push({
+                        url: url,
+                        name: data.name
+                    });
+                }
+            });
+            
+            return websites;
+        }
+
+        // 创建测试结果项
+        function createTestResultItem(website, index) {
+            const div = document.createElement('div');
+            div.className = 'glass-effect rounded-xl p-6 test-item';
+            div.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-tech-blue rounded-lg flex items-center justify-center">
+                            <span class="text-white font-semibold text-sm">${index + 1}</span>
+                        </div>
+                        <div>
+                            <h4 class="text-tech-dark dark:text-dark-text font-semibold">${website.name}</h4>
+                            <p class="text-tech-gray text-sm">${website.url}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="loading-spinner w-6 h-6" id="spinner-${index}"></div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-tech-gray">状态:</span>
+                        <span class="text-tech-cyan" id="status-${index}">测试中...</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-tech-gray">响应时间:</span>
+                        <span class="text-tech-dark" id="time-${index}">--</span>
+                    </div>
+                    <div class="speed-indicator">
+                        <div class="speed-bar" id="speed-bar-${index}" style="width: 0%"></div>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        // 更新测试结果
+        function updateTestResult(index, result, avgTime) {
+            const statusEl = document.getElementById(`status-${index}`);
+            const timeEl = document.getElementById(`time-${index}`);
+            const spinnerEl = document.getElementById(`spinner-${index}`);
+            const speedBarEl = document.getElementById(`speed-bar-${index}`);
+            
+            spinnerEl.style.display = 'none';
+            
+            if (result.success) {
+                statusEl.textContent = result.status;
+                statusEl.className = 'text-tech-cyan';
+                timeEl.textContent = `${avgTime.toFixed(0)}ms`;
+                
+                // 根据响应时间设置速度条
+                const maxTime = 10000; // 10秒为满格
+                const speedPercentage = Math.max(5, 100 - (avgTime / maxTime * 100));
+                speedBarEl.style.width = `${speedPercentage}%`;
+                
+                // 根据速度设置颜色
+                if (avgTime < 1000) {
+                    speedBarEl.style.background = 'linear-gradient(90deg, #06B6D4, #3B82F6)'; // 快速 - 青色到蓝色
+                } else if (avgTime < 3000) {
+                    speedBarEl.style.background = 'linear-gradient(90deg, #3B82F6, #8B92A6)'; // 中等 - 蓝色到灰色
+                } else {
+                    speedBarEl.style.background = 'linear-gradient(90deg, #8B92A6, #C0C5CE)'; // 慢速 - 灰色到银色
+                }
+            } else {
+                statusEl.textContent = result.status;
+                statusEl.className = 'text-red-400';
+                timeEl.textContent = 'N/A';
+                speedBarEl.style.width = '0%';
+                speedBarEl.style.background = 'linear-gradient(90deg, #ef4444, #dc2626)'; // 错误 - 红色
+            }
+        }
+
+        // 开始测试
+        document.getElementById('start-test').addEventListener('click', async () => {
+            const websites = getSelectedWebsites();
+            
+            if (websites.length === 0) {
+                alert('请至少选择一个网站进行测试');
+                return;
+            }
+
+            const testCount = parseInt(document.getElementById('test-count').value);
+            const timeout = parseInt(document.getElementById('timeout').value);
+            
+            // 清空之前的结果
+            const resultsContainer = document.getElementById('test-results');
+            resultsContainer.innerHTML = '';
+            
+            // 创建测试项
+            const testItems = websites.map((website, index) => {
+                const item = createTestResultItem(website, index);
+                resultsContainer.appendChild(item);
+                return item;
+            });
+            
+            // 开始测试
+            for (let i = 0; i < websites.length; i++) {
+                const website = websites[i];
+                const times = [];
+                
+                // 进行多次测试
+                for (let j = 0; j < testCount; j++) {
+                    const result = await testConnectivity(website.url, timeout);
+                    times.push(result.time);
+                    
+                    // 更新当前测试状态
+                    const statusEl = document.getElementById(`status-${i}`);
+                    statusEl.textContent = `测试中... (${j + 1}/${testCount})`;
+                    
+                    // 短暂延迟避免过于频繁的请求
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                // 计算平均时间
+                const avgTime = times.reduce((sum, time) => sum + time, 0) / times.length;
+                const successCount = times.filter(time => time < timeout).length;
+                
+                // 更新最终结果
+                updateTestResult(i, { success: successCount > 0 }, avgTime);
+            }
+        });
+
+        // Theme Management
+        function initTheme() {
+            const savedTheme =  =  =  = localStorage....getItem('theme') ||  ||  ||  || 'light';;;;
+            const theme =  =  =  =  =  =  =  = savedTheme;;;;;;;;
+            
+            if (theme ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  === 'dark') {
+                document....documentElement....classList....add('dark');;;;
+                updateThemeIcons('dark');;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            } else {
+                document....documentElement....classList....remove('dark');;;;
+                updateThemeIcons('light');;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            }
+        }
+
+        function updateThemeIcons(theme) {
+            const icons =  =  =  =  =  =  =  = ['theme-icon', , , , , , , , 'mobile-theme-icon'];;;;;;;;
+            icons........forEach(iconId =>  =>  =>  =>  =>  =>  =>  => {
+                const icon =  =  =  =  =  =  =  = document........getElementById(iconId);;;;;;;;
+                if (icon) {
+                    if (theme ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  ===  === 'dark') {
+                        icon....innerHTML =  =  =  = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';;;;
+                    } else {
+                        icon....innerHTML =  =  =  = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';;;;
+                    }
+                }
+            });;;;;;;;
+        }
+
+        function toggleTheme() {
+            const isDark =  =  =  =  =  =  =  = document........documentElement........classList........contains('dark');;;;;;;;
+            const newTheme =  =  =  = isDark ?  ?  ?  ? 'light' :  :  :  : 'dark';;;;
+            
+            if (newTheme ===  === 'dark') {
+                document..documentElement..classList..add('dark');;
+                updateThemeIcons('dark');;
+            } else {
+                document..documentElement..classList..remove('dark');;
+                updateThemeIcons('light');;
+            }
+            
+            localStorage..setItem('theme', , newTheme);;
+        }
+
+        // 页面加载完成后的初始化
+        document..addEventListener('DOMContentLoaded', , () =>  => {
+            initTheme();;
+            console..log('网络连通性测试工具已加载');;
+            
+            // Theme toggle buttons
+            const themeToggle =  = document..getElementById('theme-toggle');;
+            const mobileThemeToggle =  = document..getElementById('mobile-theme-toggle');;
+            const mobileThemeToggleMenu =  = document..getElementById('mobile-theme-toggle-menu');;
+
+            if (themeToggle) {
+                themeToggle..addEventListener('click', , toggleTheme);;
+            }
+            if (mobileThemeToggle) {
+                mobileThemeToggle..addEventListener('click', , toggleTheme);;
+            }
+            if (mobileThemeToggleMenu) {
+                mobileThemeToggleMenu..addEventListener('click', , toggleTheme);;
+            }
+        });;
+    </script>
+</body>
+</html>
