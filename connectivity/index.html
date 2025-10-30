@@ -174,7 +174,7 @@
                 网络连通性
                 <span class="block text-tech-cyan dark:text-tech-cyan mt-2">测试工具</span>
             </h1>
-            <p class="text-xl text-tech-gray mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p class="text-xl text-tech-gray dark:text-white mb-8 max-w-2xl mx-auto leading-relaxed">
                 快速检测您对主流AI服务和大模型平台的访问速度，确保最佳的使用体验
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -258,16 +258,16 @@
                 <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <label class="flex items-center space-x-2">
-                            <span class="text-tech-gray dark:text-gray-400">测试次数:</span>
-                            <select id="test-count" class="px-3 py-1 bg-tech-dark border border-tech-gray rounded text-tech-dark">
+                            <span class="text-tech-gray dark:text-white">测试次数:</span>
+                            <select id="test-count" class="px-3 py-1 bg-tech-dark border border-tech-gray rounded text-white dark:text-white">
                                 <option value="1">1次</option>
                                 <option value="3" selected>3次</option>
                                 <option value="5">5次</option>
                             </select>
                         </label>
                         <label class="flex items-center space-x-2">
-                            <span class="text-tech-gray dark:text-gray-400">超时设置:</span>
-                            <select id="timeout" class="px-3 py-1 bg-tech-dark border border-tech-gray rounded text-tech-dark">
+                            <span class="text-tech-gray dark:text-white">超时设置:</span>
+                            <select id="timeout" class="px-3 py-1 bg-tech-dark border border-tech-gray rounded text-white dark:text-white">
                                 <option value="5000">5秒</option>
                                 <option value="10000" selected>10秒</option>
                                 <option value="15000">15秒</option>
@@ -377,7 +377,7 @@
                         <input type="checkbox" class="custom-website-checkbox" value="${url}" ${data.checked ? 'checked' : ''}>
                         <span class="text-tech-gray dark:text-gray-400 text-sm">${data.name}</span>
                     </label>
-                    <button class="remove-custom-website text-tech-gray hover:text-red-400 ml-2" data-url="${url}">
+                    <button class="remove-custom-website text-tech-gray dark:text-white hover:text-red-400 ml-2" data-url="${url}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -495,7 +495,7 @@
                         </div>
                         <div>
                             <h4 class="text-tech-dark dark:text-dark-text font-semibold">${website.name}</h4>
-                            <p class="text-tech-gray text-sm">${website.url}</p>
+                            <p class="text-tech-gray dark:text-white text-sm">${website.url}</p>
                         </div>
                     </div>
                     <div class="text-right">
@@ -504,12 +504,12 @@
                 </div>
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
-                        <span class="text-tech-gray">状态:</span>
+                        <span class="text-tech-gray dark:text-white">状态:</span>
                         <span class="text-tech-cyan" id="status-${index}">测试中...</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-tech-gray">响应时间:</span>
-                        <span class="text-tech-dark" id="time-${index}">--</span>
+                        <span class="text-tech-gray dark:text-white">响应时间:</span>
+                        <span class="text-tech-dark dark:text-white" id="time-${index}">--</span>
                     </div>
                     <div class="speed-indicator">
                         <div class="speed-bar" id="speed-bar-${index}" style="width: 0%"></div>
