@@ -1,68 +1,453 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>联系我们 - icepig.top</title>
+    <title>Geek Profile Card</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        'tech-silver': '#F9FAFB',
-                        'tech-gray': '#6B7280',
-                        'tech-dark': '#374151',
-                        'tech-blue': '#3B82F6',
-                        'tech-cyan': '#06B6D4',
-                        'dark-bg': '#111827',
-                        'dark-card': '#1F2937',
-                        'dark-text': '#F9FAFB',
+                        'neon-blue': '#00f3ff',
+                        'neon-purple': '#b200ff',
+                        'neon-pink': '#ff00c8',
+                        'dark-bg': '#0d0221',
+                        'card-bg': '#16073a',
                     },
                     fontFamily: {
-                        'inter': ['Inter', 'system-ui', 'sans-serif'],
+                        'code': ['Consolas', 'Monaco', 'monospace'],
                     },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'scan': 'scan 4s linear infinite',
+                        'typing': 'typing 3.5s steps(40, end)',
+                        'blink': 'blink .7s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotateY(-5deg) skewX(2deg)' },
+                            '50%': { transform: 'translateY(-10px) rotateY(-3deg) skewX(1deg)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(0, 243, 255, 0.5), 0 0 10px rgba(0, 243, 255, 0.3)' },
+                            '100%': { boxShadow: '0 0 10px rgba(0, 243, 255, 0.8), 0 0 20px rgba(0, 243, 255, 0.6), 0 0 30px rgba(0, 243, 255, 0.4)' },
+                        },
+                        scan: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' },
+                        },
+                        typing: {
+                            'from': { width: '0' },
+                            'to': { width: '100%' }
+                        },
+                        blink: {
+                            'from, to': { opacity: '1' },
+                            '50%': { opacity: '0' }
+                        }
+                    }
                 }
             }
         }
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow-neon-blue {
+                text-shadow: 0 0 5px rgba(0, 243, 255, 0.7), 0 0 10px rgba(0, 243, 255, 0.5);
+            }
+            .text-shadow-neon-purple {
+                text-shadow: 0 0 5px rgba(178, 0, 255, 0.7), 0 0 10px rgba(178, 0, 255, 0.5);
+            }
+            .text-shadow-neon-pink {
+                text-shadow: 0 0 5px rgba(255, 0, 200, 0.7), 0 0 10px rgba(255, 0, 200, 0.5);
+            }
+            .border-glow-blue {
+                box-shadow: 0 0 5px rgba(0, 243, 255, 0.7), 0 0 10px rgba(0, 243, 255, 0.5), inset 0 0 5px rgba(0, 243, 255, 0.7);
+            }
+            .border-glow-purple {
+                box-shadow: 0 0 5px rgba(178, 0, 255, 0.7), 0 0 10px rgba(178, 0, 255, 0.5), inset 0 0 5px rgba(178, 0, 255, 0.7);
+            }
+            .border-glow-pink {
+                box-shadow: 0 0 5px rgba(255, 0, 200, 0.7), 0 0 10px rgba(255, 0, 200, 0.5), inset 0 0 5px rgba(255, 0, 200, 0.7);
+            }
+            .grid-bg {
+                background-size: 40px 40px;
+                background-image: 
+                    linear-gradient(to right, rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+            }
+            .scanline {
+                position: absolute;
+                width: 100%;
+                height: 5px;
+                background: rgba(0, 243, 255, 0.1);
+                z-index: 1;
+            }
+            .card-transform {
+                transform: rotateY(-5deg) skewX(2deg);
+                transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+            .card-collapsed {
+                transform: rotateY(-5deg) skewX(2deg) scaleY(0.2);
+                transform-origin: center top;
+            }
+            .light-bar {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(to top, rgba(0, 243, 255, 0.3), transparent 70%);
+                transition: height 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                pointer-events: none;
+                z-index: 2;
+            }
+            .light-bar-collapsed {
+                height: 0;
+            }
+            .handle {
+                opacity: 0;
+                transform: scale(0.5);
+                transition: all 0.5s ease;
+                pointer-events: none;
+            }
+            .handle-visible {
+                opacity: 1;
+                transform: scale(1);
+                pointer-events: all;
+            }
+            .particle {
+                position: absolute;
+                pointer-events: none;
+                background-color: rgba(0, 243, 255, 0.8);
+                border-radius: 50%;
+                z-index: 100;
+            }
+            .code-block {
+                position: absolute;
+                font-family: 'Consolas', 'Monaco', monospace;
+                white-space: nowrap;
+                overflow: hidden;
+                border-right: 2px solid;
+                animation: typing 3.5s steps(40, end), blink .75s step-end infinite;
+            }
+        }
+    </style>
 </head>
-<body class="font-inter bg-gray-50 dark:bg-dark-bg min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-white/80 dark:bg-dark-card backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-3">
-                    <a href="../index.html" class="text-tech-dark dark:text-dark-text hover:text-tech-blue transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                    </a>
-                    <h1 class="text-xl font-semibold text-tech-dark dark:text-dark-text">联系我们</h1>
+<body class="bg-dark-bg min-h-screen overflow-x-hidden font-code relative">
+    <!-- 网格背景 -->
+    <div class="grid-bg fixed inset-0 z-0"></div>
+    
+    <!-- 扫描线效果 -->
+    <div class="scanline animate-scan"></div>
+    
+    <!-- 粒子效果容器 -->
+    <div id="particles-container" class="fixed inset-0 pointer-events-none z-10"></div>
+    
+    <!-- 随机代码片段 -->
+    <div id="code-snippets" class="fixed inset-0 pointer-events-none z-0"></div>
+    
+    <!-- 主内容区 -->
+    <div class="container mx-auto px-4 py-16 relative z-20 flex justify-center items-center min-h-screen">
+        <!-- 个人名牌卡片 -->
+        <div id="profile-card" class="card-transform bg-card-bg rounded-lg w-full max-w-md overflow-hidden border border-neon-blue relative animate-float cursor-pointer">
+            <!-- 霓虹光线效果 -->
+            <div id="light-bar" class="light-bar"></div>
+            
+            <!-- 卡片内容 -->
+            <div id="card-content" class="p-6 transition-all duration-500">
+                <!-- 头像区域 -->
+                <div class="flex justify-center mb-6">
+                    <div class="relative">
+                        <div class="w-24 h-24 rounded-full bg-neon-blue/20 border-2 border-neon-blue border-glow-blue flex items-center justify-center text-5xl">
+                            <span class="text-white">👨‍💻</span>
+                        </div>
+                        <!-- 在线状态指示器 -->
+                        <div class="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-green-500 border-2 border-card-bg"></div>
+                    </div>
+                </div>
+                
+                <!-- 个人信息 -->
+                <div class="text-center mb-6">
+                    <h1 class="text-white text-2xl font-bold mb-1 text-shadow-neon-blue">Zarion</h1>
+                    <p class="text-neon-blue text-shadow-neon-blue">@Zarion_dev</p>
+                </div>
+                
+                <!-- 职位和信息 -->
+                <div class="space-y-3 mb-8">
+                    <div class="flex items-center text-gray-300">
+                        <i class="fa fa-briefcase text-neon-blue mr-3"></i>
+                        <span>Senior Full Stack Developer</span>
+                    </div>
+                    <div class="flex items-center text-gray-300">
+                        <i class="fa fa-map-marker text-neon-purple mr-3"></i>
+                        <span>Yanshan University，HeBei QinHuangDao</span>
+                    </div>
+                    <div class="flex items-center text-gray-300">
+                        <i class="fa fa-calendar text-neon-pink mr-3"></i>
+                        <span>Joined: 2025 • 1+ years</span>
+                    </div>
+                </div>
+                
+                <!-- 技能标签 -->
+                <div class="mb-8">
+                    <h2 class="text-white text-lg mb-3 flex items-center">
+                        <i class="fa fa-code text-neon-blue mr-2"></i>Skills
+                    </h2>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-neon-blue/10 text-neon-blue rounded-full text-sm border border-neon-blue/30 hover:bg-neon-blue/20 transition-colors">JavaScript</span>
+                        <span class="px-3 py-1 bg-neon-blue/10 text-neon-blue rounded-full text-sm border border-neon-blue/30 hover:bg-neon-blue/20 transition-colors">TypeScript</span>
+                        <span class="px-3 py-1 bg-neon-blue/10 text-neon-blue rounded-full text-sm border border-neon-blue/30 hover:bg-neon-blue/20 transition-colors">React</span>
+                        
+                        <span class="px-3 py-1 bg-neon-purple/10 text-neon-purple rounded-full text-sm border border-neon-purple/30 hover:bg-neon-purple/20 transition-colors">Node.js</span>
+                        <span class="px-3 py-1 bg-neon-purple/10 text-neon-purple rounded-full text-sm border border-neon-purple/30 hover:bg-neon-purple/20 transition-colors">GraphQL</span>
+                        <span class="px-3 py-1 bg-neon-purple/10 text-neon-purple rounded-full text-sm border border-neon-purple/30 hover:bg-neon-purple/20 transition-colors">MongoDB</span>
+                        
+                        <span class="px-3 py-1 bg-neon-pink/10 text-neon-pink rounded-full text-sm border border-neon-pink/30 hover:bg-neon-pink/20 transition-colors">WebGL</span>
+                        <span class="px-3 py-1 bg-neon-pink/10 text-neon-pink rounded-full text-sm border border-neon-pink/30 hover:bg-neon-pink/20 transition-colors">Rust</span>
+                        <span class="px-3 py-1 bg-neon-pink/10 text-neon-pink rounded-full text-sm border border-neon-pink/30 hover:bg-neon-pink/20 transition-colors">Blockchain</span>
+                    </div>
+                </div>
+                
+                <!-- 社交连接 -->
+                <div class="mb-6">
+                    <h2 class="text-white text-lg mb-3 flex items-center">
+                        <i class="fa fa-link text-neon-purple mr-2"></i>Connect
+                    </h2>
+                    <div class="flex justify-center gap-4">
+                        <a href="https://github.com/purezra" class="w-10 h-10 rounded-full bg-neon-blue/10 flex items-center justify-center text-neon-blue border border-neon-blue/30 hover:bg-neon-blue/20 transition-all hover:scale-110">
+                            <i class="fa fa-github"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-neon-blue/10 flex items-center justify-center text-neon-blue border border-neon-blue/30 hover:bg-neon-blue/20 transition-all hover:scale-110">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-neon-blue/10 flex items-center justify-center text-neon-blue border border-neon-blue/30 hover:bg-neon-blue/20 transition-all hover:scale-110">
+                            <i class="fa fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-neon-blue/10 flex items-center justify-center text-neon-blue border border-neon-blue/30 hover:bg-neon-blue/20 transition-all hover:scale-110">
+                            <i class="fa fa-codepen"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 底部状态 -->
+                <div class="pt-4 border-t border-gray-700/50 text-sm text-gray-400 flex justify-between items-center">
+                    <div class="flex items-center">
+                        <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                        <span>Online</span>
+                    </div>
+                    <div>Last active: 2m ago</div>
                 </div>
             </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div class="text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-tech-dark dark:text-dark-text mb-6">
-                联系我们
-            </h1>
-            <p class="text-xl text-tech-gray dark:text-white mb-8 max-w-2xl mx-auto">
-                欢迎与我们取得联系，我们将尽快回复您。
-            </p>
-            <div class="bg-white/80 dark:bg-dark-card backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-2xl p-8">
-                <p class="text-tech-gray dark:text-gray-400">
-                    联系页面内容待完善...
-                </p>
+            
+            <!-- 展开手柄 -->
+            <div id="expand-handle" class="handle absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-neon-blue/20 border-2 border-neon-blue flex items-center justify-center animate-pulse-slow border-glow-blue cursor-pointer">
+                <i class="fa fa-chevron-down text-neon-blue"></i>
             </div>
         </div>
-    </main>
+    </div>
+
+    <script>
+        // 卡片折叠/展开功能
+        const profileCard = document.getElementById('profile-card');
+        const cardContent = document.getElementById('card-content');
+        const lightBar = document.getElementById('light-bar');
+        const expandHandle = document.getElementById('expand-handle');
+        let isCollapsed = false;
+        
+        profileCard.addEventListener('click', (e) => {
+            // 如果点击的是手柄，只展开
+            if (e.target === expandHandle || expandHandle.contains(e.target)) {
+                if (isCollapsed) {
+                    toggleCard();
+                }
+                return;
+            }
+            
+            // 否则切换状态
+            toggleCard();
+        });
+        
+        function toggleCard() {
+            isCollapsed = !isCollapsed;
+            
+            if (isCollapsed) {
+                profileCard.classList.add('card-collapsed');
+                lightBar.classList.add('light-bar-collapsed');
+                cardContent.style.opacity = '0';
+                setTimeout(() => {
+                    expandHandle.classList.add('handle-visible');
+                }, 300);
+                
+                // 添加粒子爆炸效果
+                createParticles(event.clientX, event.clientY, 30);
+            } else {
+                expandHandle.classList.remove('handle-visible');
+                profileCard.classList.remove('card-collapsed');
+                lightBar.classList.remove('light-bar-collapsed');
+                setTimeout(() => {
+                    cardContent.style.opacity = '1';
+                }, 300);
+            }
+        }
+        
+        // 粒子跟随效果
+        const particlesContainer = document.getElementById('particles-container');
+        let particles = [];
+        
+        document.addEventListener('mousemove', (e) => {
+            // 创建新粒子
+            createParticles(e.clientX, e.clientY, 3, true);
+            
+            // 更新现有粒子
+            updateParticles();
+        });
+        
+        function createParticles(x, y, count, isFollower = false) {
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // 随机大小
+                const size = Math.random() * 4 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // 位置
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                // 随机颜色
+                const colors = [
+                    'rgba(0, 243, 255, 0.8)',
+                    'rgba(178, 0, 255, 0.8)',
+                    'rgba(255, 0, 200, 0.8)'
+                ];
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                particlesContainer.appendChild(particle);
+                
+                // 粒子数据
+                const particleData = {
+                    element: particle,
+                    x: x,
+                    y: y,
+                    size: size,
+                    speedX: (Math.random() - 0.5) * (isFollower ? 2 : 6),
+                    speedY: (Math.random() - 0.5) * (isFollower ? 2 : 6),
+                    life: isFollower ? 30 : 60,
+                    maxLife: isFollower ? 30 : 60
+                };
+                
+                particles.push(particleData);
+            }
+        }
+        
+        function updateParticles() {
+            // 过滤掉已死亡的粒子
+            particles = particles.filter(particle => {
+                // 更新位置
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+                
+                // 更新生命周期
+                particle.life--;
+                
+                // 更新透明度
+                const alpha = particle.life / particle.maxLife;
+                particle.element.style.opacity = alpha;
+                
+                // 更新位置
+                particle.element.style.left = `${particle.x}px`;
+                particle.element.style.top = `${particle.y}px`;
+                
+                // 如果生命周期结束，移除元素
+                if (particle.life <= 0) {
+                    particle.element.remove();
+                    return false;
+                }
+                
+                return true;
+            });
+        }
+        
+        // 定期清理粒子
+        setInterval(updateParticles, 30);
+        
+        // 生成随机代码片段
+        const codeSnippetsContainer = document.getElementById('code-snippets');
+        const codeSamples = [
+            'function hackTheMatrix() { return reality.isAnIllusion(); }',
+            'const neon = { blue: 0x00f3ff, purple: 0xb200ff, pink: 0xff00c8 };',
+            'while (true) { createSomethingAwesome(); }',
+            'console.log("Geek mode activated");',
+            'class NeuralNetwork { constructor() { this.consciousness = true; } }',
+            'const quantum = new Promise((resolve) => resolve(superposition));',
+            'for (let i = 0; i < infinity; i++) { innovate(); }',
+            'import { future, tech, code } from \'cyberpunk\';',
+            'const binary = [0,1,0,1,1,0,0,1].map(b => b ? "🧠" : "💻");',
+            'async function exploreUniverse() { await findAliens(); }'
+        ];
+        
+        const codeColors = [
+            'text-neon-blue',
+            'text-neon-purple',
+            'text-neon-pink'
+        ];
+        
+        function createCodeSnippets() {
+            // 清除现有代码片段
+            codeSnippetsContainer.innerHTML = '';
+            
+            // 创建新的代码片段
+            const count = window.innerWidth < 768 ? 3 : 6;
+            for (let i = 0; i < count; i++) {
+                const codeBlock = document.createElement('div');
+                codeBlock.classList.add('code-block', 'text-opacity-40');
+                
+                // 随机选择代码和颜色
+                const code = codeSamples[Math.floor(Math.random() * codeSamples.length)];
+                const colorClass = codeColors[Math.floor(Math.random() * codeColors.length)];
+                codeBlock.classList.add(colorClass);
+                
+                // 设置内容
+                codeBlock.textContent = code;
+                
+                // 随机位置和大小
+                const left = Math.random() * 80 + 10; // 10% to 90%
+                const top = Math.random() * 80 + 10;  // 10% to 90%
+                const fontSize = Math.random() * 10 + 12; // 12px to 22px
+                
+                codeBlock.style.left = `${left}%`;
+                codeBlock.style.top = `${top}%`;
+                codeBlock.style.fontSize = `${fontSize}px`;
+                
+                // 随机延迟动画
+                const delay = Math.random() * 5;
+                codeBlock.style.animationDelay = `${delay}s`;
+                
+                codeSnippetsContainer.appendChild(codeBlock);
+            }
+        }
+        
+        // 初始创建代码片段
+        createCodeSnippets();
+        
+        // 窗口大小改变时重新生成代码片段
+        window.addEventListener('resize', createCodeSnippets);
+        
+        // 定期更新代码片段
+        setInterval(createCodeSnippets, 15000);
+    </script>
 </body>
 </html>
