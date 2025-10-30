@@ -280,7 +280,7 @@
         </div>
 
         <!-- 测试结果 -->
-        <div id="test-results" class="space-y-4">
+        <div id="test-results" class="space-y-4 flex flex-col">
             <!-- 测试结果将在这里显示 -->
         </div>
     </main>
@@ -618,11 +618,12 @@
             const testItems = Array.from(resultsContainer.children);
             
             // 提取每个测试项的响应时间
-            const itemsWithTime = testItems.map((item, index) => {
-                const timeElement = item.querySelector(`#time-${index}`);
+            const itemsWithTime = testItems.map((item, originalIndex) => {
+                // 查找时间元素 - 通过查找包含"ms"的元素
+                const timeElement = item.querySelector('[id^="time-"]');
                 const timeText = timeElement ? timeElement.textContent : '';
                 const timeValue = timeText.includes('ms') ? parseFloat(timeText) : Infinity;
-                return { element: item, time: timeValue, index: index };
+                return { element: item, time: timeValue, originalIndex };
             });
             
             // 按时间排序（从小到大）
@@ -630,7 +631,6 @@
             
             // 重新排列DOM元素
             itemsWithTime.forEach((item, newIndex) => {
-                item.element.style.order = newIndex;
                 // 更新元素内的序号
                 const numberElement = item.element.querySelector('.w-8.h-8.bg-tech-blue.rounded-lg.flex.items-center.justify-center span');
                 if (numberElement) {
@@ -647,6 +647,9 @@
                 if (timeEl) timeEl.id = `time-${newIndex}`;
                 if (spinnerEl) spinnerEl.id = `spinner-${newIndex}`;
                 if (speedBarEl) speedBarEl.id = `speed-bar-${newIndex}`;
+                
+                // 重新排列元素顺序
+                item.element.style.order = newIndex;
             });
         }
 
