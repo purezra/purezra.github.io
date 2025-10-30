@@ -18,12 +18,13 @@
   <!-- Configure Tailwind with Silver-Gray Tech Theme -->
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            // Silver-Gray Tech Color Palette
-            'tech-silver': '#E5E7EB',
-            'tech-gray': '#9CA3AF',
+            // Silver-Gray Tech Color Palette - Light Theme
+            'tech-silver': '#F9FAFB',
+            'tech-gray': '#6B7280',
             'tech-dark': '#374151',
             'tech-darker': '#1F2937',
             'tech-blue': '#3B82F6',
@@ -31,6 +32,10 @@
             'tech-accent': '#8B5CF6',
             'tech-success': '#10B981',
             'tech-warning': '#F59E0B',
+            // Dark theme colors
+            'dark-bg': '#111827',
+            'dark-card': '#1F2937',
+            'dark-text': '#F9FAFB',
           },
           fontFamily: {
             'inter': ['Inter', 'system-ui', 'sans-serif'],
@@ -153,7 +158,7 @@
       
       /* Card hover effects */
       .tech-card {
-        @apply bg-white/80 backdrop-blur-sm border border-tech-silver/30 rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2;
+        @apply bg-white/80 dark:bg-dark-card backdrop-blur-sm border border-tech-silver/30 dark:border-tech-darker/50 rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2;
         background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.8));
       }
       
@@ -162,10 +167,23 @@
         border-color: rgba(59, 130, 246, 0.3);
       }
       
+      .dark .tech-card {
+        background: linear-gradient(145deg, rgba(31, 41, 55, 0.9), rgba(17, 24, 39, 0.8));
+      }
+      
+      .dark .tech-card:hover {
+        background: linear-gradient(145deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.9));
+        border-color: rgba(59, 130, 246, 0.5);
+      }
+      
       /* Navigation glass effect */
       .glass-nav {
-        @apply bg-white/80 backdrop-blur-lg border-b border-tech-silver/20;
+        @apply bg-white/80 dark:bg-dark-card/80 backdrop-blur-lg border-b border-tech-silver/20 dark:border-tech-darker/20;
         background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.7));
+      }
+      
+      .dark .glass-nav {
+        background: linear-gradient(145deg, rgba(31, 41, 55, 0.9), rgba(17, 24, 39, 0.7));
       }
       
       /* Hero text effects */
@@ -204,7 +222,7 @@
   </style>
 </head>
 
-<body class="font-inter bg-gray-50 min-h-screen">
+<body class="font-inter bg-gray-50 dark:bg-dark-bg min-h-screen">
   <!-- Navigation -->
   <nav class="glass-nav sticky top-0 z-50">
     <div class="container mx-auto px-6 py-4">
@@ -214,30 +232,50 @@
             <i class="fa fa-cogs text-white text-lg"></i>
           </div>
           <div>
-            <h1 class="text-xl font-bold text-tech-darker">Tool Collection</h1>
-            <p class="text-sm text-tech-gray">icepig.top</p>
+            <h1 class="text-xl font-bold text-tech-darker dark:text-tech-silver">Tool Collection</h1>
+            <p class="text-sm text-tech-gray dark:text-tech-gray">icepig.top</p>
           </div>
         </div>
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-6">
-          <a href="#tools" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">Tools</a>
-          <a href="#about" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">About</a>
-          <a href="/bg/index.html" class="text-tech-dark hover:text-tech-blue transition-colors font-medium">Contact</a>
+          <a href="#tools" class="text-tech-dark dark:text-tech-silver hover:text-tech-blue transition-colors font-medium">Tools</a>
+          <a href="#about" class="text-tech-dark dark:text-tech-silver hover:text-tech-blue transition-colors font-medium">About</a>
+          <a href="/bg/index.html" class="text-tech-dark dark:text-tech-silver hover:text-tech-blue transition-colors font-medium">Contact</a>
+          <!-- Theme Toggle -->
+          <button id="theme-toggle" class="p-2 rounded-lg bg-tech-silver dark:bg-tech-darker hover:bg-tech-gray dark:hover:bg-tech-dark transition-colors duration-200">
+            <svg id="theme-icon" class="w-5 h-5 text-tech-dark dark:text-tech-silver" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </button>
         </div>
         
         <!-- Mobile Menu Button -->
-        <button id="mobile-menu-btn" class="md:hidden text-tech-dark p-2 rounded-lg hover:bg-gray-100 transition-colors">
-          <i class="fa fa-bars text-xl"></i>
-        </button>
+        <div class="md:hidden flex items-center space-x-2">
+          <!-- Mobile Theme Toggle -->
+          <button id="mobile-theme-toggle" class="p-2 rounded-lg bg-tech-silver dark:bg-tech-darker hover:bg-tech-gray dark:hover:bg-tech-dark transition-colors duration-200">
+            <svg id="mobile-theme-icon" class="w-5 h-5 text-tech-dark dark:text-tech-silver" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </button>
+          <button id="mobile-menu-btn" class="text-tech-dark dark:text-tech-silver p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-tech-darker transition-colors">
+            <i class="fa fa-bars text-xl"></i>
+          </button>
+        </div>
       </div>
     </div>
     
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="md:hidden bg-white border-t border-tech-silver/30 shadow-lg hidden">
+    <div id="mobile-menu" class="md:hidden bg-white dark:bg-dark-card border-t border-tech-silver/30 dark:border-tech-darker/30 shadow-lg hidden">
       <div class="px-6 py-4 space-y-4">
-        <a href="#tools" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">Tools</a>
-        <a href="#about" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">About</a>
-        <a href="/bg/index.html" class="block text-tech-dark hover:text-tech-blue transition-colors font-medium py-2">Contact</a>
+        <a href="#tools" class="block text-tech-dark dark:text-tech-silver hover:text-tech-blue transition-colors font-medium py-2">Tools</a>
+        <a href="#about" class="block text-tech-dark dark:text-tech-silver hover:text-tech-blue transition-colors font-medium py-2">About</a>
+        <a href="/bg/index.html" class="block text-tech-dark dark:text-tech-silver hover:text-tech-blue transition-colors font-medium py-2">Contact</a>
+        <div class="flex items-center space-x-2 py-2">
+          <span class="text-tech-gray dark:text-tech-gray">主题:</span>
+          <button id="mobile-theme-toggle-menu" class="px-3 py-1 bg-tech-silver dark:bg-tech-darker hover:bg-tech-gray dark:hover:bg-tech-dark rounded text-sm transition-colors duration-200">
+            切换主题
+          </button>
+        </div>
       </div>
     </div>
   </nav>
@@ -255,19 +293,19 @@
     <div class="container mx-auto px-6 text-center relative z-10">
       <div class="max-w-4xl mx-auto">
         <!-- Hero Badge -->
-        <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-tech-silver/30 mb-8">
+        <div class="inline-flex items-center px-4 py-2 bg-white/20 dark:bg-dark-card/20 backdrop-blur-sm rounded-full border border-tech-silver/30 dark:border-tech-darker/30 mb-8">
           <i class="fa fa-rocket text-tech-blue mr-2"></i>
-          <span class="text-tech-dark font-medium">Premium Tool Collection</span>
+          <span class="text-tech-dark dark:text-tech-silver font-medium">Premium Tool Collection</span>
         </div>
         
         <!-- Main Hero Text -->
         <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
           <span class="hero-text">Essential Tools</span><br>
-          <span class="text-tech-darker">for Modern Work</span>
+          <span class="text-tech-darker dark:text-tech-silver">for Modern Work</span>
         </h1>
         
         <!-- Hero Subtitle -->
-        <p class="text-xl md:text-2xl text-tech-gray mb-8 max-w-3xl mx-auto leading-relaxed">
+        <p class="text-xl md:text-2xl text-tech-gray dark:text-tech-gray mb-8 max-w-3xl mx-auto leading-relaxed">
           Discover our carefully curated collection of powerful, easy-to-use tools designed to boost your productivity and streamline your workflow.
         </p>
         
@@ -277,7 +315,7 @@
             <span>Explore Tools</span>
             <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
           </a>
-          <a href="#about" class="px-8 py-4 bg-white/80 backdrop-blur-sm text-tech-dark border border-tech-silver/30 rounded-xl font-semibold transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-1">
+          <a href="#about" class="px-8 py-4 bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm text-tech-dark dark:text-tech-silver border border-tech-silver/30 dark:border-tech-darker/30 rounded-xl font-semibold transition-all duration-300 hover:bg-white/90 dark:hover:bg-dark-card/90 hover:shadow-lg hover:-translate-y-1">
             Learn More
           </a>
         </div>
@@ -286,15 +324,15 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
           <div class="text-center">
             <div class="text-3xl font-bold text-tech-blue mb-2">10+</div>
-            <div class="text-tech-gray">Useful Tools</div>
+            <div class="text-tech-gray dark:text-tech-silver">Useful Tools</div>
           </div>
           <div class="text-center">
             <div class="text-3xl font-bold text-tech-cyan mb-2">24/7</div>
-            <div class="text-tech-gray">Available</div>
+            <div class="text-tech-gray dark:text-tech-silver">Available</div>
           </div>
           <div class="text-center">
             <div class="text-3xl font-bold text-tech-accent mb-2">Free</div>
-            <div class="text-tech-gray">To Use</div>
+            <div class="text-tech-gray dark:text-tech-silver">To Use</div>
           </div>
         </div>
       </div>
@@ -302,25 +340,25 @@
     
     <!-- Scroll indicator -->
     <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-      <div class="w-6 h-10 border-2 border-tech-gray rounded-full flex justify-center">
-        <div class="w-1 h-3 bg-tech-gray rounded-full mt-2 animate-pulse"></div>
+      <div class="w-6 h-10 border-2 border-tech-gray dark:border-tech-silver rounded-full flex justify-center">
+        <div class="w-1 h-3 bg-tech-gray dark:bg-tech-silver rounded-full mt-2 animate-pulse"></div>
       </div>
     </div>
   </section>
 
   <!-- Tools Section -->
-  <section id="tools" class="py-20 bg-white relative">
+  <section id="tools" class="py-20 bg-white dark:bg-dark-bg relative">
     <div class="container mx-auto px-6">
       <!-- Section Header -->
       <div class="text-center mb-16">
-        <div class="inline-flex items-center px-4 py-2 bg-tech-blue/10 rounded-full mb-4">
+        <div class="inline-flex items-center px-4 py-2 bg-tech-blue/10 dark:bg-tech-blue/20 rounded-full mb-4">
           <i class="fa fa-tools text-tech-blue mr-2"></i>
           <span class="text-tech-blue font-medium">Our Tools</span>
         </div>
-        <h2 class="text-4xl md:text-5xl font-bold text-tech-darker mb-6">
+        <h2 class="text-4xl md:text-5xl font-bold text-tech-darker dark:text-tech-silver mb-6">
           Powerful Solutions
         </h2>
-        <p class="text-xl text-tech-gray max-w-3xl mx-auto">
+        <p class="text-xl text-tech-gray dark:text-tech-gray max-w-3xl mx-auto">
           Each tool is designed with precision and attention to detail, ensuring you get the best experience possible.
         </p>
       </div>
@@ -334,8 +372,8 @@
               <div class="w-16 h-16 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <i class="fa fa-code text-white text-2xl"></i>
               </div>
-              <h3 class="text-xl font-bold text-tech-darker mb-4">ASCII Generator</h3>
-              <p class="text-tech-gray mb-6 leading-relaxed">
+              <h3 class="text-xl font-bold text-tech-darker dark:text-tech-silver mb-4">ASCII Generator</h3>
+              <p class="text-tech-gray dark:text-tech-gray mb-6 leading-relaxed">
                 Create stunning ASCII art and text transformations. Perfect for developers, designers, and creative professionals.
               </p>
               <div class="flex items-center justify-center text-tech-blue font-semibold group-hover:text-tech-cyan transition-colors">
@@ -353,12 +391,31 @@
               <div class="w-16 h-16 bg-gradient-to-r from-tech-cyan to-tech-success rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <i class="fa fa-clock-o text-white text-2xl"></i>
               </div>
-              <h3 class="text-xl font-bold text-tech-darker mb-4">Time Calculator</h3>
-              <p class="text-tech-gray mb-6 leading-relaxed">
+              <h3 class="text-xl font-bold text-tech-darker dark:text-tech-silver mb-4">Time Calculator</h3>
+              <p class="text-tech-gray dark:text-tech-gray mb-6 leading-relaxed">
                 Precise time interval calculations with lunar calendar support. Plan your projects with confidence.
               </p>
               <div class="flex items-center justify-center text-tech-cyan font-semibold group-hover:text-tech-success transition-colors">
                 <span>Calculate</span>
+                <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+        
+        <!-- Network Connectivity Test -->
+        <div class="group">
+          <a href="enhanced_connectivity.html" class="block">
+            <div class="tech-card h-full p-8 text-center group-hover:scale-105 transition-all duration-300">
+              <div class="w-16 h-16 bg-gradient-to-r from-tech-cyan to-tech-blue rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <i class="fa fa-globe text-white text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold text-tech-darker dark:text-tech-silver mb-4">Network Connectivity Test</h3>
+              <p class="text-tech-gray dark:text-tech-gray mb-6 leading-relaxed">
+                Test your network speed and connectivity to major AI platforms and services. Ensure optimal access to ChatGPT, Claude, Gemini, and more.
+              </p>
+              <div class="flex items-center justify-center text-tech-cyan font-semibold group-hover:text-tech-blue transition-colors">
+                <span>Test Now</span>
                 <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
               </div>
             </div>
@@ -372,8 +429,8 @@
               <div class="w-16 h-16 bg-gradient-to-r from-tech-accent to-tech-warning rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <i class="fa fa-qrcode text-white text-2xl"></i>
               </div>
-              <h3 class="text-xl font-bold text-tech-darker mb-4">QR Code Generator</h3>
-              <p class="text-tech-gray mb-6 leading-relaxed">
+              <h3 class="text-xl font-bold text-tech-darker dark:text-tech-silver mb-4">QR Code Generator</h3>
+              <p class="text-tech-gray dark:text-tech-gray mb-6 leading-relaxed">
                 Generate custom QR codes for URLs, text, and more. High-quality output with customizable designs.
               </p>
               <div class="flex items-center justify-center text-tech-accent font-semibold group-hover:text-tech-warning transition-colors">
@@ -391,8 +448,8 @@
               <div class="w-16 h-16 bg-gradient-to-r from-tech-warning to-tech-success rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <i class="fa fa-palette text-white text-2xl"></i>
               </div>
-              <h3 class="text-xl font-bold text-tech-darker mb-4">Color Palette</h3>
-              <p class="text-tech-gray mb-6 leading-relaxed">
+              <h3 class="text-xl font-bold text-tech-darker dark:text-tech-silver mb-4">Color Palette</h3>
+              <p class="text-tech-gray dark:text-tech-gray mb-6 leading-relaxed">
                 Create beautiful color schemes and gradients. Perfect for designers and developers.
               </p>
               <div class="flex items-center justify-center text-tech-warning font-semibold group-hover:text-tech-success transition-colors">
@@ -410,8 +467,8 @@
               <div class="w-16 h-16 bg-gradient-to-r from-tech-success to-tech-blue rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <i class="fa fa-font text-white text-2xl"></i>
               </div>
-              <h3 class="text-xl font-bold text-tech-darker mb-4">Text Converter</h3>
-              <p class="text-tech-gray mb-6 leading-relaxed">
+              <h3 class="text-xl font-bold text-tech-darker dark:text-tech-silver mb-4">Text Converter</h3>
+              <p class="text-tech-gray dark:text-tech-gray mb-6 leading-relaxed">
                 Transform text between different formats, cases, and encodings. A must-have for content creators.
               </p>
               <div class="flex items-center justify-center text-tech-success font-semibold group-hover:text-tech-blue transition-colors">
@@ -429,8 +486,8 @@
               <div class="w-16 h-16 bg-gradient-to-r from-tech-blue to-tech-accent rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <i class="fa fa-code text-white text-2xl"></i>
               </div>
-              <h3 class="text-xl font-bold text-tech-darker mb-4">JSON Formatter</h3>
-              <p class="text-tech-gray mb-6 leading-relaxed">
+              <h3 class="text-xl font-bold text-tech-darker dark:text-tech-silver mb-4">JSON Formatter</h3>
+              <p class="text-tech-gray dark:text-tech-gray mb-6 leading-relaxed">
                 Format, validate, and beautify JSON data. Essential tool for developers and API testing.
               </p>
               <div class="flex items-center justify-center text-tech-blue font-semibold group-hover:text-tech-accent transition-colors">
@@ -445,20 +502,20 @@
   </section>
 
   <!-- About Section -->
-  <section id="about" class="py-20 grain-gradient">
+  <section id="about" class="py-20 grain-gradient dark:bg-dark-bg">
     <div class="container mx-auto px-6">
       <div class="max-w-4xl mx-auto text-center">
-        <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-tech-silver/30 mb-8">
+        <div class="inline-flex items-center px-4 py-2 bg-white/20 dark:bg-dark-card/20 backdrop-blur-sm rounded-full border border-tech-silver/30 dark:border-tech-darker/30 mb-8">
           <i class="fa fa-info-circle text-tech-blue mr-2"></i>
-          <span class="text-tech-dark font-medium">About Us</span>
+          <span class="text-tech-dark dark:text-tech-silver font-medium">About Us</span>
         </div>
         
-        <h2 class="text-4xl md:text-5xl font-bold text-tech-darker mb-8">
+        <h2 class="text-4xl md:text-5xl font-bold text-tech-darker dark:text-tech-silver mb-8">
           Built for <span class="hero-text">Developers</span><br>
           Designed for <span class="text-tech-cyan">Everyone</span>
         </h2>
         
-        <p class="text-xl text-tech-gray mb-12 leading-relaxed">
+        <p class="text-xl text-tech-gray dark:text-tech-gray mb-12 leading-relaxed">
           We believe that the right tools can make all the difference in your daily workflow. That's why we've created a collection of carefully crafted utilities that are both powerful and easy to use.
         </p>
         
@@ -467,22 +524,22 @@
             <div class="w-12 h-12 bg-tech-blue/20 rounded-xl flex items-center justify-center mx-auto mb-4">
               <i class="fa fa-bolt text-tech-blue text-xl"></i>
             </div>
-            <h3 class="text-lg font-semibold text-tech-darker mb-2">Lightning Fast</h3>
-            <p class="text-tech-gray">Optimized for speed and performance</p>
+            <h3 class="text-lg font-semibold text-tech-darker dark:text-tech-silver mb-2">Lightning Fast</h3>
+            <p class="text-tech-gray dark:text-tech-gray">Optimized for speed and performance</p>
           </div>
           <div class="text-center">
             <div class="w-12 h-12 bg-tech-cyan/20 rounded-xl flex items-center justify-center mx-auto mb-4">
               <i class="fa fa-shield text-tech-cyan text-xl"></i>
             </div>
-            <h3 class="text-lg font-semibold text-tech-darker mb-2">Secure & Private</h3>
-            <p class="text-tech-gray">Your data stays on your device</p>
+            <h3 class="text-lg font-semibold text-tech-darker dark:text-tech-silver mb-2">Secure & Private</h3>
+            <p class="text-tech-gray dark:text-tech-gray">Your data stays on your device</p>
           </div>
           <div class="text-center">
             <div class="w-12 h-12 bg-tech-accent/20 rounded-xl flex items-center justify-center mx-auto mb-4">
               <i class="fa fa-mobile text-tech-accent text-xl"></i>
             </div>
-            <h3 class="text-lg font-semibold text-tech-darker mb-2">Mobile Friendly</h3>
-            <p class="text-tech-gray">Works perfectly on all devices</p>
+            <h3 class="text-lg font-semibold text-tech-darker dark:text-tech-silver mb-2">Mobile Friendly</h3>
+            <p class="text-tech-gray dark:text-tech-gray">Works perfectly on all devices</p>
           </div>
         </div>
       </div>
@@ -555,6 +612,67 @@
 
   <!-- Smooth Scroll Script -->
   <script>
+    // Theme Management
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      const theme = savedTheme;
+      
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        updateThemeIcons('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        updateThemeIcons('light');
+      }
+    }
+
+    function updateThemeIcons(theme) {
+      const icons = ['theme-icon', 'mobile-theme-icon'];
+      icons.forEach(iconId => {
+        const icon = document.getElementById(iconId);
+        if (icon) {
+          if (theme === 'dark') {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
+          } else {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+          }
+        }
+      });
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const newTheme = isDark ? 'light' : 'dark';
+      
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        updateThemeIcons('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        updateThemeIcons('light');
+      }
+      
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // Initialize theme on page load
+    document.addEventListener('DOMContentLoaded', initTheme);
+
+    // Theme toggle buttons
+    const themeToggle = document.getElementById('theme-toggle');
+    const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+    const mobileThemeToggleMenu = document.getElementById('mobile-theme-toggle-menu');
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', toggleTheme);
+    }
+    if (mobileThemeToggle) {
+      mobileThemeToggle.addEventListener('click', toggleTheme);
+    }
+    if (mobileThemeToggleMenu) {
+      mobileThemeToggleMenu.addEventListener('click', toggleTheme);
+    }
+
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
