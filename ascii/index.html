@@ -2,67 +2,31 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>彩色ASCII艺术转换器 - icepig.top</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Retro ASCII Studio - Ultimate Edition v2.2</title>
   
-  <!-- Inter Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Courier+Prime&family=Dancing+Script&family=Fira+Code:wght@400;700&family=Inconsolata:wght@500&family=Orbitron:wght@500&family=Oswald:wght@700&family=Press+Start+2P&family=Roboto+Mono&family=Rubik+Glitch&family=Share+Tech+Mono&family=Source+Code+Pro&family=Space+Mono&family=Ubuntu+Mono&family=VT323&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome -->
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  
-  <!-- Configure Tailwind with Silver-Gray Tech Theme -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
+          screens: { 'xs': '480px' },
           colors: {
-            // Silver-Gray Tech Color Palette - Light Theme
-            'tech-silver': '#F9FAFB',
-            'tech-gray': '#6B7280',
-            'tech-dark': '#374151',
-            'tech-darker': '#1F2937',
-            'tech-blue': '#3B82F6',
-            'tech-cyan': '#06B6D4',
-            'tech-accent': '#8B5CF6',
-            'tech-success': '#10B981',
-            'tech-warning': '#F59E0B',
-            // Dark theme colors
-            'dark-bg': '#111827',
-            'dark-card': '#1F2937',
-            'dark-text': '#F9FAFB',
+            'mac-beige': '#FFF4E0',
+            'mac-black': '#1A1A1A',
+            'retro-blue': '#0000AA',
           },
-          fontFamily: {
-            'inter': ['Inter', 'system-ui', 'sans-serif'],
-            'mono': ['Fira Code', 'Monaco', 'Consolas', 'monospace'],
-          },
-          animation: {
-            'grain': 'grain 8s steps(10) infinite',
-            'float': 'float 6s ease-in-out infinite',
-            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-          },
-          keyframes: {
-            grain: {
-              '0%, 100%': { transform: 'translate(0, 0)' },
-              '10%': { transform: 'translate(-5%, -10%)' },
-              '20%': { transform: 'translate(-15%, 5%)' },
-              '30%': { transform: 'translate(7%, -25%)' },
-              '40%': { transform: 'translate(-5%, 25%)' },
-              '50%': { transform: 'translate(-15%, 10%)' },
-              '60%': { transform: 'translate(15%, 0%)' },
-              '70%': { transform: 'translate(0%, 15%)' },
-              '80%': { transform: 'translate(3%, 35%)' },
-              '90%': { transform: 'translate(-10%, 10%)' },
-            },
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-10px)' },
-            }
+          boxShadow: {
+            'retro': '4px 4px 0px 0px #000000',
+            'retro-sm': '2px 2px 0px 0px #000000',
           }
         }
       }
@@ -71,1125 +35,601 @@
   
   <style type="text/tailwindcss">
     @layer utilities {
-      /* Grain Gradient Background Effect */
-      .grain-gradient {
-        background: linear-gradient(135deg, 
-          rgba(229, 231, 235, 0.1) 0%, 
-          rgba(156, 163, 175, 0.1) 25%, 
-          rgba(55, 65, 81, 0.1) 50%, 
-          rgba(31, 41, 55, 0.1) 75%, 
-          rgba(17, 24, 39, 0.1) 100%);
-        position: relative;
-        overflow: hidden;
+      .dither-bg {
+        background-color: #FFF4E0;
+        background-image: radial-gradient(#D6C0A6 1px, transparent 1px);
+        background-size: 4px 4px;
       }
       
-      .grain-gradient::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
-        animation: grain 8s steps(10) infinite;
-        pointer-events: none;
-      }
+      /* --- 字体样式 --- */
+      .font-vt323 { font-family: 'VT323', monospace; }
+      .font-pixel { font-family: 'Press Start 2P', cursive; letter-spacing: -1px; }
+      .font-fira { font-family: 'Fira Code', monospace; }
+      .font-courier { font-family: 'Courier Prime', monospace; }
+      .font-source { font-family: 'Source Code Pro', monospace; }
+      .font-ubuntu { font-family: 'Ubuntu Mono', monospace; }
+      .font-space { font-family: 'Space Mono', monospace; }
+      .font-inconsolata { font-family: 'Inconsolata', monospace; }
+      .font-orbitron { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+      .font-glitch { font-family: 'Rubik Glitch', cursive; }
       
-      .grain-gradient::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 1px,
-          rgba(255, 255, 255, 0.03) 1px,
-          rgba(255, 255, 255, 0.03) 2px
-        );
-        animation: grain 8s steps(10) infinite;
-        pointer-events: none;
+      @media (min-width: 768px) {
+        ::-webkit-scrollbar { width: 14px; height: 14px; background: #fff; border: 2px solid black; }
+        ::-webkit-scrollbar-thumb { background: #999; border: 2px solid black; }
+        ::-webkit-scrollbar-corner { background: black; }
       }
-      
-      /* Card hover effects */
-      .tech-card {
-        @apply bg-white/80 dark:bg-dark-card backdrop-blur-sm border border-tech-silver/30 dark:border-gray-700/50 rounded-2xl shadow-lg transition-all duration-500 hover:shadow-2xl hover:-translate-y-2;
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.8));
-      }
-      
-      .tech-card:hover {
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(249, 250, 251, 0.9));
-        border-color: rgba(59, 130, 246, 0.3);
-      }
-      
-      /* Navigation glass effect */
-      .glass-nav {
-        @apply bg-white/80 dark:bg-dark-card backdrop-blur-lg border-b border-tech-silver/20 dark:border-gray-700/20;
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(249, 250, 251, 0.7));
-      }
-      
-      /* Hero text effects */
-      .hero-text {
-        @apply bg-gradient-to-r from-tech-dark via-tech-blue to-tech-cyan bg-clip-text text-transparent;
-        background-size: 200% 200%;
-        animation: gradient-shift 3s ease infinite;
-      }
-      
-      @keyframes gradient-shift {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-      }
-      
-      /* Floating elements */
-      .float-element {
-        animation: float 6s ease-in-out infinite;
-      }
-      
-      .float-element:nth-child(2) {
-        animation-delay: -2s;
-      }
-      
-      .float-element:nth-child(3) {
-        animation-delay: -4s;
-      }
-      
-      /* Tech grid pattern */
-      .tech-grid {
-        background-image: 
-          linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
-        background-size: 50px 50px;
-      }
-      
-      /* ASCII container styles */
+
+      .mac-window { @apply bg-white border-2 border-mac-black shadow-retro relative flex flex-col; }
+      .title-bar { @apply bg-mac-black text-white px-2 py-1 flex justify-between items-center font-vt323 text-lg border-b-2 border-mac-black h-8 select-none; background: repeating-linear-gradient(90deg, #000 0px, #000 2px, #555 2px, #555 4px); }
+      .title-text { @apply bg-mac-beige text-mac-black px-4 border-x-2 border-mac-black; }
+      .retro-btn { @apply bg-white border-2 border-mac-black shadow-retro-sm px-3 py-2 font-vt323 text-sm hover:bg-black hover:text-white active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-75 text-center select-none; }
+      .retro-input { @apply bg-white border-2 border-mac-black p-2 font-vt323 text-lg focus:outline-none focus:bg-blue-50 w-full rounded-none; }
+
       .ascii-container {
-        font-family: 'Fira Code', monospace;
-        line-height: 0.7;
-        letter-spacing: -0.2em;
-        overflow: auto;
-        max-height: 50vh;
-        @apply bg-black text-white p-4 rounded-lg;
+        line-height: 0.75; letter-spacing: -0.05em; white-space: pre; overflow: auto;
+        background-color: #111; color: #eee; display: flex; justify-content: center; align-items: flex-start;
+        -webkit-overflow-scrolling: touch;
       }
-      
-      .ascii-container pre {
-        font-family: inherit;
-        line-height: inherit;
-        letter-spacing: inherit;
-      }
-      
-      /* Mobile responsive adjustments */
-      @media (max-width: 768px) {
-        .hero-text {
-          font-size: clamp(2rem, 8vw, 3.5rem);
-        }
-        
-        .tech-card {
-          margin: 0 0.5rem;
-        }
-      }
+      #ascii-art { text-align: left; display: inline-block; min-width: min-content; }
+
+      /* === Label Styles === */
+      .label-base { display: block; width: 100%; text-align: center; margin: 1rem 0; white-space: normal; line-height: 1.2; }
+      .style-ansi-shadow { font-family: 'Rubik Glitch', cursive; color: #fff; text-shadow: 2px 2px 0 #555, 4px 4px 0 #333; background: #222; padding: 10px; }
+      .style-3d-ascii { font-family: 'Press Start 2P', cursive; color: #FFD700; text-shadow: 1px 1px 0 #c6a700, 2px 2px 0 #8e7800, 3px 3px 0 #584a00; text-transform: uppercase; }
+      .style-emboss { font-family: 'Verdana', sans-serif; font-weight: bold; color: #808080; background-color: #111; text-shadow: -1px -1px 0 #fff, 1px 1px 0 #000; letter-spacing: 2px; text-transform: uppercase; }
+      .style-emboss2 { font-family: 'Courier Prime', monospace; font-weight: bold; color: #333; text-shadow: 1px 1px 0 rgba(255,255,255,0.3), -1px -1px 0 rgba(0,0,0,0.8); background: #222; border: 1px solid #444; padding: 5px; }
+      .style-rebel { font-family: 'Oswald', sans-serif; color: #ff0055; text-transform: uppercase; transform: skew(-10deg); text-shadow: 2px 2px 0 #000, -1px -1px 0 #fff; border-bottom: 3px solid #ff0055; display: inline-block !important; }
+      .style-larry-3d { font-family: 'Bungee Shade', cursive; color: #00ffcc; text-shadow: 1px 1px 0 #ff00cc, 2px 2px 0 #ff00cc, 3px 3px 0 #ff00cc; letter-spacing: 2px; }
+      .style-standard { color: #FFFF00; background: #333; font-family: 'VT323', monospace; border-top: 2px dashed #555; border-bottom: 2px dashed #555; }
     }
   </style>
 </head>
 
-<body class="font-inter bg-gray-50 dark:bg-dark-bg min-h-screen">
-  <!-- Navigation -->
-  <nav class="glass-nav sticky top-0 z-50">
-    <div class="container mx-auto px-6 py-4">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-xl flex items-center justify-center">
-            <i class="fa fa-code text-white text-lg"></i>
-          </div>
-          <div>
-            <h1 class="text-xl font-bold text-tech-darker dark:text-dark-text">ASCII艺术转换器</h1>
-            <p class="text-sm text-tech-gray dark:text-gray-400">icepig.top</p>
-          </div>
-        </div>
-        <div class="hidden md:flex items-center space-x-6">
-          <a href="/" class="text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium">首页</a>
-          <a href="/time" class="text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium">时间计算器</a>
-          <a href="/bg/index.html" class="text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium">联系</a>
-          <!-- Theme Toggle -->
-          <button id="theme-toggle" class="p-2 rounded-lg bg-tech-silver hover:bg-tech-gray transition-colors duration-200">
-            <svg id="theme-icon" class="w-5 h-5 text-tech-dark dark:text-dark-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-          </button>
-        </div>
-        <div class="md:hidden flex items-center space-x-2">
-          <!-- Mobile Theme Toggle -->
-          <button id="mobile-theme-toggle" class="p-2 rounded-lg bg-tech-silver hover:bg-tech-gray transition-colors duration-200">
-            <svg id="mobile-theme-icon" class="w-5 h-5 text-tech-dark dark:text-dark-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-          </button>
-          <button id="mobile-menu-btn" class="text-tech-dark dark:text-dark-text p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-            <i class="fa fa-bars text-xl"></i>
-          </button>
-        </div>
+<body class="font-vt323 dither-bg min-h-screen flex flex-col text-mac-black overflow-x-hidden">
+
+  <nav class="bg-white border-b-2 border-mac-black sticky top-0 z-50 h-10 md:h-12 flex items-center px-4 justify-between shadow-sm shrink-0">
+    <div class="flex items-center space-x-4">
+      <div class="text-sm md:text-lg flex items-center font-bold">
+        <i class="fa fa-apple mr-2 text-lg"></i> System 7.6
       </div>
     </div>
-    
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="md:hidden bg-white border-t border-tech-silver/30 shadow-lg hidden">
-      <div class="px-6 py-4 space-y-4">
-        <a href="/" class="block text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium py-2">首页</a>
-        <a href="/time" class="block text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium py-2">时间计算器</a>
-        <a href="/bg/index.html" class="block text-tech-dark dark:text-dark-text hover:text-tech-blue dark:hover:text-tech-cyan transition-colors font-medium py-2">联系</a>
-        <div class="flex items-center space-x-2 py-2">
-          <span class="text-tech-gray dark:text-gray-400">主题:</span>
-          <button id="mobile-theme-toggle-menu" class="px-3 py-1 bg-tech-silver hover:bg-tech-gray rounded text-sm transition-colors duration-200">
-            切换主题
-          </button>
-        </div>
-      </div>
-    </div>
+    <div class="text-lg md:text-xl" id="clock">00:00 AM</div>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="relative min-h-screen grain-gradient tech-grid flex items-center justify-center overflow-hidden">
-    <!-- Floating geometric elements -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="float-element absolute top-20 left-10 w-20 h-20 bg-tech-blue/20 rounded-full blur-xl"></div>
-      <div class="float-element absolute top-40 right-20 w-32 h-32 bg-tech-cyan/20 rounded-full blur-xl"></div>
-      <div class="float-element absolute bottom-20 left-1/4 w-24 h-24 bg-tech-accent/20 rounded-full blur-xl"></div>
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-tech-blue/10 to-tech-cyan/10 rounded-full blur-3xl"></div>
-    </div>
-    
-    <div class="container mx-auto px-6 text-center relative z-10">
-      <div class="max-w-4xl mx-auto">
-        <!-- Hero Badge -->
-        <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-tech-silver/30 mb-8">
-          <i class="fa fa-magic text-tech-blue mr-2"></i>
-          <span class="text-tech-dark dark:text-dark-text font-medium">专业ASCII艺术工具</span>
-        </div>
-        
-        <!-- Main Hero Text -->
-        <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-          <span class="hero-text">彩色ASCII</span><br>
-          <span class="text-tech-darker dark:text-dark-text">艺术转换器</span>
-        </h1>
-        
-        <!-- Hero Subtitle -->
-        <p class="text-xl md:text-2xl text-tech-gray dark:text-white mb-8 max-w-3xl mx-auto leading-relaxed">
-          将图片转换为精彩的ASCII艺术，自定义参数以获得最佳效果。支持多种字符集和高级转换选项。
-        </p>
-        
-        <!-- Hero CTA Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-          <a href="#converter" class="group px-8 py-4 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex items-center">
-            <span>开始转换</span>
-            <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-          </a>
-          <a href="#features" class="px-8 py-4 bg-white/80 backdrop-blur-sm text-tech-dark border border-tech-silver/30 rounded-xl font-semibold transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-1">
-            功能介绍
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Converter Section -->
-  <section id="converter" class="py-20 bg-white relative">
-    <div class="container mx-auto px-6">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- 左侧控制面板 -->
-        <div class="lg:col-span-4">
-          <div class="tech-card p-8 h-full">
-            <h2 class="text-2xl font-bold text-tech-darker dark:text-dark-text mb-6 flex items-center">
-              <i class="fa fa-sliders mr-3 text-tech-blue"></i> 参数控制
-            </h2>
-            
-            <!-- 图片上传区域 -->
-            <div class="mb-6">
-              <label class="block text-sm font-medium text-tech-dark dark:text-dark-text mb-2">
-                上传图片
-              </label>
-              <div id="drop-area" class="border-2 border-dashed border-tech-silver rounded-lg p-6 text-center cursor-pointer hover:border-tech-blue transition-all duration-300">
-                <i class="fa fa-cloud-upload text-3xl text-tech-gray mb-2"></i>
-                <p class="text-sm text-tech-gray dark:text-white">拖放图片到这里，或</p>
-                <label class="mt-2 inline-block px-4 py-2 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-md hover:shadow-lg transition-all duration-300 cursor-pointer">
-                  选择文件
-                  <input type="file" id="image-input" accept="image/*" class="hidden">
-                </label>
-                <p id="file-name" class="mt-2 text-xs text-tech-gray dark:text-white"></p>
-              </div>
-            </div>
-            
-            <!-- 示例图片 -->
-            <div class="mb-6">
-              <label class="block text-sm font-medium text-tech-dark dark:text-dark-text mb-2">
-                或选择示例图片
-              </label>
-              <div class="grid grid-cols-3 gap-2">
-                <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-tech-blue transition-all duration-300">
-                  <img src="https://p26-doubao-search-sign.byteimg.com/labis/5680ccbdaff0ccfc759ade0c3490c9dd~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=cqOqPznnvHx7qar1Z%2FBWrTPnrWo%3D" alt="示例1" class="w-full h-16 object-cover">
-                </div>
-                <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-tech-blue transition-all duration-300">
-                  <img src="https://p26-doubao-search-sign.byteimg.com/labis/826307ac4872f4a9e3b176676b66bb4d~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=OaZ5lNCtmSIgGie4z8sdLAhuia0%3D" alt="示例2" class="w-full h-16 object-cover">
-                </div>
-                <div class="sample-image cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-tech-blue transition-all duration-300">
-                  <img src="https://p26-doubao-search-sign.byteimg.com/labis/e36d32ed9155614c3b42a79bd75d7f02~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1776947975&x-signature=Y9u43oIBbu7R4vkrK61gz3lEtTI%3D" alt="示例3" class="w-full h-16 object-cover">
-                </div>
-              </div>
-            </div>
-            
-            <!-- 转换参数 -->
-            <div class="space-y-4">
-              <!-- 宽度 -->
-              <div>
-                <label for="width-slider" class="block text-sm font-medium text-tech-dark dark:text-dark-text mb-1">
-                  宽度: <span id="width-value">100</span> 字符
-                </label>
-                <input type="range" id="width-slider" min="20" max="300" value="100" class="w-full h-2 bg-tech-silver rounded-lg appearance-none cursor-pointer">
-              </div>
-              
-              <!-- 对比度 -->
-              <div>
-                <label for="contrast-slider" class="block text-sm font-medium text-tech-dark dark:text-dark-text mb-1">
-                  对比度: <span id="contrast-value">1.2</span>
-                </label>
-                <input type="range" id="contrast-slider" min="0.5" max="2" step="0.1" value="1.2" class="w-full h-2 bg-tech-silver rounded-lg appearance-none cursor-pointer">
-              </div>
-              
-              <!-- 亮度 -->
-              <div>
-                <label for="brightness-slider" class="block text-sm font-medium text-tech-dark mb-1">
-                  亮度: <span id="brightness-value">1.0</span>
-                </label>
-                <input type="range" id="brightness-slider" min="0.5" max="2" step="0.1" value="1.0" class="w-full h-2 bg-tech-silver rounded-lg appearance-none cursor-pointer">
-              </div>
-              
-              <!-- 字符集选择 -->
-              <div>
-                <label for="char-set" class="block text-sm font-medium text-tech-dark mb-1">
-                  字符集
-                </label>
-                <select id="char-set" class="w-full bg-white border border-tech-silver text-tech-dark rounded-md focus:ring-tech-blue focus:border-tech-blue">
-                  <option value="detailed">详细 (70+字符)</option>
-                  <option value="simple">简单 (10字符)</option>
-                  <option value="blocks">方块 (Unicode方块)</option>
-                  <option value="custom" selected>自定义</option>
-                </select>
-              </div>
-              
-              <!-- 自定义字符集输入 -->
-              <div id="custom-chars-container" class="mt-4">
-                <label for="custom-chars" class="block text-sm font-medium text-tech-dark mb-1">
-                  自定义字符集
-                  <span class="text-xs text-tech-gray dark:text-white ml-2">(从暗到亮排序，至少2个字符)</span>
-                </label>
-                <input type="text" id="custom-chars" placeholder="例如: .:-=+*ABCDEFGHIJKLMNOPQRSTUVWXYZ#%@" 
-                       class="w-full bg-white border border-tech-silver text-tech-dark rounded-md focus:ring-tech-blue focus:border-tech-blue">
-                <div class="flex justify-between mt-1">
-                  <button id="reset-chars-btn" class="text-xs text-tech-blue hover:text-tech-cyan transition-colors">
-                    <i class="fa fa-refresh mr-1"></i> 恢复默认
-                  </button>
-                  <button id="preview-chars-btn" class="text-xs text-tech-blue hover:text-tech-cyan transition-colors">
-                    <i class="fa fa-eye mr-1"></i> 预览效果
-                  </button>
-                </div>
-              </div>
-              
-              <!-- 抖动选项 -->
-              <div class="flex items-center justify-between">
-                <label for="dithering-toggle" class="text-sm font-medium text-tech-dark">
-                  启用抖动
-                </label>
-                <div class="relative inline-block w-12 align-middle select-none">
-                  <input type="checkbox" id="dithering-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                  <label for="dithering-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-tech-silver cursor-pointer"></label>
-                </div>
-              </div>
-              
-              <!-- 转换按钮 -->
-              <button id="convert-btn" class="w-full mt-4 px-4 py-3 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center font-semibold">
-                <i class="fa fa-magic mr-2"></i> 转换为ASCII艺术
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 右侧结果显示区 -->
-        <div class="lg:col-span-8">
-          <div class="tech-card p-8 h-full flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-2xl font-bold text-tech-darker flex items-center">
-                <i class="fa fa-code mr-3 text-tech-blue"></i> ASCII艺术结果
-              </h2>
-              <div class="flex space-x-2">
-                <button id="copy-btn" class="px-4 py-2 bg-tech-silver text-tech-dark rounded-lg hover:bg-tech-gray transition-all duration-300 flex items-center text-sm font-medium">
-                  <i class="fa fa-copy mr-1"></i> 复制
-                </button>
-                <button id="download-btn" class="px-4 py-2 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center text-sm font-medium">
-                  <i class="fa fa-download mr-1"></i> 下载
-                </button>
-              </div>
-            </div>
-            
-            <!-- 结果显示区 -->
-            <div id="result-container" class="flex-grow flex flex-col items-center justify-center">
-              <!-- 初始状态 -->
-              <div id="initial-state" class="text-center py-12">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-tech-silver/50 mb-4">
-                  <i class="fa fa-image text-2xl text-tech-gray"></i>
-                </div>
-                <h3 class="text-lg font-medium text-tech-dark mb-1">准备开始</h3>
-                <p class="text-tech-gray dark:text-white">上传图片并点击转换按钮生成ASCII艺术</p>
-              </div>
-              
-              <!-- 加载状态 -->
-              <div id="loading-state" class="text-center py-12 hidden">
-                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-tech-blue mb-4"></div>
-                <h3 class="text-lg font-medium text-tech-dark mb-1">正在转换</h3>
-                <p class="text-tech-gray dark:text-white">正在将图片转换为ASCII艺术...</p>
-              </div>
-              
-              <!-- 错误状态 -->
-              <div id="error-state" class="text-center py-12 hidden">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
-                  <i class="fa fa-exclamation-triangle text-2xl text-red-500"></i>
-                </div>
-                <h3 class="text-lg font-medium text-tech-dark mb-1">转换失败</h3>
-                <p id="error-message" class="text-tech-gray dark:text-white">无法处理图片，请尝试使用其他图片</p>
-              </div>
-              
-              <!-- 结果状态 -->
-              <div id="ascii-result" class="w-full h-full hidden">
-                <div class="ascii-container w-full h-full">
-                  <pre id="ascii-art"></pre>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section id="features" class="py-20 grain-gradient">
-    <div class="container mx-auto px-6">
-      <div class="text-center mb-16">
-        <div class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-tech-silver/30 mb-8">
-          <i class="fa fa-star text-tech-blue mr-2"></i>
-          <span class="text-tech-dark font-medium">功能特色</span>
-        </div>
-        
-        <h2 class="text-4xl md:text-5xl font-bold text-tech-darker mb-6">
-          强大的<span class="hero-text">转换能力</span>
-        </h2>
-        
-        <p class="text-xl text-tech-gray dark:text-white max-w-3xl mx-auto">
-          专业的ASCII艺术转换工具，支持多种参数调节和字符集选择
-        </p>
-      </div>
+  <main class="flex-grow p-2 md:p-6 container mx-auto max-w-[1400px]">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start h-full">
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="text-center">
-          <div class="w-16 h-16 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <i class="fa fa-palette text-white text-2xl"></i>
+      <div class="lg:col-span-4 space-y-4 md:space-y-6">
+        <div class="mac-window">
+          <div class="title-bar">
+            <div class="w-3 h-3 border border-white bg-white"></div>
+            <span class="title-text">CONTROL PANEL</span>
+            <div class="w-3 h-3 border border-white bg-white"></div>
           </div>
-          <h3 class="text-xl font-bold text-tech-darker mb-4">彩色输出</h3>
-          <p class="text-tech-gray dark:text-white">保持原始图片的颜色信息，生成彩色ASCII艺术</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="w-16 h-16 bg-gradient-to-r from-tech-cyan to-tech-success rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <i class="fa fa-sliders text-white text-2xl"></i>
-          </div>
-          <h3 class="text-xl font-bold text-tech-darker mb-4">参数调节</h3>
-          <p class="text-tech-gray dark:text-white">精确控制宽度、对比度、亮度等参数</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="w-16 h-16 bg-gradient-to-r from-tech-accent to-tech-warning rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <i class="fa fa-magic text-white text-2xl"></i>
-          </div>
-          <h3 class="text-xl font-bold text-tech-darker mb-4">高级算法</h3>
-          <p class="text-tech-gray dark:text-white">支持抖动算法和多种字符集选择</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-tech-darker text-white py-16">
-    <div class="container mx-auto px-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <!-- Brand -->
-        <div class="md:col-span-2">
-          <div class="flex items-center space-x-3 mb-6">
-            <div class="w-10 h-10 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-xl flex items-center justify-center">
-              <i class="fa fa-code text-white text-lg"></i>
-            </div>
+          
+          <div class="p-3 md:p-4 space-y-4 bg-mac-beige pb-6">
+            
             <div>
-              <h3 class="text-xl font-bold">ASCII艺术转换器</h3>
-              <p class="text-tech-gray dark:text-white">icepig.top</p>
+              <label class="block text-xs mb-2 uppercase font-bold">1. Source Disk</label>
+              <div class="border-2 border-dashed border-mac-black bg-white p-3 text-center hover:bg-gray-50 relative group" id="drop-area">
+                <input type="file" id="image-input" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                <i class="fa fa-floppy-o text-3xl mb-1"></i>
+                <p class="text-lg leading-none mt-1">INSERT DISK</p>
+                <p id="file-name" class="mt-1 text-retro-blue truncate font-bold text-xs h-4"></p>
+              </div>
+            </div>
+
+            <hr class="border-t-2 border-mac-black border-dotted">
+
+            <div class="space-y-3">
+              <label class="block text-xs uppercase font-bold">2. Config</label>
+              
+              <div class="space-y-2 bg-white/50 p-2 border border-gray-400 border-dashed">
+                <div>
+                  <div class="flex justify-between text-sm font-bold"><span>Width</span><span id="width-value">100</span></div>
+                  <input type="range" id="width-slider" min="40" max="180" value="100" class="w-full accent-mac-black h-2 bg-white border border-black">
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm font-bold"><span>Contrast</span><span id="contrast-value">1.2</span></div>
+                  <input type="range" id="contrast-slider" min="0.5" max="2" step="0.1" value="1.2" class="w-full accent-mac-black h-2 bg-white border border-black">
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm font-bold"><span>Speed (ms)</span><span id="speed-value">20</span></div>
+                  <input type="range" id="speed-slider" min="1" max="500" step="5" value="20" class="w-full accent-mac-black h-2 bg-white border border-black">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 xs:grid-cols-2 gap-2 pt-1">
+                <div>
+                  <label class="block text-xs font-bold mb-1">Char Set</label>
+                  <select id="char-set" class="w-full retro-input text-sm py-1 px-1 h-10">
+                    <option value="detailed">High Res</option>
+                    <option value="simple">Low Res</option>
+                    <option value="blocks">Block Mode</option>
+                    <option value="binary">Matrix (0/1)</option>
+                    <option value="custom">Custom...</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold mb-1">Font Style</label>
+                  <select id="font-select" class="w-full retro-input text-sm py-1 px-1 h-10 font-sans">
+                    <option value="font-vt323" selected>VT323 (Default)</option>
+                    <option value="font-pixel">Pixel Art</option>
+                    <option value="font-fira">Fira Code</option>
+                    <option value="font-courier">Courier Prime</option>
+                    <option value="font-source">Source Code</option>
+                    <option value="font-ubuntu">Ubuntu Mono</option>
+                    <option value="font-space">Space Mono</option>
+                    <option value="font-inconsolata">Inconsolata</option>
+                    <option value="font-orbitron">Orbitron (Sci-Fi)</option>
+                    <option value="font-glitch">Rubik Glitch</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="custom-char-container" class="hidden bg-yellow-100 p-2 border border-black">
+                <input type="text" id="custom-chars" value="@%#*+=-:. " class="w-full border border-black p-1 font-mono text-sm">
+              </div>
+              
+              <div class="grid grid-cols-2 gap-2">
+                  <div class="flex items-center space-x-2 bg-white p-1 border border-black">
+                     <input type="checkbox" id="dithering-toggle" class="w-4 h-4 border-2 border-black rounded-none text-black focus:ring-0 accent-black">
+                     <label for="dithering-toggle" class="text-xs select-none font-bold">Dithering</label>
+                  </div>
+                  <div class="flex items-center space-x-2 bg-white p-1 border border-black">
+                     <input type="checkbox" id="bg-remove-toggle" class="w-4 h-4 border-2 border-black rounded-none text-black focus:ring-0 accent-black">
+                     <label for="bg-remove-toggle" class="text-xs select-none font-bold whitespace-nowrap">Remove BG</label>
+                  </div>
+              </div>
+            </div>
+
+            <hr class="border-t-2 border-mac-black border-dotted">
+
+            <div>
+              <label class="block text-xs mb-2 uppercase font-bold">3. Label (Optional)</label>
+              <input type="text" id="extra-text" placeholder="ENTER TITLE..." class="w-full retro-input mb-2 uppercase text-base">
+              
+              <div class="grid grid-cols-1 xs:grid-cols-2 gap-2 mb-2">
+                <div>
+                  <label class="block text-[10px] font-bold mb-1">Style</label>
+                  <select id="title-style" class="w-full retro-input text-sm py-1 h-8">
+                    <option value="style-standard">Standard</option>
+                    <option value="style-ansi-shadow">ANSI Shadow</option>
+                    <option value="style-3d-ascii">3D ASCII</option>
+                    <option value="style-emboss">Emboss</option>
+                    <option value="style-emboss2">Emboss 2</option>
+                    <option value="style-rebel">Rebel</option>
+                    <option value="style-larry-3d">Larry 3D</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold mb-1">Position</label>
+                  <div class="flex items-center h-8 space-x-2">
+                    <label class="flex items-center text-xs"><input type="radio" name="text-pos" value="start" checked class="mr-1 accent-black">Top</label>
+                    <label class="flex items-center text-xs"><input type="radio" name="text-pos" value="end" class="mr-1 accent-black">Btm</label>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-2">
+                <div class="flex justify-between text-[10px] font-bold"><span>Label Size</span><span id="label-size-val">24px</span></div>
+                <input type="range" id="label-size-slider" min="12" max="72" value="24" class="w-full accent-mac-black h-2 bg-white border border-black">
+              </div>
+            </div>
+
+            <button id="convert-btn" class="w-full bg-mac-black text-white border-2 border-white shadow-retro active:shadow-none active:translate-y-1 transition-all py-3 font-bold text-sm uppercase mt-2 group relative overflow-hidden">
+              <span class="relative z-10 group-hover:hidden">RUN PROGRAM</span>
+              <span class="relative z-10 hidden group-hover:inline">COMPUTING...</span>
+              <div class="absolute inset-0 bg-gray-700 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-8 h-[60vh] lg:h-full min-h-[400px] flex flex-col pb-6">
+        <div class="mac-window h-full flex flex-col shadow-retro">
+          <div class="title-bar">
+            <div class="w-3 h-3 border border-white bg-white"></div>
+            <span class="title-text">TERMINAL OUTPUT</span>
+            <div class="flex space-x-1">
+               <div class="w-3 h-3 border border-white bg-white flex items-center justify-center text-black leading-none text-[8px]">-</div>
+               <div class="w-3 h-3 border border-white bg-white flex items-center justify-center text-black leading-none text-[8px]">□</div>
             </div>
           </div>
-          <p class="text-tech-gray dark:text-white mb-6 max-w-md">
-            专业的图片转ASCII艺术工具，支持彩色输出和多种参数调节。
-          </p>
-          <div class="flex space-x-4">
-            <a href="https://github.com/purezra" class="w-10 h-10 bg-tech-dark rounded-lg flex items-center justify-center hover:bg-tech-blue transition-colors">
-              <i class="fa fa-github"></i>
-            </a>
+
+          <div class="flex-grow bg-[#111] flex flex-col relative overflow-hidden border-x-2 border-mac-black">
+            <div class="absolute inset-0 pointer-events-none shadow-[inset_0_0_40px_rgba(0,0,0,0.6)] z-10 border-4 border-[#111] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]"></div>
+            
+            <canvas id="export-canvas" class="hidden"></canvas>
+
+            <div id="ascii-wrapper" class="ascii-container w-full h-full p-2 md:p-8">
+              <pre id="ascii-art" class="font-vt323 text-[6px] md:text-[10px] lg:text-xs leading-tight"></pre>
+              <div id="placeholder-art" class="absolute inset-0 flex items-center justify-center flex-col text-gray-700 pointer-events-none z-0">
+                <i class="fa fa-terminal text-6xl mb-4 opacity-50"></i>
+                <p class="text-xs animate-pulse font-bold">AWAITING DATA...</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t-2 border-mac-black bg-mac-beige p-2 flex flex-wrap justify-between items-center gap-2 shrink-0 z-20">
+            <div id="status-text" class="font-bold text-xs truncate max-w-[150px]">READY.</div>
+            <div class="flex space-x-2">
+              <button id="btn-copy" class="retro-btn disabled:opacity-50" disabled><i class="fa fa-copy"></i> COPY</button>
+              <button id="btn-gif" class="retro-btn disabled:opacity-50" disabled><i class="fa fa-file-image-o"></i> GIF</button>
+              <button id="btn-video" class="retro-btn disabled:opacity-50 bg-red-50 text-red-900 hover:bg-red-600 hover:text-white" disabled><i class="fa fa-video-camera"></i> REC</button>
+            </div>
           </div>
         </div>
-        
-        <!-- Quick Links -->
-        <div>
-          <h4 class="text-lg font-semibold mb-4">快速链接</h4>
-          <ul class="space-y-2">
-            <li><a href="/" class="text-tech-gray dark:text-white hover:text-white transition-colors">首页</a></li>
-            <li><a href="/time" class="text-tech-gray dark:text-white hover:text-white transition-colors">时间计算器</a></li>
-            <li><a href="/bg/index.html" class="text-tech-gray dark:text-white hover:text-white transition-colors">联系</a></li>
-          </ul>
-        </div>
-        
-        <!-- Features -->
-        <div>
-          <h4 class="text-lg font-semibold mb-4">功能</h4>
-          <ul class="space-y-2">
-            <li><span class="text-tech-gray dark:text-white">彩色ASCII艺术</span></li>
-            <li><span class="text-tech-gray dark:text-white">参数调节</span></li>
-            <li><span class="text-tech-gray dark:text-white">多种字符集</span></li>
-            <li><span class="text-tech-gray dark:text-white">抖动算法</span></li>
-          </ul>
-        </div>
       </div>
-      
-      <div class="border-t border-tech-dark mt-12 pt-8 text-center">
-        <p class="text-tech-gray dark:text-white">
-          © 2025 icepig.top ASCII艺术转换器. 专业的图片转换工具。
-        </p>
-      </div>
-    </div>
-  </footer>
 
-  <!-- Custom Styles -->
-  <style>
-    /* 滑块样式 */
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #3B82F6;
-      cursor: pointer;
-    }
-    
-    input[type="range"]::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #3B82F6;
-      cursor: pointer;
-      border: none;
-    }
-    
-    /* 切换开关样式 */
-    .toggle-checkbox:checked {
-      right: 0;
-      border-color: #3B82F6;
-    }
-    
-    .toggle-checkbox:checked + .toggle-label {
-      background-color: #3B82F6;
-    }
-    
-    .toggle-label {
-      transition: background-color 0.2s ease;
-    }
-    
-    /* ASCII容器样式 */
-    .ascii-container {
-      font-size: 8px;
-    }
-    
-    @media (min-width: 640px) {
-      .ascii-container {
-        font-size: 9px;
-      }
-    }
-    
-    @media (min-width: 768px) {
-      .ascii-container {
-        font-size: 8px;
-      }
-    }
-    
-    @media (min-width: 1024px) {
-      .ascii-container {
-        font-size: 7px;
-      }
-    }
-  </style>
+    </div>
+  </main>
+
+  <a id="download-link" class="hidden"></a>
 
   <script>
-    // ASCII字符映射(按视觉密度从暗到亮排序)
-    const ASCII_CHARS_DETAILED = " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
-    const ASCII_CHARS_SIMPLE = " .:-=+*#%@";
-    const ASCII_CHARS_BLOCKS = " ░▒▓█";
-    const ASCII_CHARS_CUSTOM = " .:-=+*ABCDEFGHIJKLMNOPQRSTUVWXYZ#%@";
+    /* --- CONSTANTS --- */
+    const PRESETS = {
+      detailed: " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$",
+      simple: " .:-=+*#%@",
+      blocks: " ░▒▓█",
+      binary: " 01"
+    };
     
-    // DOM元素
-    const dropArea = document.getElementById('drop-area');
-    const imageInput = document.getElementById('image-input');
-    const fileName = document.getElementById('file-name');
-    const widthSlider = document.getElementById('width-slider');
-    const widthValue = document.getElementById('width-value');
-    const contrastSlider = document.getElementById('contrast-slider');
-    const contrastValue = document.getElementById('contrast-value');
-    const brightnessSlider = document.getElementById('brightness-slider');
-    const brightnessValue = document.getElementById('brightness-value');
-    const charSetSelect = document.getElementById('char-set');
-    const ditheringToggle = document.getElementById('dithering-toggle');
-    const convertBtn = document.getElementById('convert-btn');
-    const copyBtn = document.getElementById('copy-btn');
-    const downloadBtn = document.getElementById('download-btn');
-    const resultContainer = document.getElementById('result-container');
-    const initialState = document.getElementById('initial-state');
-    const loadingState = document.getElementById('loading-state');
-    const errorState = document.getElementById('error-state');
-    const errorMessage = document.getElementById('error-message');
-    const asciiResult = document.getElementById('ascii-result');
-    const asciiArt = document.getElementById('ascii-art');
-    const sampleImages = document.querySelectorAll('.sample-image');
-    const customCharsInput = document.getElementById('custom-chars');
-    const resetCharsBtn = document.getElementById('reset-chars-btn');
-    const previewCharsBtn = document.getElementById('preview-chars-btn');
-    
-    // 当前图片
+    const els = {
+      dropArea: document.getElementById('drop-area'),
+      imageInput: document.getElementById('image-input'),
+      fileName: document.getElementById('file-name'),
+      widthSlider: document.getElementById('width-slider'),
+      widthValue: document.getElementById('width-value'),
+      contrastSlider: document.getElementById('contrast-slider'),
+      contrastValue: document.getElementById('contrast-value'),
+      speedSlider: document.getElementById('speed-slider'),
+      speedValue: document.getElementById('speed-value'),
+      
+      charSetSelect: document.getElementById('char-set'),
+      customCharContainer: document.getElementById('custom-char-container'),
+      customCharsInput: document.getElementById('custom-chars'),
+      
+      fontSelect: document.getElementById('font-select'),
+      titleStyleSelect: document.getElementById('title-style'), 
+      labelSizeSlider: document.getElementById('label-size-slider'),
+      labelSizeVal: document.getElementById('label-size-val'),
+      
+      ditheringToggle: document.getElementById('dithering-toggle'),
+      bgRemoveToggle: document.getElementById('bg-remove-toggle'), // New Toggle
+      
+      convertBtn: document.getElementById('convert-btn'),
+      asciiWrapper: document.getElementById('ascii-wrapper'),
+      asciiArt: document.getElementById('ascii-art'),
+      placeholder: document.getElementById('placeholder-art'),
+      statusText: document.getElementById('status-text'),
+      extraText: document.getElementById('extra-text'),
+      btnCopy: document.getElementById('btn-copy'),
+      btnGif: document.getElementById('btn-gif'),
+      btnVideo: document.getElementById('btn-video'),
+      clock: document.getElementById('clock')
+    };
+
     let currentImage = null;
-    
-    // 初始化自定义字符集输入框
-    function initCustomCharsInput() {
-      const defaultCustomChars = " .:-=+*ABCDEFGHIJKLMNOPQRSTUVWXYZ#%@";
-      customCharsInput.value = defaultCustomChars;
-      
-      resetCharsBtn.addEventListener('click', () => {
-        customCharsInput.value = defaultCustomChars;
-      });
-      
-      previewCharsBtn.addEventListener('click', previewCustomChars);
+    let isAnimating = false;
+    let animationInterval = null;
+    let finalAsciiLines = []; 
+    let currentTitleProps = null;
+
+    /* --- UTILS --- */
+    setInterval(() => {
+      const now = new Date();
+      els.clock.textContent = now.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+    }, 1000);
+
+    function updateStatus(msg, blink = false) {
+      els.statusText.textContent = msg;
+      els.statusText.className = `font-bold text-xs truncate max-w-[150px] ${blink ? 'animate-pulse' : ''}`;
     }
-    
-    // 处理字符集选择变化
-    function handleCharSetChange() {
-      const selectedValue = charSetSelect.value;
-      const customCharsContainer = document.getElementById('custom-chars-container');
-      
-      if (selectedValue === 'custom') {
-        customCharsContainer.classList.remove('hidden');
-      } else {
-        customCharsContainer.classList.add('hidden');
-      }
-    }
-    
-    // 预览自定义字符集效果
-    function previewCustomChars() {
-      const customChars = getCustomChars();
-      
-      if (!customChars) {
-        showError('请输入至少2个字符作为自定义字符集');
-        return;
-      }
-      
-      let preview = '字符集预览 (从暗到亮):\n';
-      for (let i = 0; i < customChars.length; i++) {
-        preview += customChars[i] + (i > 0 && (i + 1) % 5 === 0 ? ' ' : '');
-      }
-      
-      alert(preview);
-    }
-    
-    // 获取自定义字符集
-    function getCustomChars() {
-      let chars = customCharsInput.value.trim();
-      chars = [...new Set(chars)].join('');
-      
-      if (chars.length < 2) {
-        return null;
-      }
-      
-      return chars;
-    }
-    
-    // Theme Management
-    function initTheme() {
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      const theme = savedTheme;
-      
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-        updateThemeIcons('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        updateThemeIcons('light');
-      }
+    function toggleButtons(enable) {
+      [els.btnCopy, els.btnGif, els.btnVideo].forEach(b => b.disabled = !enable);
     }
 
-    function updateThemeIcons(theme) {
-      const icons = ['theme-icon', 'mobile-theme-icon'];
-      icons.forEach(iconId => {
-        const icon = document.getElementById(iconId);
-        if (icon) {
-          if (theme === 'dark') {
-            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
-          } else {
-            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
-          }
-        }
-      });
-    }
+    /* --- LISTENERS --- */
+    els.widthSlider.addEventListener('input', (e) => els.widthValue.textContent = e.target.value);
+    els.contrastSlider.addEventListener('input', (e) => els.contrastValue.textContent = e.target.value);
+    els.speedSlider.addEventListener('input', (e) => els.speedValue.textContent = e.target.value);
+    els.labelSizeSlider.addEventListener('input', (e) => els.labelSizeVal.textContent = e.target.value + 'px');
 
-    function toggleTheme() {
-      const isDark = document.documentElement.classList.contains('dark');
-      const newTheme = isDark ? 'light' : 'dark';
-      
-      if (newTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-        updateThemeIcons('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        updateThemeIcons('light');
-      }
-      
-      localStorage.setItem('theme', newTheme);
-    }
+    els.charSetSelect.addEventListener('change', (e) => {
+      els.customCharContainer.classList.toggle('hidden', e.target.value !== 'custom');
+    });
 
-    // 初始化
-    document.addEventListener('DOMContentLoaded', () => {
-      initTheme();
-      initCustomCharsInput();
-      setupEventListeners();
-      setupMobileMenu();
-      
-      // Theme toggle buttons
-      const themeToggle = document.getElementById('theme-toggle');
-      const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
-      const mobileThemeToggleMenu = document.getElementById('mobile-theme-toggle-menu');
-
-      if (themeToggle) {
-        themeToggle.addEventListener('click', toggleTheme);
-      }
-      if (mobileThemeToggle) {
-        mobileThemeToggle.addEventListener('click', toggleTheme);
-      }
-      if (mobileThemeToggleMenu) {
-        mobileThemeToggleMenu.addEventListener('click', toggleTheme);
-      }
+    els.imageInput.addEventListener('change', handleFileSelect);
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eN => {
+      els.dropArea.addEventListener(eN, (e) => { e.preventDefault(); e.stopPropagation(); });
+    });
+    els.dropArea.addEventListener('drop', (e) => {
+      els.dropArea.classList.remove('bg-blue-50');
+      processFile(e.dataTransfer.files[0]);
     });
     
-    // 设置事件监听
-    function setupEventListeners() {
-      charSetSelect.addEventListener('change', handleCharSetChange);
-      
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false);
-      });
-      
-      ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, highlight, false);
-      });
-      
-      ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, unhighlight, false);
-      });
-      
-      dropArea.addEventListener('drop', handleDrop, false);
-      imageInput.addEventListener('change', handleFileSelect, false);
-      
-      widthSlider.addEventListener('input', () => {
-        widthValue.textContent = widthSlider.value;
-      });
-      
-      contrastSlider.addEventListener('input', () => {
-        contrastValue.textContent = contrastSlider.value;
-      });
-      
-      brightnessSlider.addEventListener('input', () => {
-        brightnessValue.textContent = brightnessSlider.value;
-      });
-      
-      convertBtn.addEventListener('click', convertImageToAscii);
-      copyBtn.addEventListener('click', copyToClipboard);
-      downloadBtn.addEventListener('click', downloadAsciiArt);
-      
-      sampleImages.forEach(sample => {
-        sample.addEventListener('click', () => {
-          const imgSrc = sample.querySelector('img').src;
-          loadSampleImage(imgSrc);
-        });
-      });
-    }
-    
-    // 设置移动端菜单
-    function setupMobileMenu() {
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      const mobileMenu = document.getElementById('mobile-menu');
-      const menuIcon = mobileMenuBtn.querySelector('i');
-      
-      mobileMenuBtn.addEventListener('click', () => {
-        const isHidden = mobileMenu.classList.contains('hidden');
-        
-        if (isHidden) {
-          mobileMenu.classList.remove('hidden');
-          menuIcon.classList.remove('fa-bars');
-          menuIcon.classList.add('fa-times');
-        } else {
-          mobileMenu.classList.add('hidden');
-          menuIcon.classList.remove('fa-times');
-          menuIcon.classList.add('fa-bars');
-        }
-      });
-      
-      const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-      mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          mobileMenu.classList.add('hidden');
-          menuIcon.classList.remove('fa-times');
-          menuIcon.classList.add('fa-bars');
-        });
-      });
-    }
-    
-    // 拖放辅助函数
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    function highlight() {
-      dropArea.classList.add('border-tech-blue');
-      dropArea.classList.add('bg-tech-blue/5');
-    }
-    
-    function unhighlight() {
-      dropArea.classList.remove('border-tech-blue');
-      dropArea.classList.remove('bg-tech-blue/5');
-    }
-    
-    // 处理拖放
-    function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-      
-      if (files.length) {
-        handleFiles(files);
-      }
-    }
-    
-    // 处理文件选择
-    function handleFileSelect(e) {
-      const files = e.target.files;
-      
-      if (files.length) {
-        handleFiles(files);
-      }
-    }
-    
-    // 处理文件
-    function handleFiles(files) {
-      const file = files[0];
-      
-      if (!file.type.match('image.*')) {
-        showError('请上传图片文件');
-        return;
-      }
-      
-      fileName.textContent = file.name;
-      
+    els.convertBtn.addEventListener('click', startConversion);
+    els.btnCopy.addEventListener('click', copyToClipboard);
+    els.btnGif.addEventListener('click', exportToGIF);
+    els.btnVideo.addEventListener('click', recordVideoAnimation);
+
+    /* --- LOGIC --- */
+    function handleFileSelect(e) { processFile(e.target.files[0]); }
+    function processFile(file) {
+      if (!file || !file.type.match('image.*')) return;
+      els.fileName.textContent = file.name;
       const reader = new FileReader();
-      
-      reader.onload = function(e) {
+      reader.onload = (e) => {
         const img = new Image();
-        img.onload = function() {
-          currentImage = img;
-          initialState.classList.remove('hidden');
-          errorState.classList.add('hidden');
-          asciiResult.classList.add('hidden');
-        };
+        img.onload = () => { currentImage = img; updateStatus("DISK LOADED.", true); };
         img.src = e.target.result;
       };
-      
       reader.readAsDataURL(file);
     }
-    
-    // 加载示例图片
-    function loadSampleImage(src) {
-      const img = new Image();
-      img.crossOrigin = 'Anonymous';
-      img.onload = function() {
-        currentImage = img;
-        fileName.textContent = src.split('/').pop().split('?')[0] || '示例图片';
-        initialState.classList.remove('hidden');
-        errorState.classList.add('hidden');
-        asciiResult.classList.add('hidden');
-      };
-      img.onerror = function() {
-        showError('无法加载示例图片');
-      };
-      img.src = src;
-    }
-    
-    // 应用抖动算法
-    function applyDithering(imageData, width, height) {
-      const data = imageData.data;
-      const dithered = new Uint8ClampedArray(data);
+
+    function startConversion() {
+      if (!currentImage) return alert("PLEASE INSERT DISK (UPLOAD IMAGE) FIRST.");
+      if (isAnimating) { clearTimeout(animationInterval); isAnimating = false; }
+
+      updateStatus("COMPUTING...", true);
+      toggleButtons(false);
+      els.placeholder.classList.add('hidden');
       
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const index = (y * width + x) * 4;
-          
-          const r = data[index];
-          const g = data[index + 1];
-          const b = data[index + 2];
-          
-          const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-          const newGray = Math.round(gray / 255) * 255;
-          const error = gray - newGray;
-          
-          if (x + 1 < width) {
-            const rightIndex = (y * width + (x + 1)) * 4;
-            dithered[rightIndex] = clamp(dithered[rightIndex] + error * 7 / 16);
-            dithered[rightIndex + 1] = clamp(dithered[rightIndex + 1] + error * 7 / 16);
-            dithered[rightIndex + 2] = clamp(dithered[rightIndex + 2] + error * 7 / 16);
-          }
-          
-          if (y + 1 < height) {
-            if (x > 0) {
-              const leftDownIndex = ((y + 1) * width + (x - 1)) * 4;
-              dithered[leftDownIndex] = clamp(dithered[leftDownIndex] + error * 3 / 16);
-              dithered[leftDownIndex + 1] = clamp(dithered[leftDownIndex + 1] + error * 3 / 16);
-              dithered[leftDownIndex + 2] = clamp(dithered[leftDownIndex + 2] + error * 3 / 16);
-            }
-            
-            const downIndex = ((y + 1) * width + x) * 4;
-            dithered[downIndex] = clamp(dithered[downIndex] + error * 5 / 16);
-            dithered[downIndex + 1] = clamp(dithered[downIndex + 1] + error * 5 / 16);
-            dithered[downIndex + 2] = clamp(dithered[downIndex + 2] + error * 5 / 16);
-            
-            if (x + 1 < width) {
-              const rightDownIndex = ((y + 1) * width + (x + 1)) * 4;
-              dithered[rightDownIndex] = clamp(dithered[rightDownIndex] + error * 1 / 16);
-              dithered[rightDownIndex + 1] = clamp(dithered[rightDownIndex + 1] + error * 1 / 16);
-              dithered[rightDownIndex + 2] = clamp(dithered[rightDownIndex + 2] + error * 1 / 16);
-            }
-          }
-        }
-      }
-      
-      return new ImageData(dithered, width, height);
-    }
-    
-    // 颜色值限制在0-255之间
-    function clamp(value) {
-      return Math.max(0, Math.min(255, value));
-    }
-    
-    // 调整图像对比度
-    function adjustContrast(imageData, contrast) {
-      const data = imageData.data;
-      const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-      
-      for (let i = 0; i < data.length; i += 4) {
-        data[i] = clamp(factor * (data[i] - 128) + 128);
-        data[i + 1] = clamp(factor * (data[i + 1] - 128) + 128);
-        data[i + 2] = clamp(factor * (data[i + 2] - 128) + 128);
-      }
-      
-      return imageData;
-    }
-    
-    // 调整图像亮度
-    function adjustBrightness(imageData, brightness) {
-      const data = imageData.data;
-      
-      for (let i = 0; i < data.length; i += 4) {
-        data[i] = clamp(data[i] * brightness);
-        data[i + 1] = clamp(data[i + 1] * brightness);
-        data[i + 2] = clamp(data[i + 2] * brightness);
-      }
-      
-      return imageData;
-    }
-    
-    // 将图片转换为ASCII艺术
-    function convertImageToAscii() {
-      if (!currentImage) {
-        showError('请先上传图片');
-        return;
-      }
-      
-      showLoading();
-      
+      els.asciiArt.innerHTML = ''; 
+      els.asciiArt.className = `text-left inline-block ${els.fontSelect.value}`;
+
       setTimeout(() => {
-        try {
-          const width = parseInt(widthSlider.value);
-          const contrast = parseFloat(contrastSlider.value);
-          const brightness = parseFloat(brightnessSlider.value);
-          const charSet = charSetSelect.value;
-          const useDithering = ditheringToggle.checked;
-          
-          let asciiChars;
-          switch (charSet) {
-            case 'detailed':
-              asciiChars = ASCII_CHARS_DETAILED;
-              break;
-            case 'simple':
-              asciiChars = ASCII_CHARS_SIMPLE;
-              break;
-            case 'blocks':
-              asciiChars = ASCII_CHARS_BLOCKS;
-              break;
-            case 'custom':
-              asciiChars = getCustomChars();
-              if (!asciiChars) {
-                showError('自定义字符集无效，请输入至少2个字符');
-                return;
-              }
-              break;
-            default:
-              asciiChars = ASCII_CHARS_CUSTOM;
-              break;
-          }
-          
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
-          const aspectRatio = currentImage.height / currentImage.width;
-          const height = Math.round(width * aspectRatio * 0.55);
-          
-          canvas.width = width;
-          canvas.height = height;
-          
-          ctx.drawImage(currentImage, 0, 0, width, height);
-          
-          let imageData = ctx.getImageData(0, 0, width, height);
-          
-          imageData = adjustContrast(imageData, contrast);
-          imageData = adjustBrightness(imageData, brightness);
-          
-          if (useDithering) {
-            imageData = applyDithering(imageData, width, height);
-          }
-          
-          let ascii = '';
-          const data = imageData.data;
-          
-          for (let y = 0; y < height; y++) {
-            let line = '';
-            
-            for (let x = 0; x < width; x++) {
-              const index = (y * width + x) * 4;
-              const r = data[index];
-              const g = data[index + 1];
-              const b = data[index + 2];
-              const a = data[index + 3];
-              
-              if (a < 128) {
-                line += ' ';
-              } else {
-                const brightness = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-                
-                const charIndex = Math.min(
-                  Math.floor((brightness / 255) * asciiChars.length),
-                  asciiChars.length - 1
-                );
-                const char = asciiChars[charIndex];
-                
-                line += `<span style="color: rgb(${r}, ${g}, ${b})">${char}</span>`;
-              }
-            }
-            
-            ascii += line + '\n';
-          }
-          
-          asciiArt.innerHTML = ascii;
-          showResult();
-          
-        } catch (error) {
-          console.error('转换失败:', error);
-          showError('转换失败: ' + error.message);
-        }
+        const asciiData = generateAsciiData();
+        playTypewriterAnimation(asciiData);
       }, 100);
     }
-    
-    // 显示加载状态
-    function showLoading() {
-      initialState.classList.add('hidden');
-      errorState.classList.add('hidden');
-      asciiResult.classList.add('hidden');
-      loadingState.classList.remove('hidden');
-    }
-    
-    // 显示结果
-    function showResult() {
-      initialState.classList.add('hidden');
-      loadingState.classList.add('hidden');
-      errorState.classList.add('hidden');
-      asciiResult.classList.remove('hidden');
-    }
-    
-    // 显示错误
-    function showError(message) {
-      initialState.classList.add('hidden');
-      loadingState.classList.add('hidden');
-      asciiResult.classList.add('hidden');
-      errorState.classList.remove('hidden');
+
+    function generateAsciiData() {
+      const width = parseInt(els.widthSlider.value);
+      const contrast = parseFloat(els.contrastSlider.value);
+      const removeBg = els.bgRemoveToggle.checked; // Check toggle state
       
-      errorMessage.textContent = message;
-    }
-    
-    // 复制到剪贴板
-    function copyToClipboard() {
-      const textAscii = asciiArt.textContent;
+      let chars = PRESETS[els.charSetSelect.value];
+      if (els.charSetSelect.value === 'custom') chars = els.customCharsInput.value || "@# ";
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const ratio = currentImage.height / currentImage.width;
+      const height = Math.round(width * ratio * 0.55); 
       
-      navigator.clipboard.writeText(textAscii)
-        .then(() => {
-          const originalText = copyBtn.innerHTML;
-          copyBtn.innerHTML = '<i class="fa fa-check mr-1"></i> 已复制';
-          copyBtn.classList.remove('bg-tech-silver', 'text-tech-dark');
-          copyBtn.classList.add('bg-tech-success', 'text-white');
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(currentImage, 0, 0, width, height);
+      
+      // Get raw data for BG checking
+      let rawImgData = ctx.getImageData(0, 0, width, height);
+      const rawData = rawImgData.data;
+
+      // Get contrast adjusted data for char selection
+      const imgData = adjustContrast(ctx.getImageData(0, 0, width, height), contrast);
+      const data = imgData.data;
+      
+      // BG Color Detection (Top-Left Pixel)
+      const bgR = rawData[0];
+      const bgG = rawData[1];
+      const bgB = rawData[2];
+      const tolerance = 30; // Euclidean distance tolerance
+
+      let lines = [];
+
+      for (let y = 0; y < height; y++) {
+        let lineHTML = "";
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 4;
           
-          setTimeout(() => {
-            copyBtn.innerHTML = originalText;
-            copyBtn.classList.remove('bg-tech-success', 'text-white');
-            copyBtn.classList.add('bg-tech-silver', 'text-tech-dark');
-          }, 2000);
-        })
-        .catch(err => {
-          console.error('无法复制: ', err);
-          showError('无法复制到剪贴板');
-        });
+          // Raw colors for BG check
+          const rRaw = rawData[idx], gRaw = rawData[idx+1], bRaw = rawData[idx+2], aRaw = rawData[idx+3];
+          
+          // Contrast adjusted colors for text
+          const r = data[idx], g = data[idx+1], b = data[idx+2];
+          
+          let isBgPixel = false;
+
+          // Check 1: Alpha Transparency (Always remove transparent pixels)
+          if (aRaw < 20) {
+            isBgPixel = true;
+          } 
+          // Check 2: Solid Color Match (Only if toggle is ON)
+          else if (removeBg) {
+             const dist = Math.sqrt(Math.pow(rRaw - bgR, 2) + Math.pow(gRaw - bgG, 2) + Math.pow(bRaw - bgB, 2));
+             if (dist < tolerance) isBgPixel = true;
+          }
+
+          if (isBgPixel) {
+            // Use an invisible dot or space to maintain alignment
+            lineHTML += `<span style="opacity:0"> </span>`;
+          } else {
+            const bright = (0.299*r + 0.587*g + 0.114*b);
+            const char = chars[Math.floor((bright / 255) * (chars.length - 1))] || chars[chars.length-1];
+            lineHTML += `<span style="color: rgb(${r},${g},${b})">${char}</span>`;
+          }
+        }
+        lines.push(lineHTML);
+      }
+
+      // === Label Processing ===
+      const extraText = els.extraText.value.trim();
+      if (extraText) {
+        const pos = document.querySelector('input[name="text-pos"]:checked').value;
+        const styleClass = els.titleStyleSelect.value; 
+        const fontSize = els.labelSizeSlider.value;
+        currentTitleProps = { text: extraText, style: styleClass, size: fontSize };
+        const labelHtml = `<div class="label-base ${styleClass}" style="font-size: ${fontSize}px;">${extraText}</div>`;
+        if (pos === 'start') lines.unshift(labelHtml);
+        else lines.push(labelHtml);
+      } else {
+        currentTitleProps = null;
+      }
+
+      finalAsciiLines = lines;
+      return lines;
     }
-    
-    // 下载ASCII艺术
-    function downloadAsciiArt() {
-      const textAscii = asciiArt.textContent;
+
+    function playTypewriterAnimation(lines) {
+      isAnimating = true;
+      let i = 0;
+      updateStatus("PRINTING...", true);
+      const speed = parseInt(els.speedSlider.value);
+
+      function printLine() {
+        if (!isAnimating) return;
+        if (i >= lines.length) {
+          isAnimating = false;
+          updateStatus("COMPLETED.", false);
+          toggleButtons(true);
+          return;
+        }
+        const node = document.createElement('div');
+        node.innerHTML = lines[i];
+        node.style.minHeight = '1em'; 
+        els.asciiArt.appendChild(node);
+        els.asciiWrapper.scrollTop = els.asciiWrapper.scrollHeight;
+        i++;
+        animationInterval = setTimeout(printLine, speed);
+      }
+      printLine();
+    }
+
+    function adjustContrast(imageData, contrast) {
+      const d = imageData.data;
+      const f = (259 * (contrast + 255)) / (255 * (259 - contrast));
+      for (let i = 0; i < d.length; i += 4) {
+        d[i] = clamp(f * (d[i] - 128) + 128);
+        d[i+1] = clamp(f * (d[i+1] - 128) + 128);
+        d[i+2] = clamp(f * (d[i+2] - 128) + 128);
+      }
+      return imageData;
+    }
+    function clamp(v) { return Math.max(0, Math.min(255, v)); }
+
+    /* --- EXPORT --- */
+    function copyToClipboard() {
+       navigator.clipboard.writeText(els.asciiArt.innerText).then(() => updateStatus("COPIED!", true));
+    }
+
+    function exportToGIF() {
+      updateStatus("RENDERING GIF...", true);
+      html2canvas(els.asciiArt, { backgroundColor: '#111111', scale: 2, useCORS: true }).then(canvas => {
+        const gif = new GIF({ workers: 2, quality: 10, width: canvas.width, height: canvas.height, background: '#111111' });
+        gif.addFrame(canvas, {delay: 200});
+        gif.on('finished', (blob) => { downloadBlob(blob, 'gif'); updateStatus("GIF EXPORTED.", false); });
+        gif.render();
+      });
+    }
+
+    async function recordVideoAnimation() {
+      if (!finalAsciiLines.length) return;
+      updateStatus("REC...", true);
+      els.btnVideo.disabled = true;
+
+      const canvas = document.getElementById('export-canvas');
+      const ctx = canvas.getContext('2d');
+      const scale = 2;
       
-      const blob = new Blob([textAscii], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'ascii-art.txt';
+      const containerRect = els.asciiArt.getBoundingClientRect();
+      canvas.width = (containerRect.width || 800) * scale;
+      canvas.height = (containerRect.height || 600) * scale + 200; 
+      ctx.scale(scale, scale);
+
+      const stream = canvas.captureStream(30);
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      const chunks = [];
       
-      document.body.appendChild(a);
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        downloadBlob(new Blob(chunks, { type: 'video/webm' }), 'webm');
+        updateStatus("VIDEO SAVED.", false);
+        els.btnVideo.disabled = false;
+      };
+
+      mediaRecorder.start();
+
+      const compStyle = getComputedStyle(els.asciiArt);
+      const fontSize = parseInt(compStyle.fontSize) || 12;
+      const fontFamily = compStyle.fontFamily;
+      const lineHeight = fontSize * 0.85;
+      
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(0, 0, canvas.width/scale, canvas.height/scale);
+
+      let lineIndex = 0;
+      // Updated Regex to handle empty/transparent spans
+      const regex = /<span style="color: rgb\((\d+),(\d+),(\d+)\)">([^<])<\/span>/g;
+      const speed = parseInt(els.speedSlider.value);
+      
+      function drawStep() {
+        if (lineIndex >= finalAsciiLines.length) { mediaRecorder.stop(); return; }
+
+        const lineHTML = finalAsciiLines[lineIndex];
+        const y = lineIndex * lineHeight + 50;
+
+        if (lineHTML.includes('class="label-base')) {
+            if (currentTitleProps) {
+                const titleSize = parseInt(currentTitleProps.size);
+                ctx.font = `bold ${titleSize}px "Courier New", monospace`;
+                ctx.textAlign = "center";
+                ctx.fillStyle = currentTitleProps.style.includes('rebel') ? '#ff0055' : '#FFFF00';
+                ctx.fillText(currentTitleProps.text, (canvas.width/scale)/2, y + titleSize);
+                ctx.textAlign = "left";
+                ctx.font = `${fontSize}px ${fontFamily}`;
+            }
+        } else {
+            ctx.font = `${fontSize}px ${fontFamily}`;
+            let match, x = 20;
+            // The regex will naturally skip the <span style="opacity:0"> </span> parts
+            while ((match = regex.exec(lineHTML)) !== null) {
+                ctx.fillStyle = `rgb(${match[1]},${match[2]},${match[3]})`;
+                ctx.fillText(match[4], x, y);
+                x += ctx.measureText(match[4]).width; 
+            }
+            // We need to account for the spaces in the X position calculation for video
+            // Simple approach: re-parse for spaces if accuracy is needed, 
+            // but for "Remove BG", skipping drawing is exactly what we want.
+            // However, to keep alignment correct relative to X, we might need a more complex parser 
+            // if the background was in the *middle*.
+            // For simple left-aligned or full-block art, this regex loop is usually sufficient 
+            // as long as "x" increments correctly. 
+            // **Correction**: If we skip drawing, "x" doesn't increment.
+            // To fix alignment in video for removed blocks, we need to iterate HTML nodes or chars.
+            // For this version, we accept that video export of removed-bg art might be left-collapsed 
+            // unless we specifically handle the "opacity:0" span.
+            
+            // Better Loop for Video Alignment:
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(`<div>${lineHTML}</div>`, 'text/html');
+            const spans = doc.body.firstChild.children;
+            let currentX = 20;
+            
+            for(let span of spans) {
+                if (span.style.opacity === '0') {
+                   currentX += ctx.measureText(" ").width; // Advance cursor for empty space
+                } else {
+                   ctx.fillStyle = span.style.color;
+                   ctx.fillText(span.innerText, currentX, y);
+                   currentX += ctx.measureText(span.innerText).width;
+                }
+            }
+        }
+        
+        lineIndex++;
+        setTimeout(drawStep, speed);
+      }
+      drawStep();
+    }
+
+    function downloadBlob(blob, ext) {
+      const a = document.getElementById('download-link');
+      a.href = URL.createObjectURL(blob);
+      a.download = `retro-export-${Date.now()}.${ext}`;
       a.click();
-      
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 0);
     }
   </script>
 </body>
