@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kilo Code 对话导出 - icepig.top</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'tech-silver': '#F9FAFB',
+            'tech-gray': '#6B7280',
+            'tech-dark': '#374151',
+            'tech-darker': '#1F2937',
+            'tech-blue': '#3B82F6',
+            'tech-cyan': '#06B6D4',
+            'tech-accent': '#8B5CF6',
+            'tech-success': '#10B981',
+            'tech-warning': '#F59E0B',
+            'tech-red': '#EF4444',
+            'dark-bg': '#111827',
+            'dark-card': '#1F2937',
+            'dark-text': '#F9FAFB',
+          },
+          fontFamily: {
+            'inter': ['Inter', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .glass-card {
+        @apply bg-white/80 dark:bg-dark-card backdrop-blur-sm border border-tech-silver/30 dark:border-tech-darker/50 rounded-2xl shadow-lg transition-all duration-300;
+      }
+      .dark .glass-card {
+        background: linear-gradient(145deg, rgba(31, 41, 55, 0.9), rgba(17, 24, 39, 0.8));
+      }
+      .drop-zone-active {
+        @apply border-tech-blue bg-tech-blue/5 dark:bg-tech-cyan/5;
+      }
+      .pulse-ring {
+        animation: pulse-ring 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+      }
+      @keyframes pulse-ring {
+        0% { transform: scale(0.8); opacity: 1; }
+        100% { transform: scale(1.3); opacity: 0; }
+      }
+      .fade-in {
+        animation: fadeIn 0.3s ease-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-gray-50 dark:bg-dark-bg min-h-screen">
+  <!-- Navigation -->
+  <nav class="glass-card sticky top-0 z-50 border-b-0 rounded-b-none">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex justify-between items-center">
+        <a href="/" class="flex items-center space-x-3 group">
+          <div class="w-10 h-10 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <i class="fa fa-code text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-tech-darker dark:text-tech-silver">Kilo Code 对话导出</h1>
+            <p class="text-sm text-tech-gray dark:text-tech-gray">icepig.top</p>
+          </div>
+        </a>
+        <a href="/" class="px-4 py-2 bg-tech-silver dark:bg-tech-darker text-tech-dark dark:text-tech-silver rounded-lg hover:bg-tech-gray dark:hover:bg-tech-dark transition-colors flex items-center">
+          <i class="fa fa-th-large mr-2"></i>返回工具箱
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-6 py-12">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-10 fade-in">
+        <div class="inline-flex items-center px-4 py-2 bg-tech-blue/10 dark:bg-tech-blue/20 rounded-full mb-4">
+          <i class="fa fa-file-code-o text-tech-blue mr-2"></i>
+          <span class="text-tech-blue font-medium">Kilo Code 插件</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold text-tech-darker dark:text-tech-silver mb-4">
+          导出对话记录为 Markdown
+        </h2>
+        <p class="text-lg text-tech-gray dark:text-tech-gray max-w-2xl mx-auto">
+          上传 Kilo Code 的 <code class="bg-tech-silver dark:bg-tech-darker px-2 py-1 rounded text-tech-accent">ui_messages.json</code> 文件，转换为可读的 Markdown 格式
+        </p>
+      </div>
+
+      <!-- Upload Cards -->
+      <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <!-- Single File Upload -->
+        <div class="glass-card p-6 fade-in">
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-10 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-lg flex items-center justify-center mr-3">
+              <i class="fa fa-file-code-o text-white"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-tech-darker dark:text-tech-silver">单文件导出</h3>
+              <p class="text-sm text-tech-gray">转换单个对话</p>
+            </div>
+          </div>
+          <div id="drop-zone" class="border-2 border-dashed border-tech-gray/30 dark:border-tech-silver/20 rounded-xl p-8 text-center cursor-pointer hover:border-tech-blue dark:hover:border-tech-cyan transition-all duration-300 hover:bg-tech-blue/5 dark:hover:bg-tech-cyan/5">
+            <div class="relative w-16 h-16 mx-auto mb-4">
+              <div class="absolute inset-0 bg-tech-blue/20 rounded-full pulse-ring"></div>
+              <div class="relative w-16 h-16 bg-gradient-to-r from-tech-blue to-tech-cyan rounded-full flex items-center justify-center">
+                <i class="fa fa-cloud-upload text-2xl text-white"></i>
+              </div>
+            </div>
+            <p class="text-tech-dark dark:text-tech-silver font-medium mb-2">点击或拖拽上传</p>
+            <p class="text-sm text-tech-gray">支持 <code class="bg-tech-silver dark:bg-tech-darker px-1 rounded">ui_messages.json</code></p>
+            <input type="file" id="file-input" accept=".json" class="hidden" aria-label="选择文件">
+          </div>
+        </div>
+
+        <!-- Batch Upload -->
+        <div class="glass-card p-6 fade-in">
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-10 bg-gradient-to-r from-tech-accent to-tech-blue rounded-lg flex items-center justify-center mr-3">
+              <i class="fa fa-folder-open text-white"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-tech-darker dark:text-tech-silver">批量导出</h3>
+              <p class="text-sm text-tech-gray">导出所有对话</p>
+            </div>
+          </div>
+          <div id="batch-zone" class="border-2 border-dashed border-tech-gray/30 dark:border-tech-silver/20 rounded-xl p-8 text-center cursor-pointer hover:border-tech-accent dark:hover:border-tech-blue transition-all duration-300 hover:bg-tech-accent/5 dark:hover:bg-tech-blue/5">
+            <div class="relative w-16 h-16 mx-auto mb-4">
+              <div class="absolute inset-0 bg-tech-accent/20 rounded-full pulse-ring" style="animation-delay: 0.5s;"></div>
+              <div class="relative w-16 h-16 bg-gradient-to-r from-tech-accent to-tech-blue rounded-full flex items-center justify-center">
+                <i class="fa fa-files-o text-2xl text-white"></i>
+              </div>
+            </div>
+            <p class="text-tech-dark dark:text-tech-silver font-medium mb-2">点击选择文件夹</p>
+            <p class="text-sm text-tech-gray">包含多个 <code class="bg-tech-silver dark:bg-tech-darker px-1 rounded">ui_messages.json</code></p>
+            <input type="file" id="folder-input" webkitdirectory multiple class="hidden" aria-label="选择文件夹">
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading-section" class="glass-card p-8 hidden text-center">
+        <div class="w-16 h-16 mx-auto mb-4 relative">
+          <div class="absolute inset-0 border-4 border-tech-blue/30 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-transparent border-t-tech-blue rounded-full animate-spin"></div>
+        </div>
+        <p class="text-lg font-medium text-tech-dark dark:text-tech-silver mb-2">正在处理...</p>
+        <p id="loading-text" class="text-tech-gray">解析对话文件</p>
+      </div>
+
+      <!-- Preview Area -->
+      <div id="preview-section" class="glass-card p-6 mb-6 hidden fade-in">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+          <div class="flex items-center">
+            <div class="w-8 h-8 bg-tech-success/20 rounded-lg flex items-center justify-center mr-3">
+              <i class="fa fa-check text-tech-success"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-tech-darker dark:text-tech-silver">转换成功</h3>
+              <p id="file-info" class="text-sm text-tech-gray"></p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button id="copy-btn" class="px-4 py-2 bg-tech-silver dark:bg-tech-darker text-tech-dark dark:text-tech-silver rounded-lg hover:bg-tech-gray transition-colors flex items-center">
+              <i class="fa fa-copy mr-2"></i>复制
+            </button>
+            <button id="download-btn" class="px-4 py-2 bg-gradient-to-r from-tech-blue to-tech-cyan text-white rounded-lg hover:shadow-lg transition-all flex items-center">
+              <i class="fa fa-download mr-2"></i>下载 .md
+            </button>
+          </div>
+        </div>
+        <div id="preview-content" class="bg-tech-silver dark:bg-dark-bg rounded-xl p-4 max-h-80 overflow-auto">
+          <pre id="markdown-output" class="text-sm text-tech-dark dark:text-tech-silver whitespace-pre-wrap font-mono leading-relaxed"></pre>
+        </div>
+      </div>
+
+      <!-- Batch Results -->
+      <div id="batch-section" class="glass-card p-6 mb-6 hidden fade-in">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+          <div class="flex items-center">
+            <div class="w-8 h-8 bg-tech-success/20 rounded-lg flex items-center justify-center mr-3">
+              <i class="fa fa-check text-tech-success"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-tech-darker dark:text-tech-silver">批量导出完成</h3>
+              <p id="batch-summary" class="text-sm text-tech-gray"></p>
+            </div>
+          </div>
+          <button id="download-all-btn" class="px-6 py-2 bg-gradient-to-r from-tech-success to-tech-cyan text-white rounded-lg hover:shadow-lg transition-all flex items-center">
+            <i class="fa fa-download mr-2"></i>下载全部 ZIP
+          </button>
+        </div>
+        <div id="batch-list" class="space-y-2 max-h-60 overflow-auto"></div>
+      </div>
+
+      <!-- Error Message -->
+      <div id="error-section" class="glass-card p-6 hidden border-red-500/30 bg-red-50 dark:bg-red-900/10 fade-in">
+        <div class="flex items-start">
+          <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+            <i class="fa fa-exclamation-triangle text-red-500"></i>
+          </div>
+          <div class="flex-1">
+            <h4 class="font-semibold text-red-600 dark:text-red-400 mb-1">出错了</h4>
+            <p id="error-message" class="text-red-600/80 dark:text-red-400/80"></p>
+          </div>
+          <button id="error-dismiss" class="text-tech-gray hover:text-red-500 transition-colors ml-4">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="glass-card p-6 fade-in">
+        <h4 class="flex items-center text-tech-darker dark:text-tech-silver font-semibold mb-3">
+          <i class="fa fa-lightbulb-o text-tech-warning mr-2"></i>使用提示
+        </h4>
+        <ul class="space-y-2 text-tech-gray text-sm">
+          <li class="flex items-start">
+            <i class="fa fa-chevron-right text-tech-blue mr-2 mt-1 text-xs"></i>
+            <span>Kilo Code 对话文件位于: <code class="bg-tech-silver dark:bg-tech-darker px-1 rounded text-tech-accent">%APPDATA%\Code\User\globalStorage\kilocode.kilo-code\tasks</code></span>
+          </li>
+          <li class="flex items-start">
+            <i class="fa fa-chevron-right text-tech-blue mr-2 mt-1 text-xs"></i>
+            <span>每个对话文件夹中包含 <code class="bg-tech-silver dark:bg-tech-darker px-1 rounded">ui_messages.json</code> 和 <code class="bg-tech-silver dark:bg-tech-darker px-1 rounded">task_metadata.json</code></span>
+          </li>
+          <li class="flex items-start">
+            <i class="fa fa-chevron-right text-tech-blue mr-2 mt-1 text-xs"></i>
+            <span>批量导出时请选择包含所有对话文件夹的父目录</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center py-8 text-tech-gray dark:text-tech-silver">
+    <p>© 2025 <a href="/" class="text-tech-blue hover:underline">icepig.top</a> · Kilo Code 对话导出工具</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    // Elements
+    const dropZone = document.getElementById('drop-zone');
+    const batchZone = document.getElementById('batch-zone');
+    const fileInput = document.getElementById('file-input');
+    const folderInput = document.getElementById('folder-input');
+    const loadingSection = document.getElementById('loading-section');
+    const loadingText = document.getElementById('loading-text');
+    const previewSection = document.getElementById('preview-section');
+    const previewContent = document.getElementById('preview-content');
+    const markdownOutput = document.getElementById('markdown-output');
+    const fileInfo = document.getElementById('file-info');
+    const copyBtn = document.getElementById('copy-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const batchSection = document.getElementById('batch-section');
+    const batchList = document.getElementById('batch-list');
+    const batchSummary = document.getElementById('batch-summary');
+    const downloadAllBtn = document.getElementById('download-all-btn');
+    const errorSection = document.getElementById('error-section');
+    const errorMessage = document.getElementById('error-message');
+    const errorDismiss = document.getElementById('error-dismiss');
+
+    let currentMarkdown = '';
+    let currentTitle = 'conversation';
+    let batchResults = [];
+
+    // Helper functions
+    function tsToTime(ts) {
+      if (!ts) return '未知时间';
+      return new Date(ts / 1000).toLocaleString('zh-CN', { 
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        timeZone: 'UTC'
+      }) + ' UTC';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function parseToolText(text) {
+      try {
+        const obj = JSON.parse(text);
+        const tool = obj.tool || '未知工具';
+        const lines = [`**工具**: \`${tool}\``];
+        
+        if (obj.batchFiles && Array.isArray(obj.batchFiles)) {
+          const files = obj.batchFiles.map(f => f.path).filter(Boolean);
+          if (files.length > 0) {
+            lines.push("**读取文件**:\n" + files.map(p => `  - \`${p}\``).join('\n'));
+          }
+        } else if (obj.todos && Array.isArray(obj.todos)) {
+          lines.push("**Todo 列表**:");
+          obj.todos.forEach(t => {
+            const status = t.status === 'completed' ? '✅' : (t.status === 'in_progress' ? '🔄' : '⬜');
+            lines.push(`  - ${status} ${t.content || ''}`);
+          });
+        } else if (obj.command) {
+          lines.push(`**命令**: \`${obj.command}\``);
+        } else if (obj.writeFile) {
+          lines.push(`**写入文件**: \`${obj.writeFile}\``);
+        } else if (obj.readFile) {
+          lines.push(`**读取文件**: \`${obj.readFile}\``);
+        } else if (obj.globPattern) {
+          lines.push(`**搜索**: \`${obj.globPattern}\``);
+        } else if (obj.searchQuery) {
+          lines.push(`**搜索内容**: ${obj.searchQuery}`);
+        }
+        
+        return lines.join('\n');
+      } catch {
+        return escapeHtml(text);
+      }
+    }
+
+    function convertToMarkdown(messages, metadata = null) {
+      const lines = [];
+      
+      // Extract title from metadata
+      let title = null;
+      if (metadata) {
+        title = metadata.taskText || metadata.name || metadata.title;
+        if (title && title.length > 100) title = title.substring(0, 100) + '...';
+      }
+      
+      // Header
+      lines.push(`# ${title || 'Kilo Code 对话记录'}\n`);
+      
+      // Stats
+      const stats = {
+        user: 0,
+        ai: 0,
+        tool: 0,
+        command: 0
+      };
+      
+      messages.forEach(msg => {
+        const subtype = msg.say || msg.ask || '';
+        if (subtype === 'user_feedback') stats.user++;
+        else if (subtype === 'text' || subtype === 'completion_result') stats.ai++;
+        else if (subtype === 'tool') stats.tool++;
+        else if (subtype === 'command' || subtype === 'command_output') stats.command++;
+      });
+      
+      lines.push(`**对话统计**: ${stats.user} 条用户消息 · ${stats.ai} 条 AI 回复 · ${stats.tool} 次工具调用 · ${stats.command} 次命令\n`);
+      
+      const firstTs = messages[0]?.ts;
+      const lastTs = messages[messages.length - 1]?.ts;
+      
+      if (firstTs) lines.push(`**开始时间**: ${tsToTime(firstTs)}`);
+      if (lastTs) lines.push(`**结束时间**: ${tsToTime(lastTs)}`);
+      lines.push(`**导出时间**: ${new Date().toLocaleString('zh-CN')}\n`);
+      lines.push('---\n');
+
+      // Message types to skip
+      const SKIP = new Set(['api_req_started', 'checkpoint_saved', 'api_req_retry_delayed', 'resume_task', 'condense_context']);
+
+      // Process messages
+      messages.forEach((msg, index) => {
+        const ts = msg.ts || 0;
+        const mtype = msg.type || '';
+        const subtype = msg.say || msg.ask || '';
+        const text = (msg.text || '').trim();
+        const images = msg.images || [];
+
+        // Skip certain message types or empty messages
+        if (subtype && SKIP.has(subtype)) return;
+        if (!text && !images.length) return;
+
+        const timeStr = tsToTime(ts);
+
+        if (mtype === 'say') {
+          switch (subtype) {
+            case 'text':
+              lines.push(`## 🤖 AI 回复\n*${timeStr}*\n`);
+              lines.push(text);
+              lines.push('');
+              break;
+              
+            case 'reasoning':
+              lines.push(`### 💭 推理过程\n*${timeStr}*\n`);
+              lines.push('> ' + text.replace(/\n/g, '\n> '));
+              lines.push('');
+              break;
+              
+            case 'completion_result':
+              lines.push(`## ✅ 任务完成\n*${timeStr}*\n`);
+              lines.push(text);
+              lines.push('');
+              break;
+              
+            case 'user_feedback':
+              lines.push(`## 👤 用户\n*${timeStr}*\n`);
+              lines.push(text);
+              if (images.length) {
+                lines.push(`\n*📎 附带 ${images.length} 张图片*\n`);
+              }
+              break;
+              
+            case 'command':
+              lines.push(`### 💻 执行命令\n*${timeStr}*\n`);
+              lines.push('```bash');
+              lines.push(text);
+              lines.push('```\n');
+              break;
+              
+            case 'command_output':
+              lines.push(`### 📤 命令输出\n*${timeStr}*\n`);
+              lines.push('```');
+              lines.push(text.substring(0, 2000)); // Limit output length
+              if (text.length > 2000) lines.push('\n... (输出过长已截断)');
+              lines.push('```\n');
+              break;
+              
+            case 'error':
+              lines.push(`### ❌ 错误\n*${timeStr}*\n`);
+              lines.push('```');
+              lines.push(text);
+              lines.push('```\n');
+              break;
+              
+            case 'resource':
+              lines.push(`### 📎 资源访问\n*${timeStr}*\n`);
+              lines.push(`\`${text}\``);
+              lines.push('');
+              break;
+          }
+        } else if (mtype === 'ask') {
+          if (subtype === 'tool') {
+            lines.push(`### 🔧 工具调用\n*${timeStr}*\n`);
+            lines.push(parseToolText(text));
+            lines.push('');
+          } else if (subtype === 'followup') {
+            lines.push(`### ❓ 后续问题\n*${timeStr}*\n`);
+            lines.push(text);
+            lines.push('');
+          } else if (subtype === 'approval') {
+            lines.push(`### ⚠️ 请求确认\n*${timeStr}*\n`);
+            lines.push(text);
+            lines.push('');
+          }
+        }
+      });
+
+      return lines.join('\n');
+    }
+
+    function showLoading(text = '处理中...') {
+      hideAll();
+      loadingText.textContent = text;
+      loadingSection.classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      loadingSection.classList.add('hidden');
+    }
+
+    function showPreview(title, info) {
+      hideAll();
+      currentTitle = title;
+      fileInfo.textContent = info;
+      previewSection.classList.remove('hidden');
+    }
+
+    function showBatch(results) {
+      hideAll();
+      batchResults = results;
+      batchSummary.textContent = `共 ${results.length} 个对话`;
+      batchSection.classList.remove('hidden');
+    }
+
+    function showError(msg) {
+      hideAll();
+      errorMessage.textContent = msg;
+      errorSection.classList.remove('hidden');
+    }
+
+    function hideAll() {
+      hideLoading();
+      previewSection.classList.add('hidden');
+      batchSection.classList.add('hidden');
+      errorSection.classList.add('hidden');
+    }
+
+    function hideError() {
+      errorSection.classList.add('hidden');
+    }
+
+    // File upload handlers
+    dropZone.addEventListener('click', () => fileInput.click());
+    batchZone.addEventListener('click', () => folderInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleSingleFile(file);
+      e.target.value = ''; // Reset for same file selection
+    });
+
+    folderInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      if (files.length > 0) handleBatchFiles(files);
+      e.target.value = ''; // Reset
+    });
+
+    // Drag and drop
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drop-zone-active');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drop-zone-active');
+      });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const file = e.dataTransfer.files[0];
+      if (file && file.name.endsWith('.json')) {
+        handleSingleFile(file);
+      } else {
+        showError('请上传 JSON 文件');
+      }
+    });
+
+    errorDismiss.addEventListener('click', hideError);
+
+    async function handleSingleFile(file) {
+      hideError();
+      showLoading('正在读取文件...');
+      
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        if (!Array.isArray(data)) {
+          throw new Error('文件格式错误：ui_messages.json 应为消息数组');
+        }
+        
+        showLoading('正在转换为 Markdown...');
+        
+        currentMarkdown = convertToMarkdown(data);
+        const msgCount = data.length;
+        const msg = msgCount === 1 ? '1 条消息' : `${msgCount} 条消息`;
+        showPreview(file.name.replace('.json', ''), msg);
+        markdownOutput.textContent = currentMarkdown;
+        
+      } catch (e) {
+        showError('文件解析失败：' + e.message);
+      }
+    }
+
+    async function handleBatchFiles(files) {
+      hideError();
+      showLoading('正在扫描对话文件...');
+      
+      batchResults = [];
+      batchList.innerHTML = '';
+      
+      // Group files by directory
+      const fileMap = new Map();
+      
+      files.forEach(file => {
+        const parts = file.webkitRelativePath.split('/');
+        if (parts.length >= 2 && file.name === 'ui_messages.json') {
+          const dir = parts[0];
+          if (!fileMap.has(dir)) {
+            fileMap.set(dir, { json: null, meta: null });
+          }
+          fileMap.get(dir).json = file;
+        } else if (parts.length >= 2 && file.name === 'task_metadata.json') {
+          const dir = parts[0];
+          if (!fileMap.has(dir)) {
+            fileMap.set(dir, { json: null, meta: null });
+          }
+          fileMap.get(dir).meta = file;
+        }
+      });
+
+      if (fileMap.size === 0) {
+        showError('未找到 ui_messages.json 文件。请确保选择包含对话文件夹的目录。');
+        return;
+      }
+
+      let success = 0;
+      let failed = 0;
+
+      for (const [dir, files2] of fileMap) {
+        try {
+          showLoading(`正在处理: ${dir}...`);
+          
+          const jsonText = await files2.json.text();
+          const jsonData = JSON.parse(jsonText);
+          
+          let metadata = null;
+          if (files2.meta) {
+            const metaText = await files2.meta.text();
+            metadata = JSON.parse(metaText);
+          }
+          
+          const markdown = convertToMarkdown(jsonData, metadata);
+          batchResults.push({
+            name: dir + '.md',
+            content: markdown,
+            success: true
+          });
+          
+          batchList.innerHTML += `
+            <div class="flex items-center p-2 bg-tech-success/10 rounded-lg">
+              <i class="fa fa-check-circle text-tech-success mr-3"></i>
+              <span class="flex-1 text-tech-dark dark:text-tech-silver">${dir}</span>
+              <span class="text-sm text-tech-gray">${jsonData.length} 条消息</span>
+            </div>
+          `;
+          success++;
+          
+        } catch (e) {
+          failed++;
+          batchList.innerHTML += `
+            <div class="flex items-center p-2 bg-red-50 dark:bg-red-900/10 rounded-lg">
+              <i class="fa fa-times-circle text-red-500 mr-3"></i>
+              <span class="flex-1 text-tech-dark dark:text-tech-silver">${dir}</span>
+              <span class="text-sm text-red-500">${e.message}</span>
+            </div>
+          `;
+        }
+      }
+
+      if (batchResults.length === 0) {
+        showError('所有文件处理失败，请检查文件格式是否正确。');
+        return;
+      }
+
+      showBatch(batchResults);
+      
+      if (failed > 0) {
+        setTimeout(() => {
+          showError(`处理完成，但有 ${failed} 个文件失败。`);
+        }, 500);
+      }
+    }
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(currentMarkdown).then(() => {
+        copyBtn.innerHTML = '<i class="fa fa-check mr-2"></i>已复制';
+        copyBtn.classList.add('bg-tech-success', 'text-white');
+        copyBtn.classList.remove('bg-tech-silver', 'dark:bg-tech-darker', 'text-tech-dark', 'dark:text-tech-silver');
+        setTimeout(() => {
+          copyBtn.innerHTML = '<i class="fa fa-copy mr-2"></i>复制';
+          copyBtn.classList.remove('bg-tech-success', 'text-white');
+          copyBtn.classList.add('bg-tech-silver', 'dark:bg-tech-darker', 'text-tech-dark', 'dark:text-tech-silver');
+        }, 2000);
+      });
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const blob = new Blob([currentMarkdown], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = currentTitle + '.md';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    downloadAllBtn.addEventListener('click', async () => {
+      if (batchResults.length === 0) return;
+      
+      downloadAllBtn.disabled = true;
+      downloadAllBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>打包中...';
+      
+      try {
+        const zip = new JSZip();
+        batchResults.forEach(r => zip.file(r.name, r.content));
+        const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'kilo_exports_' + new Date().toISOString().slice(0, 10) + '.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        showError('打包失败：' + e.message);
+      } finally {
+        downloadAllBtn.disabled = false;
+        downloadAllBtn.innerHTML = '<i class="fa fa-download mr-2"></i>下载全部 ZIP';
+      }
+    });
+  </script>
+</body>
+</html>

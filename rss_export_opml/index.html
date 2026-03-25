@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSS OPML Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .platform-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #999;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .platform-content {
+            display: none;
+        }
+
+        .platform-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .dual-input {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .input-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .param-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .param-item:hover {
+            background: #e9ecef;
+        }
+
+        .param-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .param-item label {
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            user-select: none;
+        }
+
+        .group-section {
+            display: grid;
+            gap: 15px;
+        }
+
+        .group-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .group-item label {
+            min-width: 100px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        select, input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-generate:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+            display: none;
+        }
+
+        .btn-download:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .result-content {
+            width: 100%;
+            min-height: 200px;
+            padding: 12px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-x: auto;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .match-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1976D2;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+
+        .route-selector {
+            margin-bottom: 20px;
+        }
+
+        .route-selector label {
+            display: block;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔖 RSS OPML Generator</h1>
+        <p class="subtitle">批量生成微博和Twitter的OPML订阅源文件</p>
+
+        <!-- 平台选择标签 -->
+        <div class="platform-tabs">
+            <button class="tab active" onclick="switchPlatform('weibo')">📱 微博</button>
+            <button class="tab" onclick="switchPlatform('twitter')">🐦 Twitter / X</button>
+        </div>
+
+        <!-- 微博内容 -->
+        <div id="weibo-content" class="platform-content active">
+            <div class="section">
+                <div class="section-title">1. 输入微博链接和用户名</div>
+                <div class="dual-input">
+                    <div class="input-column">
+                        <div class="column-label">📎 微博链接（每行一个）</div>
+                        <textarea id="weiboLinks" placeholder="粘贴微博链接，例如：
+https://weibo.com/u/6603744955
+https://weibo.com/u/1906286443
+https://weibo.com/u/7762107285"></textarea>
+                        <p class="hint">支持格式：https://weibo.com/u/USER_ID 或 https://weibo.com/USER_ID/</p>
+                    </div>
+                    <div class="input-column">
+                        <div class="column-label">👤 用户名（每行一个，与左侧链接一一对应）</div>
+                        <textarea id="weiboNames" placeholder="粘贴用户名，例如：
+@Yocar-冯骥 的个人主页 - 微博
+@钟文泽 的个人主页 - 微博
+@罗永浩的十字路口 的个人主页 - 微博
+
+或直接输入用户名：
+Yocar-冯骥
+钟文泽"></textarea>
+                        <p class="hint">会自动提取@符号后的用户名，或直接输入纯用户名</p>
+                    </div>
+                </div>
+                <div id="weiboMatchInfo"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">2. 选择路由参数（可选）</div>
+                <div class="params-grid" id="weiboParamsGrid"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">3. 选择分组</div>
+                <div class="group-section">
+                    <div class="group-item">
+                        <label>主分组：</label>
+                        <select id="weiboMainGroup">
+                            <option value="Articles">Articles</option>
+                            <option value="SocialMedia" selected>SocialMedia</option>
+                            <option value="Pictures">Pictures</option>
+                            <option value="Videos">Videos</option>
+                            <option value="Audios">Audios</option>
+                            <option value="Notifications">Notifications</option>
+                        </select>
+                    </div>
+                    <div class="group-item">
+                        <label>子分组：</label>
+                        <input type="text" id="weiboSubGroup" placeholder="例如：微博关注、科技博主（留空则直接放在主分组下）">
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-generate" onclick="generateWeiboOPML()">生成 OPML</button>
+                <button class="btn-download" id="weiboDownloadBtn" onclick="downloadOPML('weibo')">下载 OPML 文件</button>
+            </div>
+        </div>
+
+        <!-- Twitter内容 -->
+        <div id="twitter-content" class="platform-content">
+            <div class="section">
+                <div class="route-selector">
+                    <label>选择路由类型：</label>
+                    <select id="twitterRouteType">
+                        <option value="user">User timeline - 单用户时间线</option>
+                        <option value="media">User media - 单用户媒体流</option>
+                        <option value="list">List timeline - 列表时间线</option>
+                        <option value="keyword">Keyword - 关键词搜索流</option>
+                        <option value="home_latest">Home latest timeline - 主页最新时间线</option>
+                        <option value="home">Home timeline - 主页推荐/默认时间线</option>
+                        <option value="likes">User likes - 用户点赞流</option>
+                        <option value="trends">Trends - 趋势榜</option>
+                        <option value="tweet">Tweet Details - 单条推文详情</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">1. 输入Twitter ID和标题</div>
+                <div class="dual-input">
+                    <div class="input-column">
+                        <div class="column-label">🆔 Twitter ID（每行一个）</div>
+                        <textarea id="twitterIds" placeholder="根据路由类型输入不同内容：
+
+User/Media/Likes: 用户名
+_RSSHub
+elonmusk
+
+List: 列表ID
+1502570462752219136
+
+Keyword: 关键词
+RSSHub
+AI news
+
+Home/Home latest: 留空即可
+
+Trends: WOEID（可选，留空为全球）
+1
+23424856
+
+Tweet Details: 用户名/推文ID
+DIYgod/1650844643997646852"></textarea>
+                        <p class="hint">根据选择的路由类型输入相应的ID或内容</p>
+                    </div>
+                    <div class="input-column">
+                        <div class="column-label">📝 标题（每行一个，与左侧ID一一对应）</div>
+                        <textarea id="twitterTitles" placeholder="粘贴标题，例如：
+RSSHub Official
+Elon Musk
+DIYgod"></textarea>
+                        <p class="hint">直接输入标题即可</p>
+                    </div>
+                </div>
+                <div id="twitterMatchInfo"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">2. 选择路由参数（可选）</div>
+                <div class="params-grid" id="twitterParamsGrid"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">3. 选择分组</div>
+                <div class="group-section">
+                    <div class="group-item">
+                        <label>主分组：</label>
+                        <select id="twitterMainGroup">
+                            <option value="Articles">Articles</option>
+                            <option value="SocialMedia" selected>SocialMedia</option>
+                            <option value="Pictures">Pictures</option>
+                            <option value="Videos">Videos</option>
+                            <option value="Audios">Audios</option>
+                            <option value="Notifications">Notifications</option>
+                        </select>
+                    </div>
+                    <div class="group-item">
+                        <label>子分组：</label>
+                        <input type="text" id="twitterSubGroup" placeholder="例如：Twitter关注、科技博主（留空则直接放在主分组下）">
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-generate" onclick="generateTwitterOPML()">生成 OPML</button>
+                <button class="btn-download" id="twitterDownloadBtn" onclick="downloadOPML('twitter')">下载 OPML 文件</button>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="result-title">生成的 OPML 内容：</div>
+            <div class="result-content" id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 微博参数配置,包含默认值
+        const weiboParams = [
+            { id: 'readable', label: '排版优化(更适合阅读)', defaultValue: false },
+            { id: 'authorNameBold', label: '作者名加粗', defaultValue: false },
+            { id: 'showAuthorInTitle', label: '标题显示作者', defaultValue: false },
+            { id: 'showAuthorInDesc', label: '正文显示作者', defaultValue: false },
+            { id: 'showAuthorAvatarInDesc', label: '正文显示作者头像', defaultValue: false },
+            { id: 'showEmojiForRetweet', label: '用符号替换"转发"(用🔁等表情)', defaultValue: false },
+            { id: 'showRetweetTextInTitle', label: '标题包含转发评论', defaultValue: true },
+            { id: 'addLinkForPics', label: '配图添加可点击链接', defaultValue: false },
+            { id: 'showTimestampInDescription', label: '正文显示时间', defaultValue: false },
+            { id: 'displayVideo', label: '直接显示视频', defaultValue: true },
+            { id: 'displayArticle', label: '直接显示微博长文', defaultValue: false },
+            { id: 'displayComments', label: '显示热门评论', defaultValue: false },
+            { id: 'showEmoji', label: '显示微博表情', defaultValue: true },
+            { id: 'showLinkIconInDescription', label: '显示链接图标', defaultValue: true },
+            { id: 'preferMobileLink', label: '使用移动版链接', defaultValue: false },
+            { id: 'showRetweeted', label: '显示被转发的微博', defaultValue: true },
+            { id: 'showBloggerIcons', label: '评论显示博主标识', defaultValue: false }
+        ];
+
+        const twitterParams = [
+            { id: 'readable', label: '排版优化（更适合阅读）' },
+            { id: 'authorNameBold', label: '作者名加粗' },
+            { id: 'showAuthorInTitle', label: '标题显示作者' },
+            { id: 'showAuthorInDesc', label: '正文显示作者' },
+            { id: 'addLinkForPics', label: '配图添加可点击链接' },
+            { id: 'showTimestampInDescription', label: '正文显示时间' },
+            { id: 'includeReplies', label: '包含回复（仅user路由）' },
+            { id: 'includeRts', label: '包含转推（仅user路由）' },
+            { id: 'onlyMedia', label: '只显示带媒体的推文' }
+        ];
+
+        // 初始化参数网格
+        function initParamsGrid(params, gridId) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+            params.forEach(param => {
+                const div = document.createElement('div');
+                div.className = 'param-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="${gridId}-${param.id}" value="1">
+                    <label for="${gridId}-${param.id}">${param.label}</label>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        initParamsGrid(weiboParams, 'weiboParamsGrid');
+        initParamsGrid(twitterParams, 'twitterParamsGrid');
+
+        let generatedOPML = {
+            weibo: '',
+            twitter: ''
+        };
+
+        // 平台切换
+        function switchPlatform(platform) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.platform-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${platform}-content`).classList.add('active');
+        }
+
+        // 微博相关函数
+        document.getElementById('weiboLinks').addEventListener('input', updateWeiboMatchInfo);
+        document.getElementById('weiboNames').addEventListener('input', updateWeiboMatchInfo);
+
+        function updateWeiboMatchInfo() {
+            const links = document.getElementById('weiboLinks').value.split('\n').filter(l => l.trim());
+            const names = document.getElementById('weiboNames').value.split('\n').filter(n => n.trim());
+            const matchInfo = document.getElementById('weiboMatchInfo');
+
+            if (links.length === 0 && names.length === 0) {
+                matchInfo.innerHTML = '';
+                return;
+            }
+
+            if (links.length === names.length && links.length > 0) {
+                matchInfo.innerHTML = `<div class="match-info">✓ 匹配成功：检测到 ${links.length} 个链接和 ${names.length} 个用户名</div>`;
+            } else if (links.length > 0 && names.length === 0) {
+                matchInfo.innerHTML = `<div class="match-info warning">⚠ 未输入用户名</div>`;
+            } else if (links.length !== names.length) {
+                matchInfo.innerHTML = `<div class="match-info warning">⚠ 数量不匹配：${links.length} 个链接，${names.length} 个用户名</div>`;
+            }
+        }
+
+        function extractUserId(url) {
+            url = url.trim();
+            const patterns = [
+                /weibo\.com\/u\/(\d+)/,
+                /weibo\.com\/(\d+)/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        function extractUserName(line) {
+            line = line.trim();
+            if (!line) return null;
+
+            const atMatch = line.match(/@([^\s]+)\s*的个人主页/);
+            if (atMatch) return atMatch[1].trim();
+
+            const atSimpleMatch = line.match(/@([^\s]+)/);
+            if (atSimpleMatch) return atSimpleMatch[1].trim();
+
+            return line.replace(/的个人主页.*$/, '').trim();
+        }
+
+        function getSelectedParams(gridId) {
+            const selectedParams = [];
+            const grid = document.getElementById(gridId);
+            grid.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                const paramId = checkbox.id.replace(`${gridId}-`, '');
+                selectedParams.push(`${paramId}=1`);
+            });
+            return selectedParams.join('&');
+        }
+
+        function generateWeiboOPML() {
+            const linksText = document.getElementById('weiboLinks').value;
+            const namesText = document.getElementById('weiboNames').value;
+            const mainGroup = document.getElementById('weiboMainGroup').value;
+            const subGroup = document.getElementById('weiboSubGroup').value.trim();
+            
+            if (!linksText.trim()) {
+                alert('请输入微博链接！');
+                return;
+            }
+
+            const linkLines = linksText.split('\n').filter(line => line.trim());
+            const nameLines = namesText.split('\n').filter(line => line.trim());
+
+            const users = [];
+            
+            linkLines.forEach((link, index) => {
+                const userId = extractUserId(link);
+                if (!userId) return;
+
+                let userName = null;
+                if (nameLines[index]) {
+                    userName = extractUserName(nameLines[index]);
+                }
+
+                users.push({
+                    userId: userId,
+                    userName: userName || `微博用户 ${userId}`
+                });
+            });
+
+            if (users.length === 0) {
+                alert('未能识别有效的微博链接！');
+                return;
+            }
+
+            const routeParams = getSelectedParams('weiboParamsGrid');
+            const paramString = routeParams ? '/' + routeParams : '';
+            const now = new Date().toISOString();
+            
+            let outlines = '';
+            
+            users.forEach(user => {
+                const xmlUrl = `https://rsshub.app/weibo/user/${user.userId}${paramString}`;
+                const htmlUrl = `https://weibo.com/${user.userId}/`;
+                
+                outlines += `<outline text="${user.userName}" title="${user.userName}" xmlUrl="${xmlUrl}" htmlUrl="${htmlUrl}" type="rss"></outline>`;
+            });
+
+            let finalOutlines;
+            if (subGroup) {
+                finalOutlines = `<outline text="${mainGroup}"><outline text="${subGroup}">${outlines}</outline></outline>`;
+            } else {
+                finalOutlines = `<outline text="${mainGroup}">${outlines}</outline>`;
+            }
+
+            generatedOPML.weibo = `<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0"><head><dateCreated>${now}</dateCreated><title>Weibo RSS Feeds</title></head><body>${finalOutlines}</body></opml>`;
+
+            document.getElementById('resultContent').textContent = generatedOPML.weibo;
+            document.getElementById('resultSection').classList.add('show');
+            document.getElementById('weiboDownloadBtn').style.display = 'block';
+        }
+
+        // Twitter相关函数
+        document.getElementById('twitterIds').addEventListener('input', updateTwitterMatchInfo);
+        document.getElementById('twitterTitles').addEventListener('input', updateTwitterMatchInfo);
+
+        function updateTwitterMatchInfo() {
+            const ids = document.getElementById('twitterIds').value.split('\n').filter(l => l.trim());
+            const titles = document.getElementById('twitterTitles').value.split('\n').filter(n => n.trim());
+            const matchInfo = document.getElementById('twitterMatchInfo');
+
+            if (ids.length === 0 && titles.length === 0) {
+                matchInfo.innerHTML = '';
+                return;
+            }
+
+            if (ids.length === titles.length && ids.length > 0) {
+                matchInfo.innerHTML = `<div class="match-info">✓ 匹配成功：检测到 ${ids.length} 个ID和 ${titles.length} 个标题</div>`;
+            } else if (ids.length > 0 && titles.length === 0) {
+                matchInfo.innerHTML = `<div class="match-info warning">⚠ 未输入标题</div>`;
+            } else if (ids.length !== titles.length) {
+                matchInfo.innerHTML = `<div class="match-info warning">⚠ 数量不匹配：${ids.length} 个ID，${titles.length} 个标题</div>`;
+            }
+        }
+
+        function generateTwitterOPML() {
+            const idsText = document.getElementById('twitterIds').value;
+            const titlesText = document.getElementById('twitterTitles').value;
+            const mainGroup = document.getElementById('twitterMainGroup').value;
+            const subGroup = document.getElementById('twitterSubGroup').value.trim();
+            const routeType = document.getElementById('twitterRouteType').value;
+            
+            if (!idsText.trim()) {
+                alert('请输入Twitter ID！');
+                return;
+            }
+
+            const idLines = idsText.split('\n').filter(line => line.trim());
+            const titleLines = titlesText.split('\n').filter(line => line.trim());
+
+            const items = [];
+            
+            idLines.forEach((id, index) => {
+                id = id.trim();
+                if (!id) return;
+
+                const title = titleLines[index] ? titleLines[index].trim() : id;
+
+                items.push({
+                    id: id,
+                    title: title
+                });
+            });
+
+            if (items.length === 0) {
+                alert('未能识别有效的Twitter ID！');
+                return;
+            }
+
+            const routeParams = getSelectedParams('twitterParamsGrid');
+            const paramString = routeParams ? '/' + routeParams : '';
+            const now = new Date().toISOString();
+            
+            let outlines = '';
+            
+            items.forEach(item => {
+                let xmlUrl = '';
+                let htmlUrl = '';
+
+                switch(routeType) {
+                    case 'user':
+                        xmlUrl = `https://rsshub.app/twitter/user/${item.id}${paramString}`;
+                        htmlUrl = `https://twitter.com/${item.id}`;
+                        break;
+                    case 'media':
+                        xmlUrl = `https://rsshub.app/twitter/media/${item.id}${paramString}`;
+                        htmlUrl = `https://twitter.com/${item.id}`;
+                        break;
+                    case 'list':
+                        xmlUrl = `https://rsshub.app/twitter/list/${item.id}${paramString}`;
+                        htmlUrl = `https://twitter.com/i/lists/${item.id}`;
+                        break;
+                    case 'keyword':
+                        xmlUrl = `https://rsshub.app/twitter/keyword/${encodeURIComponent(item.id)}${paramString}`;
+                        htmlUrl = `https://twitter.com/search?q=${encodeURIComponent(item.id)}`;
+                        break;
+                    case 'home_latest':
+                        xmlUrl = `https://rsshub.app/twitter/home_latest${paramString}`;
+                        htmlUrl = `https://twitter.com/home`;
+                        break;
+                    case 'home':
+                        xmlUrl = `https://rsshub.app/twitter/home${paramString}`;
+                        htmlUrl = `https://twitter.com/home`;
+                        break;
+                    case 'likes':
+                        xmlUrl = `https://rsshub.app/twitter/likes/${item.id}${paramString}`;
+                        htmlUrl = `https://twitter.com/${item.id}/likes`;
+                        break;
+                    case 'trends':
+                        // trends路由：id是woeid，可选
+                        const woeid = item.id || '1';
+                        xmlUrl = `https://rsshub.app/twitter/trends/${woeid}`;
+                        htmlUrl = `https://twitter.com/explore/tabs/trending`;
+                        break;
+                    case 'tweet':
+                        // tweet路由需要特殊处理：id/status/status_id
+                        // 这里假设用户输入格式为 "username/status_id"
+                        const parts = item.id.split('/');
+                        if (parts.length === 2) {
+                            xmlUrl = `https://rsshub.app/twitter/tweet/${parts[0]}/status/${parts[1]}${paramString}`;
+                            htmlUrl = `https://twitter.com/${parts[0]}/status/${parts[1]}`;
+                        } else {
+                            // 如果格式不对，跳过这个项
+                            return;
+                        }
+                        break;
+                }
+                
+                outlines += `<outline text="${item.title}" title="${item.title}" xmlUrl="${xmlUrl}" htmlUrl="${htmlUrl}" type="rss"></outline>`;
+            });
+
+            let finalOutlines;
+            if (subGroup) {
+                finalOutlines = `<outline text="${mainGroup}"><outline text="${subGroup}">${outlines}</outline></outline>`;
+            } else {
+                finalOutlines = `<outline text="${mainGroup}">${outlines}</outline>`;
+            }
+
+            generatedOPML.twitter = `<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0"><head><dateCreated>${now}</dateCreated><title>Twitter RSS Feeds</title></head><body>${finalOutlines}</body></opml>`;
+
+            document.getElementById('resultContent').textContent = generatedOPML.twitter;
+            document.getElementById('resultSection').classList.add('show');
+            document.getElementById('twitterDownloadBtn').style.display = 'block';
+        }
+
+        function downloadOPML(platform) {
+            const opml = generatedOPML[platform];
+            if (!opml) {
+                alert('请先生成OPML！');
+                return;
+            }
+
+            const blob = new Blob([opml], { type: 'text/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${platform}_feeds_${Date.now()}.opml`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
